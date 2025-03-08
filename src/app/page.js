@@ -36,8 +36,39 @@ export default function Home() {
   //postTFG();
   getTFG("67cc7e501aa308fc5563ed4f");
   return (
-    <div>
-
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <Link href="/register">
+        <button
+          style={{
+            backgroundColor: '#0070f3',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            margin: '10px',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '1em'
+          }}
+        >
+          Register
+        </button>
+      </Link>
+      <Link href="/login">
+        <button
+          style={{
+            backgroundColor: '#0070f3',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            margin: '10px',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '1em'
+          }}
+        >
+          Login
+        </button>
+      </Link>
     </div>
   );
 }
