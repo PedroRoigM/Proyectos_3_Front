@@ -1,6 +1,5 @@
 'use client'
 import Link from "next/link";
-import GetTFG from "../components/lib/GetTFG";
 import PostTFG from "../components/lib/PostTFG";
 import GetTFGs from "../components/lib/GetTFGs";
 import GetTenTFGs from "../components/lib/GetTenTFGs";
@@ -8,7 +7,6 @@ import GetTenTFGs from "../components/lib/GetTenTFGs";
 import { useState } from "react";
 
 export default function Page() {
-    const [id, setId] = useState('');
     const [pageNum, setPageNum] = useState('');
     const [formData, setFormData] = useState({
         year: "22/23",
@@ -22,7 +20,6 @@ export default function Page() {
 
     // Estados para los resultados y visibilidad
     const [getTFGsResult, setGetTFGsResult] = useState(null);
-    const [getTFGResult, setGetTFGResult] = useState(null);
     const [postTFGResult, setPostTFGResult] = useState(null);
     const [getTenTFGsResult, setGetTenTFGsResult] = useState(null);
 
@@ -38,12 +35,6 @@ export default function Page() {
         const tfgs = await GetTFGs();
         setGetTFGsResult(tfgs);
         setShowResults(prev => ({ ...prev, getTFGs: true }));
-    };
-
-    const getTFG = async (id) => {
-        const tfg = await GetTFG({ id: id });
-        setGetTFGResult(tfg);
-        setShowResults(prev => ({ ...prev, getTFG: true }));
     };
 
     const postTFG = async () => {
@@ -84,26 +75,6 @@ export default function Page() {
                     <pre style={resultStyle}>{JSON.stringify(tfg, null, 2)}</pre>
                 </Link>
             ))}
-
-            {/* Get TFG */}
-            <div style={{ marginBottom: '20px' }}>
-                <input
-                    type="text"
-                    value={id}
-                    onChange={(e) => setId(e.target.value)}
-                    placeholder="Enter TFG ID"
-                    style={inputStyle}
-                />
-                <button onClick={() => getTFG(id)} style={buttonStyle}>Get TFG</button>
-                <button onClick={() => toggleResults("getTFG")} style={toggleButtonStyle}>
-                    {showResults.getTFG ? "Ocultar Resultados" : "Mostrar Resultados"}
-                </button>
-                {showResults.getTFG && getTFGResult && (
-                    <Link href={`/dashboard/TFGs_Pruebas/${getTFGResult._id}?id=${getTFGResult._id}`} style={linkStyle}>
-                        <pre style={resultStyle}>{JSON.stringify(getTFGResult, null, 2)}</pre>
-                    </Link>
-                )}
-            </div>
 
             {/* Post TFG */}
             <div style={{ marginBottom: '20px' }}>
