@@ -3,20 +3,30 @@ import Link from "next/link";
 import PostTFG from "../components/lib/PostTFG";
 import GetTFGs from "../components/lib/GetTFGs";
 import GetTenTFGs from "../components/lib/GetTenTFGs";
-
-import { useState } from "react";
+import GetDifferentDegrees from "../components/lib/GetDifferentDegrees";
+import GetDifferentYears from "../components/lib/GetDifferentYears";
+import { useEffect, useState } from "react";
 
 export default function Page() {
     const [pageNum, setPageNum] = useState('');
     const [formData, setFormData] = useState({
-        year: "22/23",
-        degree: "Grado en Diseño de Productos Interactivos (DIPI)",
-        student: "Paquito",
-        tfgTitle: "ANÁLISIS DE BUENAS PRÁCTICAS EN EL DISEÑO DE INTERFACES PARA JUEGOS DE REALIDAD VIRTUAL",
-        keywords: ["Realidad Virtual", "Experiencia de Usuario", "Interfaz de Usuario", "Inmersión"],
-        advisor: "Álvaro Ortuño Morente",
-        abstract: "prueba"
+        year: "",
+        degree: "",
+        student: "",
+        tfgTitle: "",
+        keywords: [],
+        advisor: "",
+        abstract: ""
     });
+    const [degrees, setDegrees] = useState([{}]);
+    const [years, setYears] = useState([{}]);
+    // Conseguir los grados y años
+    useEffect(() => {
+        GetDifferentDegrees().then(degrees => setDegrees([null, ...degrees]));
+        console.log('Degrees: ', degrees);
+        GetDifferentYears().then(years => setYears([null, ...years]));
+        console.log('Years: ', years);
+    }, []);
 
     // Estados para los resultados y visibilidad
     const [getTFGsResult, setGetTFGsResult] = useState(null);
@@ -45,6 +55,7 @@ export default function Page() {
 
     const getTenTFGs = async (pageNum, formData) => {
         const tfgs = await GetTenTFGs(pageNum, formData);
+        console.log(tfgs);
         setGetTenTFGsResult(tfgs);
         setShowResults(prev => ({ ...prev, getTenTFGs: true }));
     };
@@ -70,8 +81,8 @@ export default function Page() {
             <button onClick={() => toggleResults("getTFGs")} style={toggleButtonStyle}>
                 {showResults.getTFGs ? "Ocultar Resultados" : "Mostrar Resultados"}
             </button>
-            {showResults.getTFGs && getTFGsResult && getTFGsResult.map(tfg => (
-                <Link key={tfg._id} href={`/dashboard/TFGs_Pruebas/${tfg._id}?id=${tfg._id}`} style={linkStyle}>
+            {showResults.getTFGs && getTFGsResult && getTFGsResult.map((tfg, index) => (
+                <Link key={tfg?._id || `tfg-${index}`} href={`/dashboard/TFGs_Pruebas/${tfg._id}?id=${tfg._id}`} style={linkStyle}>
                     <pre style={resultStyle}>{JSON.stringify(tfg, null, 2)}</pre>
                 </Link>
             ))}
@@ -118,7 +129,27 @@ export default function Page() {
                             style={inputStyle}
                         />
                     </div>
-                    {Object.keys(formData).map((key) => (
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px' }}>Year</label>
+                        <select name="year" value={formData.year} onChange={handleInputChange} style={inputStyle}>
+                            {years.map((year, index) => (
+                                <option key={year?.year || `year-${index}`} value={year?.year || ""}>
+                                    {year ? year.year : "Año"}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px' }}>Degree</label>
+                        <select name="degree" value={formData.degree} onChange={handleInputChange} style={inputStyle}>
+                            {degrees.map((degree, index) => (
+                                <option key={degree?._id || `degree-${index}`} value={degree?.degree || ""}>
+                                    {degree ? degree.degree : "Grado"}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    {Object.keys(formData).filter(key => key !== 'year' && key !== 'degree').map((key) => (
                         <div key={key} style={{ marginBottom: '10px' }}>
                             <label style={{ display: 'block', marginBottom: '5px' }}>{key}</label>
                             <input
@@ -135,8 +166,8 @@ export default function Page() {
                 <button onClick={() => toggleResults("getTenTFGs")} style={toggleButtonStyle}>
                     {showResults.getTenTFGs ? "Ocultar Resultados" : "Mostrar Resultados"}
                 </button>
-                {showResults.getTenTFGs && getTenTFGsResult && getTenTFGsResult.map(tfg => (
-                    <Link key={tfg._id} href={`/dashboard/TFGs_Pruebas/${tfg._id}?id=${tfg._id}`} style={linkStyle}>
+                {showResults.getTenTFGs && getTenTFGsResult && getTenTFGsResult.map((tfg, index) => (
+                    <Link key={tfg?._id || `tenTFG-${index}`} href={`/dashboard/TFGs_Pruebas/${tfg._id}?id=${tfg._id}`} style={linkStyle}>
                         <pre style={resultStyle}>{JSON.stringify(tfg, null, 2)}</pre>
                     </Link>
                 ))}
