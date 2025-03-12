@@ -1,11 +1,8 @@
-'use server'
+'use server';
 import { cookies } from "next/headers";
 
-export default async function GetTenTFGs({ number, dataForm }) {
-    const page_number = number || 1;
-    const url = `${process.env.SERVER_URL}/tfgs/pages/${page_number}`;
-    const body = JSON.stringify(dataForm) || null;
-
+export default async function postYear() {
+    const url = `${process.env.SERVER_URL}/years`;
     const token = process.env.TOKEN;
     const response = await fetch(url, {
         method: 'POST',
@@ -13,9 +10,8 @@ export default async function GetTenTFGs({ number, dataForm }) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
-        body: body,
+        body: JSON.stringify(degree)
     });
     const data = await response.json();
-    console.log(data);
     return data;
 }

@@ -1,17 +1,18 @@
-'use server'
+'use server';
+import { cookies } from "next/headers";
 
-export default async function PostTFG({ formData }) {
-    const url = `${process.env.SERVER_URL}/tfgs`;
+export default async function postDegree({ degree }) {
+    const url = `${process.env.SERVER_URL}/degrees`;
     const token = process.env.TOKEN;
-    const body = JSON.stringify(formData);
     const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
-        body: body,
+        body: JSON.stringify(degree)
     });
-    const data = await response.json();
+    const data = response.json();
     return data;
 }
+

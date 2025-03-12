@@ -1,16 +1,15 @@
 'use server'
+import { cookies } from "next/headers";
 
-export default async function PostTFG({ formData }) {
-    const url = `${process.env.SERVER_URL}/tfgs`;
+export default async function DeleteYear({ id }) {
+    const url = `${process.env.SERVER_URL}/years/${id}`;
     const token = process.env.TOKEN;
-    const body = JSON.stringify(formData);
     const response = await fetch(url, {
-        method: 'POST',
+        method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authentication': `Bearer ${token}`,
         },
-        body: body,
     });
     const data = await response.json();
     return data;

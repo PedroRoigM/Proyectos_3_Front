@@ -1,7 +1,7 @@
 'use server'
 import { cookies } from "next/headers";
 
-export default async function GetDifferentDegrees() {
+export default async function GetDegrees() {
     const url = `${process.env.SERVER_URL}/degrees`;
     const token = process.env.TOKEN;
     const response = await fetch(url, {

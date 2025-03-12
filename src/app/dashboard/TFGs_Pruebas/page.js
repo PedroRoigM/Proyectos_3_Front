@@ -3,12 +3,13 @@ import Link from "next/link";
 import PostTFG from "../components/lib/PostTFG";
 import GetTFGs from "../components/lib/GetTFGs";
 import GetTenTFGs from "../components/lib/GetTenTFGs";
-import GetDifferentDegrees from "../components/lib/GetDifferentDegrees";
-import GetDifferentYears from "../components/lib/GetDifferentYears";
+import GetDegrees from "../components/lib/GetDegrees";
+import GetYears from "../components/lib/GetYears";
+import GetAdvisors from "../components/lib/GetAdvisors";
 import { useEffect, useState } from "react";
 
 export default function Page() {
-    const [pageNum, setPageNum] = useState('');
+    const [pageNum, setPageNum] = useState(1);
     const [formData, setFormData] = useState({
         year: "",
         degree: "",
@@ -20,12 +21,12 @@ export default function Page() {
     });
     const [degrees, setDegrees] = useState([{}]);
     const [years, setYears] = useState([{}]);
+    const [advisors, setAdvisors] = useState([{}]);
     // Conseguir los grados y años
     useEffect(() => {
-        GetDifferentDegrees().then(degrees => setDegrees([null, ...degrees]));
-        console.log('Degrees: ', degrees);
-        GetDifferentYears().then(years => setYears([null, ...years]));
-        console.log('Years: ', years);
+        GetDegrees().then(degrees => setDegrees([null, ...degrees]));
+        GetYears().then(years => setYears([null, ...years]));
+        GetAdvisors().then(advisors => setAdvisors([null, ...advisors]));
     }, []);
 
     // Estados para los resultados y visibilidad
@@ -53,9 +54,8 @@ export default function Page() {
         setShowResults(prev => ({ ...prev, postTFG: true }));
     };
 
-    const getTenTFGs = async (pageNum, formData) => {
+    const getTenTFGs = async () => {
         const tfgs = await GetTenTFGs(pageNum, formData);
-        console.log(tfgs);
         setGetTenTFGsResult(tfgs);
         setShowResults(prev => ({ ...prev, getTenTFGs: true }));
     };
@@ -118,13 +118,13 @@ export default function Page() {
             {/* Search TFGs */}
             <div style={{ marginBottom: '20px' }}>
                 <h2>Search TFGs</h2>
-                <form onSubmit={(e) => { e.preventDefault(); getTenTFGs(pageNum, formData); }}>
+                <form onSubmit={(e) => { e.preventDefault(); getTenTFGs(); }}>
                     <div style={{ marginBottom: '10px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Page Number</label>
                         <input
                             type="text"
                             value={pageNum}
-                            onChange={(e) => setPageNum(e.target.value)}
+                            onChange={(e) => setPageNum(Number(e.target.value))}
                             placeholder="Enter Page Number"
                             style={inputStyle}
                         />
@@ -149,7 +149,17 @@ export default function Page() {
                             ))}
                         </select>
                     </div>
-                    {Object.keys(formData).filter(key => key !== 'year' && key !== 'degree').map((key) => (
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px' }}>Advisor</label>
+                        <select name="advisor" value={formData.advisor} onChange={handleInputChange} style={inputStyle}>
+                            {advisors.map((advisor, index) => (
+                                <option key={advisor?._id || `degree-${index}`} value={advisor?.advisor || ""}>
+                                    {advisor ? advisor.advisor : "Tutor"}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    {Object.keys(formData).filter(key => key !== 'year' && key !== 'degree' && key != 'advisor').map((key) => (
                         <div key={key} style={{ marginBottom: '10px' }}>
                             <label style={{ display: 'block', marginBottom: '5px' }}>{key}</label>
                             <input
