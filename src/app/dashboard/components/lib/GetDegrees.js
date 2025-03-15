@@ -2,16 +2,26 @@
 import { cookies } from "next/headers";
 
 export default async function GetDegrees() {
-    const url = `${process.env.SERVER_URL}/degrees`;
-    const token = process.env.TOKEN;
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            "Authorization": `Bearer ${token}`,
-        },
-    });
-    const data = await response.json();
+    try {
+        const url = `${process.env.SERVER_URL}/degrees`;
+        const token = process.env.TOKEN;
+        if (!token) {
+            throw new Error('Token not found');
+        }
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+        const data = await response.json();
 
-    return data;
+        return data;
+    } catch (err) {
+        console.log(err)
+    }
 }

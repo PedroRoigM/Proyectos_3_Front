@@ -2,7 +2,7 @@
 import Link from "next/link";
 import PostTFG from "../components/lib/PostTFG";
 import GetTFGs from "../components/lib/GetTFGs";
-import GetTenTFGs from "../components/lib/GetTenTFGs";
+import PostTenTFGs from "../components/lib/PostTenTFGs";
 import GetDegrees from "../components/lib/GetDegrees";
 import GetYears from "../components/lib/GetYears";
 import GetAdvisors from "../components/lib/GetAdvisors";
@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 
 export default function Page() {
     const [pageNum, setPageNum] = useState(1);
+    const [tfgId, setTfgId] = useState("");
+    const [pdfPages, setPdfPages] = useState([]);
     const [formData, setFormData] = useState({
         year: "",
         degree: "",
@@ -18,6 +20,12 @@ export default function Page() {
         keywords: [],
         advisor: "",
         abstract: ""
+    });
+    const [formDataSearch, setFormDataSearch] = useState({
+        year: "",
+        degree: "",
+        advisor: "",
+        search: ""
     });
     const [degrees, setDegrees] = useState([{}]);
     const [years, setYears] = useState([{}]);
@@ -40,26 +48,54 @@ export default function Page() {
         postTFG: false,
         getTenTFGs: false
     });
-
     // Funciones asincrónicas con actualización de estado
     const getTFGS = async () => {
         const tfgs = await GetTFGs();
         setGetTFGsResult(tfgs);
         setShowResults(prev => ({ ...prev, getTFGs: true }));
     };
-
     const postTFG = async () => {
-        const tfg = await PostTFG({ formData: formData });
-        setPostTFGResult(tfg);
-        setShowResults(prev => ({ ...prev, postTFG: true }));
+        try {
+            console.log("Intentando postTFG...");
+
+            // Verificar si formData está bien definido
+            if (!formData || typeof formData !== "object") {
+                console.error("Error: formData no está definido correctamente", formData);
+                return;
+            }
+            const formattedKeywords = typeof formData.keywords === "string"
+                ? formData.keywords.split(',').map(keyword => keyword.trim())
+                : Array.isArray(formData.keywords)
+                    ? formData.keywords.map(keyword => keyword.trim())
+                    : [];
+
+            console.log("Enviando TFG con:", { ...formData, keywords: formattedKeywords });
+
+            // Eliminar el campo pageNumber si existe
+            const { pageNumber, ...filteredFormData } = formData;
+            const tfg = await PostTFG({
+                ...filteredFormData,
+                keywords: formattedKeywords
+            });
+
+            console.log("TFG guardado:", tfg);
+
+            setPostTFGResult(tfg);
+            setShowResults(prev => ({ ...prev, postTFG: true }));
+        } catch (error) {
+            console.error("Error al publicar TFG:", error);
+        }
     };
 
     const getTenTFGs = async () => {
-        const tfgs = await GetTenTFGs(pageNum, formData);
+        const sanitizedFormDataSearch = Object.fromEntries(
+            Object.entries(formDataSearch).filter(([key, value]) => value !== "")
+        );
+        const tfgs = await PostTenTFGs(pageNum, sanitizedFormDataSearch);
+        console.log(tfgs);
         setGetTenTFGsResult(tfgs);
         setShowResults(prev => ({ ...prev, getTenTFGs: true }));
     };
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -67,14 +103,21 @@ export default function Page() {
             [name]: value
         });
     };
-
+    const handleInputChangeSearch = (e) => {
+        const { name, value } = e.target;
+        setFormDataSearch({
+            ...formDataSearch,
+            [name]: value
+        });
+    };
     const toggleResults = (key) => {
         setShowResults(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
+
     return (
         <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-            <h1 style={{ color: '#333', textAlign: 'center' }}>TFGs Pruebas Page</h1>
+            <h1 style={{ color: 'white', textAlign: 'center' }}>TFGs Pruebas Page</h1>
 
             {/* Get TFGs */}
             <button onClick={getTFGS} style={buttonStyle}>Get TFGs</button>
@@ -90,8 +133,43 @@ export default function Page() {
             {/* Post TFG */}
             <div style={{ marginBottom: '20px' }}>
                 <h2>Post TFG</h2>
-                <form onSubmit={(e) => { e.preventDefault(); postTFG(); }}>
-                    {Object.keys(formData).map((key) => (
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    console.log("Formulario enviado");
+                    postTFG();
+                }}>
+
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px' }}>Year</label>
+                        <select name="year" value={formData.year} onChange={handleInputChange} style={inputStyle}>
+                            {years.map((year, index) => (
+                                <option key={year?.year || `year-${index}`} value={year?.year || ""}>
+                                    {year ? year.year : "Año"}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px' }}>Degree</label>
+                        <select name="degree" value={formData.degree} onChange={handleInputChange} style={inputStyle}>
+                            {degrees.map((degree, index) => (
+                                <option key={degree?._id || `degree-${index}`} value={degree?.degree || ""}>
+                                    {degree ? degree.degree : "Grado"}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', marginBottom: '5px' }}>Advisor</label>
+                        <select name="advisor" value={formData.advisor} onChange={handleInputChange} style={inputStyle}>
+                            {advisors.map((advisor, index) => (
+                                <option key={advisor?._id || `degree-${index}`} value={advisor?.advisor || ""}>
+                                    {advisor ? advisor.advisor : "Tutor"}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    {Object.keys(formData).filter(key => key !== 'year' && key !== 'degree' && key != 'advisor').map((key) => (
                         <div key={key} style={{ marginBottom: '10px' }}>
                             <label style={{ display: 'block', marginBottom: '5px' }}>{key}</label>
                             <input
@@ -131,7 +209,7 @@ export default function Page() {
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Year</label>
-                        <select name="year" value={formData.year} onChange={handleInputChange} style={inputStyle}>
+                        <select name="year" value={formDataSearch.year} onChange={handleInputChangeSearch} style={inputStyle}>
                             {years.map((year, index) => (
                                 <option key={year?.year || `year-${index}`} value={year?.year || ""}>
                                     {year ? year.year : "Año"}
@@ -141,7 +219,7 @@ export default function Page() {
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Degree</label>
-                        <select name="degree" value={formData.degree} onChange={handleInputChange} style={inputStyle}>
+                        <select name="degree" value={formDataSearch.degree} onChange={handleInputChangeSearch} style={inputStyle}>
                             {degrees.map((degree, index) => (
                                 <option key={degree?._id || `degree-${index}`} value={degree?.degree || ""}>
                                     {degree ? degree.degree : "Grado"}
@@ -151,7 +229,7 @@ export default function Page() {
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Advisor</label>
-                        <select name="advisor" value={formData.advisor} onChange={handleInputChange} style={inputStyle}>
+                        <select name="advisor" value={formDataSearch.advisor} onChange={handleInputChangeSearch} style={inputStyle}>
                             {advisors.map((advisor, index) => (
                                 <option key={advisor?._id || `degree-${index}`} value={advisor?.advisor || ""}>
                                     {advisor ? advisor.advisor : "Tutor"}
@@ -159,14 +237,14 @@ export default function Page() {
                             ))}
                         </select>
                     </div>
-                    {Object.keys(formData).filter(key => key !== 'year' && key !== 'degree' && key != 'advisor').map((key) => (
+                    {Object.keys(formDataSearch).filter(key => key !== 'year' && key !== 'degree' && key != 'advisor').map((key) => (
                         <div key={key} style={{ marginBottom: '10px' }}>
                             <label style={{ display: 'block', marginBottom: '5px' }}>{key}</label>
                             <input
                                 type="text"
                                 name={key}
-                                value={formData[key]}
-                                onChange={handleInputChange}
+                                value={formDataSearch[key]}
+                                onChange={handleInputChangeSearch}
                                 style={inputStyle}
                             />
                         </div>
