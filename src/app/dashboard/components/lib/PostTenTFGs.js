@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 
 export default async function PostTenTFGs(number, dataForm) {
     try {
+        console.log(dataForm);
         const page_number = number || 1;
         const url = `${process.env.SERVER_URL}/tfgs/pages/${page_number}`;
         const body = JSON.stringify(dataForm) || null;
