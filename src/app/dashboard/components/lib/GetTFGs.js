@@ -4,7 +4,7 @@
 export default async function GetTFGs() {
     try {
         const url = `${process.env.SERVER_URL}/tfgs`;
-        const token = process.env.TOKEN;
+        const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('Token not found');
         }

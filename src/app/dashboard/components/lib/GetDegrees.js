@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export default async function GetDegrees() {
     try {
         const url = `${process.env.SERVER_URL}/degrees`;
-        const token = process.env.TOKEN;
+        const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('Token not found');
         }

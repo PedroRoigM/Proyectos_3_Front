@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export default async function DeleteDegree({ id }) {
     try {
         const url = `${process.env.SERVER_URL}/degrees/${id}`;
-        const token = process.env.TOKEN;
+        const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('Token not found');
         }

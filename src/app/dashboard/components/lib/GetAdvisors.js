@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export default async function GetAdvisors() {
     try {
         const url = `${process.env.SERVER_URL}/advisors`;
-        const token = process.env.TOKEN;
+        const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('Token not found');
         }

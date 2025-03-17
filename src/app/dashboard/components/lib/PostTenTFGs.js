@@ -7,7 +7,7 @@ export default async function PostTenTFGs(number, dataForm) {
         const page_number = number || 1;
         const url = `${process.env.SERVER_URL}/tfgs/pages/${page_number}`;
         const body = JSON.stringify(dataForm) || null;
-        const token = process.env.TOKEN;
+        const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('NOT_FOUND_TOKEN');
         }
@@ -23,7 +23,6 @@ export default async function PostTenTFGs(number, dataForm) {
             throw new Error(response.statusText);
         }
         const data = await response.json();
-
         return data;
     } catch (err) {
         console.log(err)

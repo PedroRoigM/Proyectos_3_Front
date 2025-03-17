@@ -8,7 +8,7 @@ export default function SearchResults() {
     const [tfgs, setTfgs] = useState(null);
     const [search, setSearch] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
-
+    const [pages, setPages] = useState(1);
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
         const searchQuery = searchParams.get('search');
@@ -22,13 +22,13 @@ export default function SearchResults() {
             getSearchResult(page_number, parsedSearch);
         }
     }, []);
-
     const getSearchResult = (page_number, dataForm) => {
         const sanitizedFormData = Object.fromEntries(
             Object.entries(dataForm).filter(([key, value]) => value !== "")
         );
         PostTenTFGs(page_number, sanitizedFormData).then((response) => {
-            setTfgs(response);
+            setTfgs(response.tfgs);
+            setPages(response.totalPages);
         });
     };
     const setTfgsResults = (search) => {
@@ -40,7 +40,6 @@ export default function SearchResults() {
         const searchQuery = encodeURIComponent(JSON.stringify(search));
         window.location.href = `/dashboard/search?page_number=${page_number}&search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
-
     return (
         <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
             <SearchBar search={setTfgsResults} />

@@ -8,9 +8,10 @@
 "use client";
 
 import { useState } from 'react';
-import PostLogin from './lib/login';
-export default function Login() {
+import PostRegister from './lib/register';
+export default function Register() {
     const [formData, setFormData] = useState({
+        name: '',
         email: '',
         password: ''
     });
@@ -39,15 +40,13 @@ export default function Login() {
                 return;
             }
 
-            const response = await PostLogin(formData);
+            const response = await PostRegister(formData);
             if (response.error) {
                 setError(response.error);
                 setLoading(false);
                 return;
             }
-            setSuccess('Login realizado correctamente.');
-            // Redirigir a la página de dashboard
-            window.location.href = '/dashboard';
+
         } catch (err) {
             setError(err.message);
         }
@@ -59,6 +58,19 @@ export default function Login() {
             {success && <p style={{ color: 'green' }}>{success}</p>}
             {loading && <p>Loading...</p>}
             <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: '15px' }}>
+                    <label>
+                        Name:
+                        <input
+                            type="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            style={{ color: 'black', backgroundColor: 'white' }}
+                        />
+                    </label>
+                </div>
                 <div style={{ marginBottom: '15px' }}>
                     <label>
                         Email:
@@ -99,5 +111,5 @@ export default function Login() {
                 </button>
             </form>
         </div>
-    );
+    )
 }

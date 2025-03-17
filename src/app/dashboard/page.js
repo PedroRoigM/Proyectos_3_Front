@@ -5,9 +5,11 @@ import SearchBar from "./components/SearchBar";
 import PostTenTFGs from "./components/lib/PostTenTFGs";
 export default function Dashboard() {
     const [tfgs, setTfgs] = useState(null);
+    const [pages, setPages] = useState(1);
     useEffect(() => {
         PostTenTFGs(1, {}).then((response) => {
-            setTfgs(response);
+            setTfgs(response.tfgs);
+            setPages(response.totalPages);
         });
     }, []);
     const setTfgsResults = (search) => {
@@ -15,7 +17,6 @@ export default function Dashboard() {
         const searchQuery = encodeURIComponent(JSON.stringify(search));
         window.location.href = `/dashboard/search?search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
-
     return (
         <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
             <SearchBar search={setTfgsResults} />

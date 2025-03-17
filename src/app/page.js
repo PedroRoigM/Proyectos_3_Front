@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import Image from "next/image";
 // Componente: Home
 // Devuelve la página principal de la aplicación.
 // Debe de mostrar un mensaje de bienvenida.
@@ -8,61 +6,24 @@ import Image from "next/image";
 // Tras el registro, debe redirigir a la página de validacion.
 // Tras la validación, debe redirigir a la página de login.
 // Tras el login, debe redirigir a la página de dashboard.
-import GetTFGs from "./dashboard/components/lib/GetTFGs";
-import GetTFG from "./dashboard/components/lib/GetTFG";
-import PostTFG from "./dashboard/components/lib/PostTFG";
+'use client';
+import Login from './components/Login';
+import Register from './components/Register';
+import { useState, useEffect } from 'react';
 export default function Home() {
-
-
+  const [login, setLogin] = useState(false);
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <Link href="/register">
-        <button
-          style={{
-            backgroundColor: '#0070f3',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            margin: '10px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '1em'
-          }}
-        >
-          Register
+    <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
+      <h1 className="text-4xl font-bold mb-4">Bienvenido a la aplicación</h1>
+      <div className="flex gap-4">
+        <button onClick={() => setLogin(false)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Registro
         </button>
-      </Link>
-      <Link href="/login">
-        <button
-          style={{
-            backgroundColor: '#0070f3',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            margin: '10px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '1em'
-          }}
-        >
+        <button onClick={() => setLogin(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Login
         </button>
-      </Link>
-      <Link href="/dashboard/TFGs_Pruebas">
-        <button
-          style={{
-            backgroundColor: '#0070f3',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            margin: '10px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '1em'
-          }}>
-          TFG page
-        </button>
-      </Link>
-    </div >
+      </div>
+      {login ? <Login /> : <Register />}
+    </div>
   );
 }
