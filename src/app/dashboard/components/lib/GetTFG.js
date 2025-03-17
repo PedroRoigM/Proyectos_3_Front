@@ -1,5 +1,5 @@
 'use server'
-//import { cookies } from "next/headers";
+import { cookies } from "next/headers";
 
 export default async function GetTFG({ id }) {
     try {
@@ -18,6 +18,7 @@ export default async function GetTFG({ id }) {
         if (!response.ok) {
             throw new Error(response.statusText);
         }
+
         const data = response.json();
         return data;
     } catch (err) {
