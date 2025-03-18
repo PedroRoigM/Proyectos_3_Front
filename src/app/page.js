@@ -12,6 +12,9 @@ import Register from './components/Register';
 import { useState, useEffect } from 'react';
 export default function Home() {
   const [login, setLogin] = useState(false);
+  const handleChange = () => {
+    setLogin(!login)
+  }
   return (
     <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
       <h1 className="text-4xl font-bold mb-4">Bienvenido a la aplicación</h1>
@@ -25,7 +28,7 @@ export default function Home() {
         </button>
         */}
       </div>
-      {login ? <Login /> : <Register />}
+      {login ? <Login changeToRegister={handleChange} /> : <Register changeToLogin={handleChange} />}
     </div>
   );
 }

@@ -9,7 +9,7 @@
 
 import { useState } from 'react';
 import PostLogin from './lib/login';
-export default function Login() {
+export default function Login({ changeToRegister }) {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -85,6 +85,9 @@ export default function Login() {
                         />
                     </label>
                 </div>
+                <a href="/recover-password" style={{ color: 'blue', textAlign: 'left', display: 'block', fontSize: '12px' }}>
+                    ¿Has olvidado tu contraseña?
+                </a>
                 <button type="submit" style={{
                     backgroundColor: '#0070f3',
                     color: 'white',
@@ -95,8 +98,10 @@ export default function Login() {
                     cursor: 'pointer',
                     fontSize: '1em'
                 }}>
+
                     Login
                 </button>
+                <p onClick={changeToRegister} style={{ color: 'blue', cursor: 'pointer' }}>No tiene cuenta?</p>
             </form>
         </div>
     );

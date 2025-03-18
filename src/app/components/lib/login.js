@@ -11,7 +11,6 @@ export default async function PostLogin(dataForm) {
         },
         body: body,
     });
-    console.log(response)
     if (!response.ok) {
         return null;
     }
