@@ -21,6 +21,7 @@ export default function Register({ changeToLogin }) {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -30,8 +31,11 @@ export default function Register({ changeToLogin }) {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
+        setSuccess('');
         try {
-            if (!formData.email || !formData.password) {
+            if (!formData.name || !formData.email || !formData.password) {
                 setError('Todos los campos son obligatorios.');
                 setLoading(false);
                 return;
@@ -54,135 +58,58 @@ export default function Register({ changeToLogin }) {
             setError(err.message);
         }
     };
-    return (
-        <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            padding: '20px',
-            background: 'linear-gradient(to bottom,rgb(187, 187, 187),rgb(60, 60, 60))'
-        }}>
-            <div style={{
-                backgroundColor: '#F5F5F5',
-                padding: '100px',
-                textAlign: 'center',
-                borderRadius: '5px',
-                fontFamily: 'Montserrat, sans-serif',
-                width: '90%',
-                maxWidth: '550px',
-            }}>
+    return(
+        <div className="flex items-center justify-center h-screen p-5 bg-gradient-to-b from-white to-gray-400">
+                <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-md text-center">
+                    <h1 className="text-gray-800 font-bold text-2xl mb-4">Registro</h1>
+                    {error && <p className="text-red-500 mb-2">{error}</p>}
+                    {success && <p className="text-green-500 mb-2">{success}</p>}
+                    {loading && <p className="text-gray-500">Cargando...</p>}
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="text-left">
+                            <label className="text-gray-700 block mb-1">Usuario</label>
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Nombre"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none"
+                            />
+                        </div>
+                        <div className="text-left">
+                            <label className="text-gray-700 block mb-1">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none"
+                            />
+                        </div>
+                        <div className="text-left">
+                            <label className="text-gray-700 block mb-1">Contraseña</label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Contraseña"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none"
+                            />
+                        </div>
+                        
+                        <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mt-2">
+                            Registrarse
+                        </button>
 
-                <h1 style={{ fontWeight: 'bold', color: 'black', margin: '10px', fontSize: '25px' }}>Registro</h1>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                {success && <p style={{ color: 'green' }}>{success}</p>}
-                {loading && <p style={{ color: 'white' }}>Loading...</p>}
-                <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '15px', marginTop: '15px', textAlign: 'left' }}>
-                        <label>
-                            Usuario
-                        </label>
-                        <input
-                            type="name"
-                            name="name"
-                            placeholder='name'
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            style={{
-                                color: 'black',
-                                backgroundColor: 'white',
-                                fontFamily: 'Montserrat, sans-serif',
-                                fontWeight: 'bold',
-                                width: '100%',
-                                padding: '10px',
-                                borderRadius: '5px',
-                                border: '2px solid #000000',
-                                marginBottom: '10px'
-                            }}
-                        />
-                    </div>
-                    <div style={{ marginBottom: '15px', marginTop: '15px', textAlign: 'left' }}>
-                        <label>
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            style={{
-                                color: 'black',
-                                backgroundColor: 'white',
-                                fontFamily: 'Montserrat, sans-serif',
-                                fontWeight: 'bold',
-                                width: '100%',
-                                padding: '10px',
-                                borderRadius: '5px',
-                                border: '2px solid #000000',
-                                marginBottom: '10px'
-                            }}
-                        />
-                    </div>
-                    <div style={{ marginBottom: '15px', marginTop: '15px', textAlign: 'left' }}>
-                        <label>
-                            Contraseña
-                        </label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            style={{
-                                color: 'black',
-                                backgroundColor: 'white',
-                                fontFamily: 'Montserrat, sans-serif',
-                                fontWeight: 'bold',
-                                width: '100%',
-                                padding: '10px',
-                                borderRadius: '5px',
-                                border: '2px solid #000000',
-                                marginBottom: '10px'
-
-                            }}
-                        />
-                    </div>
-
-                    <button onClick={changeToLogin} style={{
-                        color: 'white',
-                        backgroundColor: 'black',
-                        border: '1px solid black',
-                        padding: '10px 20px',
-                        margin: '10px 5px',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        fontFamily: 'Montserrat, sans-serif',
-                        fontWeight: 'bold'
-                    }}>
-                        INICIAR SESIÓN
-                    </button>
-
-                    <button type="submit" style={{
-                        color: 'black',
-                        border: '1px solid black',
-                        padding: '10px 20px',
-                        margin: '10px 5px',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        fontFamily: 'Montserrat, sans-serif',
-                        fontWeight: 'bold'
-                    }}>
-                        REGISTRARSE
-                    </button>
-
-                </form>
+                        <p onClick={changeToLogin} className="cursor-pointer text-blue-600 text-sm block text-left">¿Ya tiene cuenta?</p>
+                    </form>
+                </div>
             </div>
-        </div>
-    )
-}
+        );
+    }

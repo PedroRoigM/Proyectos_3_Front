@@ -53,56 +53,51 @@ export default function Login({ changeToRegister }) {
         }
     };
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Login</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
-            {loading && <p>Loading...</p>}
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '15px' }}>
-                    <label>
-                        Email:
+        <div className="flex items-center justify-center h-screen p-5 bg-gradient-to-b from-white to-gray-400">
+            <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-md text-center">
+                <h1 className="text-gray-800 font-bold text-2xl mb-4">Login</h1>
+                {error && <p className="text-red-500 mb-2">{error}</p>}
+                {success && <p className="text-green-500 mb-2">{success}</p>}
+                {loading && <p className="text-gray-500">Cargando...</p>}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="text-left">
+                        <label className="text-gray-700 block mb-1">Email</label>
                         <input
                             type="email"
                             name="email"
+                            placeholder="Email"
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            style={{ color: 'black', backgroundColor: 'white' }}
+                            className="w-full p-2 rounded-md border border-gray-300 focus:outline-none"
                         />
-                    </label>
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <label>
-                        Contraseña:
+                    </div>
+                    <div className="text-left">
+                        <label className="text-gray-700 block mb-1">Contraseña</label>
                         <input
                             type="password"
                             name="password"
+                            placeholder="Contraseña"
                             value={formData.password}
                             onChange={handleChange}
                             required
-                            style={{ color: 'black', backgroundColor: 'white' }}
+                            className="w-full p-2 rounded-md border border-gray-300 focus:outline-none"
                         />
-                    </label>
-                </div>
-                <a href="/recover-password" style={{ color: 'blue', textAlign: 'left', display: 'block', fontSize: '12px' }}>
-                    ¿Has olvidado tu contraseña?
-                </a>
-                <button type="submit" style={{
-                    backgroundColor: '#0070f3',
-                    color: 'white',
-                    border: 'none',
-                    padding: '10px 20px',
-                    margin: '10px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontSize: '1em'
-                }}>
+                    </div>
+                    <a href="/recover-password" className="text-blue-600 text-sm block text-left">¿Has olvidado tu contraseña?</a>
+                    <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mt-2">
+                        Iniciar sesión
+                    </button>
 
-                    Login
-                </button>
-                <p onClick={changeToRegister} style={{ color: 'blue', cursor: 'pointer' }}>No tiene cuenta?</p>
-            </form>
+                    {/* Botón Registro 
+                    <button onClick={changeToRegister} className="w-full bg-gray-700 text-white font-bold py-2 rounded-md mt-2">
+                        Registrarse
+                    </button>
+                    */}
+
+                    <p onClick={changeToRegister} className="cursor-pointer text-blue-600 text-sm block text-left">¿No tiene cuenta?</p>
+                </form>
+            </div>
         </div>
     );
 }
