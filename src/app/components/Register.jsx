@@ -9,6 +9,9 @@
 
 import { useState } from 'react';
 import PostRegister from './lib/register';
+
+
+
 export default function Register() {
     const [formData, setFormData] = useState({
         name: '',
@@ -52,64 +55,137 @@ export default function Register() {
         }
     };
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Login</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
-            {loading && <p>Loading...</p>}
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '15px' }}>
-                    <label>
-                        Name:
-                        <input
-                            type="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            style={{ color: 'black', backgroundColor: 'white' }}
-                        />
-                    </label>
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <label>
-                        Email:
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            style={{ color: 'black', backgroundColor: 'white' }}
-                        />
-                    </label>
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <label>
-                        Contraseña:
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            style={{ color: 'black', backgroundColor: 'white' }}
-                        />
-                    </label>
-                </div>
-                <button type="submit" style={{
-                    backgroundColor: '#0070f3',
-                    color: 'white',
-                    border: 'none',
-                    padding: '10px 20px',
-                    margin: '10px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontSize: '1em'
+        <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100vh', 
+            padding: '20px',
+            background: 'linear-gradient(to bottom,rgb(187, 187, 187),rgb(60, 60, 60))'
+        }}>
+            <div style={{
+                backgroundColor: '#F5F5F5', 
+                padding: '100px', 
+                textAlign: 'center',
+                borderRadius: '5px',
+                fontFamily: 'Montserrat, sans-serif',
+                width: '90%',
+                maxWidth: '550px',
                 }}>
-                    Login
-                </button>
-            </form>
+
+                <h1 style={{ fontWeight: 'bold', color: 'black', margin: '10px', fontSize: '25px' }}>Registro</h1>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {success && <p style={{ color: 'green' }}>{success}</p>}
+                {loading && <p style={{color: 'white'}}>Loading...</p>}
+                <form onSubmit={handleSubmit}>
+                    <div style={{ marginBottom: '15px', marginTop: '15px', textAlign: 'left' }}>
+                        <label>
+                            Usuario
+                        </label>
+                            <input
+                                type="name"
+                                name="name"
+                                placeholder='name'
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                                style={{ 
+                                    color: 'black', 
+                                    backgroundColor: 'white',
+                                    fontFamily: 'Montserrat, sans-serif', 
+                                    fontWeight: 'bold',
+                                    width: '100%',
+                                    padding: '10px',
+                                    borderRadius: '5px',
+                                    border: '2px solid #000000',
+                                    marginBottom: '10px'
+                                }}
+                            />
+                    </div>
+                    <div style={{ marginBottom: '15px', marginTop: '15px', textAlign: 'left' }}>
+                        <label>
+                            Email
+                        </label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder= "email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                style={{ 
+                                    color: 'black', 
+                                    backgroundColor: 'white',
+                                    fontFamily: 'Montserrat, sans-serif', 
+                                    fontWeight: 'bold',
+                                    width: '100%',
+                                    padding: '10px',
+                                    borderRadius: '5px',
+                                    border: '2px solid #000000',
+                                    marginBottom: '10px'
+                                }}
+                            />
+                    </div>
+                    <div style={{ marginBottom: '15px', marginTop: '15px', textAlign: 'left' }}>  
+                        <label>
+                            Contraseña
+                        </label>                          
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder= "password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                style={{ 
+                                    color: 'black', 
+                                    backgroundColor: 'white',
+                                    fontFamily: 'Montserrat, sans-serif', 
+                                    fontWeight: 'bold',
+                                    width: '100%',
+                                    padding: '10px',
+                                    borderRadius: '5px',
+                                    border: '2px solid #000000',
+                                    marginBottom: '10px'
+                                    
+                                }}
+                            />
+                    </div>
+                    <label style={{ color: 'black', textAlign: 'left', display: 'block', fontSize: '12px' }}>
+                        ¿Ha olvidado su contraseña?
+                    </label>
+
+                    <button type="submit" style={{
+                        color: 'white',
+                        backgroundColor: 'black',
+                        border: '1px solid black',
+                        padding: '10px 20px',
+                        margin: '10px 5px',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontWeight: 'bold'
+                    }}>
+                        INICIAR SESIÓN
+                    </button>
+
+                    <button type="submit" style={{
+                        color: 'black',
+                        border: '1px solid black',
+                        padding: '10px 20px',
+                        margin: '10px 5px',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontWeight: 'bold'
+                    }}>
+                        REGISTRARSE
+                    </button>
+                    
+                </form>
+            </div>
         </div>
     )
 }
