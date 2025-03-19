@@ -1,9 +1,10 @@
-'use server'
+'use server';
+
 import { cookies } from "next/headers";
 
 export default async function GetTFG(id) {
     try {
-        const url = `${process.env.SERVER_URL}/tfgs/${id}`;
+        const url = `${process.env.SERVER_URL}/tfgs/verify/${id}`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('Token not found');
