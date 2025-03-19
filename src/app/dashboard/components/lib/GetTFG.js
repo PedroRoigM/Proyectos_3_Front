@@ -1,7 +1,7 @@
 'use server'
 import { cookies } from "next/headers";
 
-export default async function GetTFG({ id }) {
+export default async function GetTFG(id) {
     try {
         const url = `${process.env.SERVER_URL}/tfgs/${id}`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
@@ -15,6 +15,7 @@ export default async function GetTFG({ id }) {
                 'Authorization': `Bearer ${token}`,
             },
         });
+        console.log(response);
         if (!response.ok) {
             throw new Error(response.statusText);
         }

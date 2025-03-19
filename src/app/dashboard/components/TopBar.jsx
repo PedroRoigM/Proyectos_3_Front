@@ -20,6 +20,11 @@ export default function TopBar() {
                         Destacados
                     </p>
                 </Link>
+                <Link href="/dashboard/upload-tfg">
+                    <p className="text-white hover:text-[#14192c] transition duration-300 cursor-pointer font-medium">
+                        Subir TFG
+                    </p>
+                </Link>
             </nav>
 
 

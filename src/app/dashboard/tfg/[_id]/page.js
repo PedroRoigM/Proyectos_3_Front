@@ -11,7 +11,7 @@ export default function Page() {
     const maxVisible = 3; // Número de palabras clave visibles por defecto
     useEffect(() => {
         const getTFG = async () => {
-            const tfg = await GetTFG({ id: id });
+            const tfg = await GetTFG(id);
             setTfg(tfg);
         };
         const getTFGpdf = async () => {
