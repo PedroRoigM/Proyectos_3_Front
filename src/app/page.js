@@ -16,18 +16,7 @@ export default function Home() {
     setLogin(!login)
   }
   return (
-    <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto rounded-md">
-      <h1 className="text-4xl font-bold mb-4">Bienvenido a la aplicación</h1>
-      <div className="flex gap-4">
-        {/*
-        <button onClick={() => setLogin(false)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Registro
-        </button>
-        <button onClick={() => setLogin(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Login
-        </button>
-        */}
-      </div>
+    <div className="font-montserrat rounded-md from-white to-gray-400 bg-gradient-to-b h-screen">
       {login ? <Login changeToRegister={handleChange} /> : <Register changeToLogin={handleChange} />}
     </div>
   );

@@ -16,13 +16,12 @@ export function middleware(request) {
                 return response;
             }
             // Redirigir a /dashboard si ya está validado
-            if (decoded?.verified && request.nextUrl.pathname.startsWith('/validation')) {
+            if (decoded?.verified && !request.nextUrl.pathname.startsWith('/dashboard')) {
                 return NextResponse.redirect(new URL('/dashboard', request.url));
             }
-
-            // Redirigir a /dashboard si intenta entrar a otro sitio sin ser /validation
-            if (!request.nextUrl.pathname.startsWith('/dashboard') && !request.nextUrl.pathname.startsWith('/validation')) {
-                return NextResponse.redirect(new URL('/dashboard', request.url));
+            // Redirigir a /validation si no está validado
+            if (!decoded?.verified && !request.nextUrl.pathname.startsWith('/validation')) {
+                return NextResponse.redirect(new URL('/validation', request.url));
             }
 
         } catch (error) {
@@ -31,7 +30,7 @@ export function middleware(request) {
         }
     }
 
-    if (!token && request.nextUrl.pathname.startsWith('/dashboard')) {
+    if (!token && request.nextUrl.pathname.startsWith('/dashboard') || !token && request.nextUrl.pathname.startsWith('/validation')) {
         return NextResponse.redirect(new URL('/', request.url));
     }
 

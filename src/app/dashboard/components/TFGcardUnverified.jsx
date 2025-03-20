@@ -34,7 +34,7 @@ export default function TFGcard({ tfg }) {
                     ))}
                 </div>
                 <div className='flex gap-2 mr-2'>
-                    <button className='bg-[#14192c] text-white border-2 border-[#14192c] font-bold px-4 py-2 rounded-md hover:text-green-400 transition'>
+                    <button className='bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#14192c] transition'>
                         Verificar
                     </button>
                     <button className='bg-[#ffffff] text-black border-2 border-[#14192c] font-bold px-4 py-2 rounded-md hover:text-red-600 transition'>

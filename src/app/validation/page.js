@@ -2,6 +2,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import PatchValidation from "../components/lib/validate";
+import TopBar from "../components/TopBar";
 export default function Page() {
     // codigo de 6 digitos
     const [code, setCode] = useState('');

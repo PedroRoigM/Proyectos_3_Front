@@ -27,17 +27,19 @@ export default function Page() {
     if (!tfg) return <div>Loading...</div>;
     return (
         <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
-            <div>
-                <h2 >{tfg.tfgTitle}</h2>
-                <h3>{tfg.degree}</h3>
-            </div>
-            <div>
-                <button>
-                    <a href={`/dashboard/tfg/admin/edit/${id}`}>Editar</a>
-                </button>
-                <button>
-                    <p onClick={downdoadPDF}>Descargar</p>
-                </button>
+            <div className="flex items-center justify-between p-5 pr-3 pl-3 rounded-md max-w-full overflow-hidden text-black">
+                <div>
+                    <h2 >{tfg.tfgTitle}</h2>
+                    <h3>{tfg.degree}</h3>
+                </div>
+                <div className="flex gap-10">
+                    <button className='bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#14192c] transition'>
+                        <a href={`/dashboard/tfg/admin/edit/${id}`}>Editar</a>
+                    </button>
+                    <button className=' text-black  border-gray-400 border-2 font-bold px-4 py-2 rounded-md hover:bg-[#9da3a7] transition'>
+                        <p onClick={downdoadPDF}>Descargar</p>
+                    </button>
+                </div>
             </div>
             <div className="bg-[#e5e9ec] flex flex-wrap items-center justify-between p-5 pr-3 pl-3 rounded-md max-w-full overflow-hidden">
                 {/* Contenedor de palabras clave */}

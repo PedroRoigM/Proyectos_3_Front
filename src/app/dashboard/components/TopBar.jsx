@@ -1,33 +1,26 @@
 // Componente que renderiza a barra superior da dashboard
-
+import Image from 'next/image';
 import React from 'react';
 import Link from 'next/link';
-import GetDegrees from './lib/GetDegrees';
-import SearchBar from './SearchBar';
 export default function TopBar() {
-    const degrees = GetDegrees();
     return (
-        <div className="flex justify-between items-center border-b-4 border-black p-5 bg-[#0065ef] shadow-md">
+        <div className="flex justify-between items-center border-b-[2px] border-black shadow-md p-[2%]">
             {/* Logo */}
-            <h1 className="bg-black text-white px-4 py-2 rounded-lg text-lg font-semibold tracking-wide">
-                LOGO
-            </h1>
+            <Image src="/logo.jpg" alt="Logo" width="150" height="150" />
 
             {/* Navegación */}
-            <nav className="flex gap-[20px]">
+            <nav className="flex gap-10 text-black">
                 <Link href="/dashboard">
-                    <p className="text-white hover:text-[#14192c] transition duration-300 cursor-pointer font-medium">
+                    <p className=" hover:text-[#14192c] transition duration-300 cursor-pointer font-medium">
                         Destacados
                     </p>
                 </Link>
                 <Link href="/dashboard/upload-tfg">
-                    <p className="text-white hover:text-[#14192c] transition duration-300 cursor-pointer font-medium">
+                    <p className="hover:text-[#14192c] transition duration-300 cursor-pointer font-medium">
                         Subir TFG
                     </p>
                 </Link>
             </nav>
-
-
         </div>
     );
 }
