@@ -23,6 +23,9 @@ export default function Page() {
     const [error, setError] = useState('');
     const [inputValue, setInputValue] = useState("");
 
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const fetchAdvisors = async () => {
             const response = await GetAdvisors();
@@ -73,23 +76,46 @@ export default function Page() {
         });
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setErrors({}); //reset errores
         try {
-            console.log(formData);
-            if (!formData.year || !formData.degree || !formData.student || !formData.advisor || !formData.keywords || !formData.tfgTitle || !formData.abstract || !formData.file) {
-                setError('Todos los campos son obligatorios.');
+            let validationErrors = {};
+
+
+            // Validación de campos
+            if (!formData.year) validationErrors.year = 'El año es obligatorio.';
+            if (!formData.degree) validationErrors.degree = 'El grado es obligatorio.';
+            if (!formData.student) validationErrors.student = 'El nombre del estudiante es obligatorio.';
+            if (!formData.advisor) validationErrors.advisor = 'El tutor es obligatorio.';
+            if (formData.keywords.length === 0) validationErrors.keywords = 'Las palabras clave son obligatorias.';
+            if (!formData.tfgTitle) validationErrors.tfgTitle = 'El título del TFG es obligatorio.';
+            if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
+            if (!formData.file) validationErrors.file = 'El archivo es obligatorio.';
+
+            if (Object.keys(validationErrors).length > 0) {
+                setErrors(validationErrors);
+                setLoading(false);
                 return;
             }
+
+
             const { file, ...dataWithoutFile } = formData;
             const response = await PostTFG(dataWithoutFile);
+
+
             if (response.error) {
-                setError(response.error);
+                setError({general: response.error});
+                setLoading(false);
                 return;
             }
             await PatchTfgFile(response.id, file);
             setError('TFG subido correctamente.');
+            setLoading(false);
         } catch (err) {
-            setError(err.message);
+            setErrors({ general: 'Ha ocurrido un error, intentalo de nuevo.' });
+            setLoading(false);
         }
     };
 
@@ -97,50 +123,60 @@ export default function Page() {
         <div className="flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-400">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[50%] lg:w-[50%]">
                 <h1 className="text-gray-800 font-bold text-2xl text-center mb-4">Subir TFG</h1>
-                {error && <p className={`text-center text-lg mb-3 ${error.includes("✅") ? "text-green-500" : "text-red-500"}`}>{error}</p>}
+
+                {loading && <p className="text-gray-500 text-center">Cargando...</p>}
+                {errors.general && <p className={`text-center text-lg mb-3 ${errors.general.includes("✅") ? "text-green-500" : "text-red-500"}`}>{errors.general}</p>}
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="text-gray-700 block mb-1">Año</label>
-                        <select name="year" value={formData.year} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300">
+                        <select name="year" value={formData.year} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.year ? 'border-red-500' : 'border-gray-300'}`}>
                             <option value="">Selecciona un año</option>
                             {years.map(year => <option key={year._id} value={year.year}>{year.year}</option>)}
                         </select>
+                        {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
                     </div>
 
                     <div>
                         <label className="text-gray-700 block mb-1">Grado</label>
-                        <select name="degree" value={formData.degree} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300">
+                        <select name="degree" value={formData.degree} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.degree ? 'border-red-500' : 'border-gray-300'}`}>
                             <option value="">Selecciona un Grado</option>
                             {degrees.map(degree => <option key={degree._id} value={degree.degree}>{degree.degree}</option>)}
                         </select>
+                        {errors.degree && <p className="text-red-500 text-sm">{errors.degree}</p>}
                     </div>
 
                     <div>
                         <label className="text-gray-700 block mb-1">Estudiante</label>
-                        <input type="text" name="student" value={formData.student} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300" />
+                        <input type="text" name="student" value={formData.student} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.student ? 'border-red-500' : 'border-gray-300'}`} />
+                        {errors.student && <p className="text-red-500 text-sm">{errors.student}</p>}
                     </div>
 
                     <div>
                         <label className="text-gray-700 block mb-1">Tutor</label>
-                        <select name="advisor" value={formData.advisor} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300">
+                        <select name="advisor" value={formData.advisor} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.advisor ? 'border-red-500' : 'border-gray-300'}`}>
                             <option value="">Selecciona tu Tutor</option>
                             {advisors.map(advisor => <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>)}
                         </select>
+                        {errors.advisor && <p className="text-red-500 text-sm">{errors.advisor}</p>}
                     </div>
 
                     <div>
                         <label className="text-gray-700 block mb-1">Título</label>
-                        <input type="text" name="tfgTitle" value={formData.tfgTitle} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300" />
+                        <input type="text" name="tfgTitle" value={formData.tfgTitle} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.tfgTitle ? 'border-red-500' : 'border-gray-300'}`} />
+                        {errors.tfgTitle && <p className="text-red-500 text-sm">{errors.tfgTitle}</p>}
                     </div>
 
                     <div>
                         <label className="text-gray-700 block mb-1">Resumen</label>
-                        <textarea name="abstract" value={formData.abstract} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300"></textarea>
+                        <textarea name="abstract" value={formData.abstract} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.abstract ? 'border-red-500' : 'border-gray-300'}`}></textarea>
+                        {errors.abstract && <p className="text-red-500 text-sm">{errors.abstract}</p>}
                     </div>
 
                     <div>
                         <label className="text-gray-700 block mb-1">Archivo</label>
-                        <input type="file" name="file" onChange={handleFileChange} className="w-full p-2 rounded-md border border-gray-300" />
+                        <input type="file" name="file" onChange={handleFileChange} className={`w-full p-2 rounded-md border ${errors.file ? 'border-red-500' : 'border-gray-300'}`} />
+                        {errors.file && <p className="text-red-500 text-sm">{errors.file}</p>}
                     </div>
 
                     {/* Palabras clave */}
@@ -164,7 +200,7 @@ export default function Page() {
                         </ul>
                     )}
 
-                    <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-700 transition">Enviar</button>
+                    <button onClick={handleSubmit} type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-700 transition">Enviar</button>
                 </form>
             </div>
         </div>
