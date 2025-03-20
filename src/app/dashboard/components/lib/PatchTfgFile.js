@@ -3,8 +3,8 @@ import { cookies } from "next/headers";
 
 export default async function PatchTfgFile(id, file) {
     try {
-        const url = `${process.env.SERVER_URL}/tfgs/file/${id}`;
-        const token = cookies().get('bytoken')?.value;
+        const url = `${process.env.SERVER_URL}/tfgs/pdf/${id}`;
+        const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('NOT_FOUND_TOKEN');
         }
@@ -20,7 +20,7 @@ export default async function PatchTfgFile(id, file) {
             },
             body
         });
-
+        console.log(response)
         if (!response.ok) {
             let errorMessage = `Error ${response.status}: ${response.statusText}`;
             try {

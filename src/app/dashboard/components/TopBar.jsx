@@ -9,7 +9,7 @@ export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <header className="w-full bg-white border-b-[2px] border-black shadow-md p-4 md:p-6">
+        <header className="w-full bg-white border-b-[2px] border-black shadow-md p-1 md:p-1 ">
             <div className="container mx-auto flex justify-between items-center">
                 {/* Logo */}
                 <Link href="/dashboard">

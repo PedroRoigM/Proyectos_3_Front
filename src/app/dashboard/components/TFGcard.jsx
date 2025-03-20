@@ -14,21 +14,20 @@ export default function TFGcard({ tfg }) {
     };
 
     return (
-        <div className="pb-3 rounded-md w-full overflow-hidden border border-[#000000] mb-4">
-            <Link href={`/dashboard/tfg/${tfg._id}?id=${tfg._id}`}>
-                <div className="cursor-pointer">
-                    <div className="bg-[#e5e9ec] p-5">
-                        <h2 className="text-lg md:text-xl lg:text-2xl">{truncateText(tfg.tfgTitle, 100)}</h2>
-                        <h3 className="text-md md:text-lg lg:text-xl">{tfg.degree}</h3>
-                        <p className="text-sm md:text-md lg:text-lg">{truncateText(tfg.abstract, 300)}</p>
-                    </div>
+        <div className="border w-full border-black rounded-md overflow-hidden shadow-md">
+            <Link href={`/dashboard/tfg/${tfg._id}?id=${tfg._id}`} className="block">
+                <div className="bg-gray-200 p-4 hover:bg-gray-300 transition">
+                    <h2 className="text-lg md:text-xl font-semibold">{truncateText(tfg.tfgTitle, 80)}</h2>
+                    <h3 className="text-sm md:text-md text-gray-700">{tfg.degree}</h3>
+                    <p className="text-xs md:text-sm text-gray-600">{truncateText(tfg.abstract, 180)}</p>
                 </div>
             </Link>
-            <div className="flex gap-2 flex-wrap bg-[#F2F2F2] pt-2 pl-3">
-                {tfg.keywords.map((element, index) => (
-                    <p key={index} className="border border-gray-500 rounded-md px-2 py-1 text-xs md:text-sm lg:text-md">
-                        {element}
-                    </p>
+
+            <div className="flex flex-wrap gap-2 bg-gray-100 p-2">
+                {tfg.keywords.map((keyword, index) => (
+                    <span key={index} className="border border-gray-500 rounded-md px-2 py-1 text-xs md:text-sm">
+                        {keyword}
+                    </span>
                 ))}
             </div>
         </div>

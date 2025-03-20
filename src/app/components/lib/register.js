@@ -2,7 +2,6 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 export default async function PostRegister(dataForm) {
-    console.log(dataForm);
     const url = `${process.env.SERVER_URL}/users/register`;
     const body = JSON.stringify(dataForm);
     const response = await fetch(url, {
@@ -12,7 +11,6 @@ export default async function PostRegister(dataForm) {
         },
         body: body,
     });
-    console.log(response);//borar luego
     if (!response.ok) {
         throw new Error(response.statusText);
     }

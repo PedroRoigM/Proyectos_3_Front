@@ -87,43 +87,42 @@ export default function Page() {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         setLoading(true);
-        setErrors({}); // Resetear errores
+        setErrors({});
+
+        const validationErrors = {};
+        if (!formData.year) validationErrors.year = 'El año es obligatorio.';
+        if (!formData.degree) validationErrors.degree = 'El grado es obligatorio.';
+        if (!formData.student) validationErrors.student = 'El nombre del estudiante es obligatorio.';
+        if (!formData.advisor) validationErrors.advisor = 'El tutor es obligatorio.';
+        if (!formData.tfgTitle) validationErrors.tfgTitle = 'El título del TFG es obligatorio.';
+        if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
+        if (!formData.file) validationErrors.file = 'El archivo es obligatorio.';
+        if (formData.keywords.length === 0) validationErrors.keywords = 'Añade al menos una palabra clave.';
+
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            setLoading(false);
+            return;
+        }
+
         try {
-            let validationErrors = {};
-
-            // Validación de campos
-            if (!formData.year) validationErrors.year = 'El año es obligatorio.';
-            if (!formData.degree) validationErrors.degree = 'El grado es obligatorio.';
-            if (!formData.student) validationErrors.student = 'El nombre del estudiante es obligatorio.';
-            if (!formData.advisor) validationErrors.advisor = 'El tutor es obligatorio.';
-            if (formData.keywords.length === 0) validationErrors.keywords = 'Las palabras clave son obligatorias.';
-            if (!formData.tfgTitle) validationErrors.tfgTitle = 'El título del TFG es obligatorio.';
-            if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
-            if (!formData.file) validationErrors.file = 'El archivo es obligatorio.';
-
-            if (Object.keys(validationErrors).length > 0) {
-                setErrors(validationErrors);
-                setLoading(false);
-                return;
-            }
-
             const { file, ...dataWithoutFile } = formData;
             const response = await PostTFG(dataWithoutFile);
-
+            console.log(response)
             if (response.error) {
-                setError({ general: response.error });
+                setErrors({ general: response.error });
                 setLoading(false);
                 return;
             }
-            await PatchTfgFile(response.id, file);
-            setError('TFG subido correctamente.');
-            setLoading(false);
-        } catch (err) {
-            setErrors({ general: 'Ha ocurrido un error, intentalo de nuevo.' });
-            setLoading(false);
+
+            await PatchTfgFile(response._id, file);
+            setErrors({ general: "✅ TFG subido correctamente." });
+        } catch {
+            setErrors({ general: '❌ Ha ocurrido un error, intenta de nuevo.' });
         }
+
+        setLoading(false);
     };
 
     return (
@@ -207,33 +206,33 @@ export default function Page() {
                         </ul>
                     )}
 
-                    <button onClick={(e) => { e.preventDefault(); setShowConfirmation(true); }} type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-700 transition">Enviar</button>
+                    <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md">Enviar</button>
 
-                    
-                    {showConfirmation && (
-                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-70">
-                    <div className="bg-white p-8 rounded-lg shadow-lg w-[300px]">
-                        <p className="text-lg text-center mb-4">¿Estás seguro de que quieres enviar el TFG?</p>
-                        <div className="flex justify-around">
-                            <button
-                                type="button"
-                                onClick={() => handleConfirmSubmit(true)}
-                                className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
-                            >
-                                Sí
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleConfirmSubmit(false)}
-                                className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
-                            >
-                                No
-                            </button>
+                    {/*{showConfirmation && (
+                        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-70">
+                            <div className="bg-white p-8 rounded-lg shadow-lg w-[300px]">
+                                <p className="text-lg text-center mb-4">¿Estás seguro de que quieres enviar el TFG?</p>
+                                <div className="flex justify-around">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleConfirmSubmit(true)}
+                                        className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
+                                    >
+                                        Sí
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleConfirmSubmit(false)}
+                                        className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
+                                    >
+                                        No
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     )}
-                
+                        */}
+
                 </form>
             </div>
         </div>

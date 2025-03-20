@@ -33,7 +33,7 @@ export default function SearchBar({ search }) {
         search(formDataSearch);
     }
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-black p-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-black">
             {/* Input de búsqueda */}
             <input
                 type="text"
@@ -41,63 +41,57 @@ export default function SearchBar({ search }) {
                 value={formDataSearch.search}
                 onChange={handleChange}
                 placeholder="Buscar..."
-                className="border border-gray-500 rounded-md px-3 py-2 w-full text-lg"
+                className="border border-gray-400 rounded-md px-2 py-1 w-full text-sm"
             />
 
-            {/* Contenedor responsive */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Contenedor más compacto */}
+            <div className="flex flex-wrap gap-2">
                 {/* Select Año */}
-                <div className="w-full">
-                    <select
-                        name="year"
-                        value={formDataSearch.year}
-                        onChange={handleChange}
-                        className="border border-gray-500 rounded-md px-3 py-2 w-full text-lg"
-                    >
-                        {years.map((year, index) => (
-                            <option key={year?.year || `year-${index}`} value={year?.year || ""}>
-                                {year ? year.year : "Año"}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <select
+                    name="year"
+                    value={formDataSearch.year}
+                    onChange={handleChange}
+                    className="border border-gray-400 rounded-md px-2 py-1 text-sm w-full sm:w-auto flex-1"
+                >
+                    {years.map((year, index) => (
+                        <option key={year?.year || `year-${index}`} value={year?.year || ""}>
+                            {year ? year.year : "Año"}
+                        </option>
+                    ))}
+                </select>
 
                 {/* Select Grado */}
-                <div className="w-full">
-                    <select
-                        name="degree"
-                        value={formDataSearch.degree}
-                        onChange={handleChange}
-                        className="border border-gray-500 rounded-md px-3 py-2 w-full text-lg"
-                    >
-                        {degrees.map((degree, index) => (
-                            <option key={degree?._id || `degree-${index}`} value={degree?.degree || ""}>
-                                {degree ? degree.degree : "Grado"}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <select
+                    name="degree"
+                    value={formDataSearch.degree}
+                    onChange={handleChange}
+                    className="border border-gray-400 rounded-md px-2 py-1 text-sm w-full sm:w-auto flex-1"
+                >
+                    {degrees.map((degree, index) => (
+                        <option key={degree?._id || `degree-${index}`} value={degree?.degree || ""}>
+                            {degree ? degree.degree : "Grado"}
+                        </option>
+                    ))}
+                </select>
 
                 {/* Select Tutor */}
-                <div className="w-full">
-                    <select
-                        name="advisor"
-                        value={formDataSearch.advisor}
-                        onChange={handleChange}
-                        className="border border-gray-500 rounded-md px-3 py-2 w-full text-lg"
-                    >
-                        {advisors.map((advisor, index) => (
-                            <option key={advisor?._id || `advisor-${index}`} value={advisor?.advisor || ""}>
-                                {advisor ? advisor.advisor : "Tutor"}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <select
+                    name="advisor"
+                    value={formDataSearch.advisor}
+                    onChange={handleChange}
+                    className="border border-gray-400 rounded-md px-2 py-1 text-sm w-full sm:w-auto flex-1"
+                >
+                    {advisors.map((advisor, index) => (
+                        <option key={advisor?._id || `advisor-${index}`} value={advisor?.advisor || ""}>
+                            {advisor ? advisor.advisor : "Tutor"}
+                        </option>
+                    ))}
+                </select>
 
                 {/* Botón de búsqueda */}
                 <button
                     type="submit"
-                    className="w-full bg-blue-500 text-white font-bold rounded-md px-3 py-2 text-lg hover:bg-blue-600 transition-all"
+                    className="bg-blue-500 text-white font-bold rounded-md px-3 py-1 text-sm w-full sm:w-auto flex-1 hover:bg-blue-600 transition"
                 >
                     Buscar
                 </button>

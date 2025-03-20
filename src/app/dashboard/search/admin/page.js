@@ -21,6 +21,9 @@ export default function SearchResults() {
             setCurrentPage(page_number);
             getSearchResult(page_number, parsedSearch);
         }
+        else {
+            getSearchResult(page_number, {});
+        }
     }, []);
     const getSearchResult = (page_number, dataForm) => {
         const sanitizedFormData = Object.fromEntries(
@@ -34,14 +37,14 @@ export default function SearchResults() {
     const setTfgsResults = (search) => {
         // Redirigir a la página de resultados y pasar la búsqueda a través de parámetros de la URL
         const searchQuery = encodeURIComponent(JSON.stringify(search));
-        window.location.href = `/dashboard/search/unverified?search=${searchQuery}`; // Redirige a la página con la búsqueda
+        window.location.href = `/dashboard/search/admin?search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
     const changePage = (page_number) => {
         const searchQuery = encodeURIComponent(JSON.stringify(search));
-        window.location.href = `/dashboard/search/unverified?page_number=${page_number}&search=${searchQuery}`; // Redirige a la página con la búsqueda
+        window.location.href = `/dashboard/search/admin?page_number=${page_number}&search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
     return (
-        <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
+        <div className="font-montserrat w-full h-full flex flex-col justify-center  mx-auto my-[50px] rounded-md max-w-[90%] md:max-w-[80%] lg:max-w-[70%]">
             <SearchBar search={setTfgsResults} />
             <h1 className="text-4xl font-bold mb-4">Resultados de la búsqueda</h1>
             {tfgs ? (

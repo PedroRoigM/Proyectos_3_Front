@@ -41,7 +41,7 @@ export default function SearchResults() {
         window.location.href = `/dashboard/search?page_number=${page_number}&search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
     return (
-        <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
+        <div className="font-montserrat w-full h-full flex flex-col justify-center  mx-auto my-[50px] rounded-md max-w-[90%] md:max-w-[80%] lg:max-w-[70%]">
             <SearchBar search={setTfgsResults} />
             <h1 className="text-4xl font-bold mb-4">Resultados de la búsqueda</h1>
             {tfgs ? (
