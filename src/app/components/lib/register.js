@@ -12,6 +12,7 @@ export default async function PostRegister(dataForm) {
         },
         body: body,
     });
+    console.log(response);//borar luego
     if (!response.ok) {
         throw new Error(response.statusText);
     }

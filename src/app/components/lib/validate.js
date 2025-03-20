@@ -19,7 +19,7 @@ export default async function PatchValidation(code) {
             body: body,
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            return null;
         }
         const user = await response.json();
         if (!user) {

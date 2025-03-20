@@ -80,7 +80,7 @@ export default function Page() {
     return (
         <div className="font-montserrat rounded-md from-white to-gray-400 bg-gradient-to-b h-screen">
             <div className="flex items-center justify-center mt-[8%]">
-                <div className="flex flex-col bg-white p-10 rounded-lg shadow-lg w-4/5 md:w-3/5 lg:w-2/5 text-center">
+                <div className="flex flex-col bg-white p-10 rounded-lg shadow-lg w-4/5 md:w-2/5 lg:w-1/3 text-center">
                     <h1 className="text-gray-800 font-bold text-2xl mb-[20%]">Recuperar contraseña</h1>
 
                     {step === 1 && (
@@ -91,7 +91,7 @@ export default function Page() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className={`border-2 ${errors.email ? 'border-red-500' : 'border-black'} mb-[20%]`} />
+                                className={`border-2 ${errors.email ? 'border-red-500' : 'border-black'} mb-[20%] p-2 rounded-md w-full`} />
                             {errors.email && <p className="text-red-500">{errors.email}</p>}
                         </div>
                     )}
@@ -99,12 +99,12 @@ export default function Page() {
                         <div className="mb-[20%]">
                             <div className="mb-[5%]">
                                 <p>Introduce el código</p>
-                                <input type="text" name="code" value={formData.code} onChange={handleChange} className={`border-2 ${errors.code ? 'border-red-500' : 'border-black'}`} />
+                                <input type="text" name="code" value={formData.code} onChange={handleChange} className={`border-2 ${errors.code ? 'border-red-500' : 'border-black'} p-2 rounded-md w-full`} />
                                 {errors.code && <p className="text-red-500">{errors.code}</p>}
                             </div>
                             <div>
                                 <p>Introduce tu nueva contraseña</p>
-                                <input type="password" name="password" value={formData.password} onChange={handleChange} className={`border-2 ${errors.password ? 'border-red-500' : 'border-black'}`} />
+                                <input type="password" name="password" value={formData.password} onChange={handleChange} className={`border-2 ${errors.password ? 'border-red-500' : 'border-black'} p-2 rounded-md w-full`} />
                                 {errors.password && <p className="text-red-500">{errors.password}</p>}
                             </div>
                         </div>
@@ -112,7 +112,7 @@ export default function Page() {
                     {step === 3 && (
                         <p>Contraseña cambiada correctamente</p>
                     )}
-                    <div>
+                    <div className="flex justify-between mt-4">
                         <button type="submit" onClick={handleSubmit} className='bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#14192c] transition'>
                             Enviar
                         </button>
