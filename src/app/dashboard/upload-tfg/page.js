@@ -94,8 +94,8 @@ export default function Page() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-300">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-1/2 lg:w-1/3">
+        <div className="flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-400">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[50%] lg:w-[50%]">
                 <h1 className="text-gray-800 font-bold text-2xl text-center mb-4">Subir TFG</h1>
                 {error && <p className={`text-center text-lg mb-3 ${error.includes("✅") ? "text-green-500" : "text-red-500"}`}>{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-4">
