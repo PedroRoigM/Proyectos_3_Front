@@ -18,13 +18,13 @@ export default function Dashboard() {
         window.location.href = `/dashboard/search?search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
     return (
-        <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
+        <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%] md:max-w-[80%] lg:max-w-[70%]">
             <SearchBar search={setTfgsResults} />
-            <h1 className="text-4xl font-bold mb-4">Proyectos Destacados</h1>
+            <h1 className="text-4xl font-bold mb-4 text-center md:text-left">Proyectos Destacados</h1>
             {tfgs ? (
-                <div className="flex-col gap-4">
+                <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
                     {tfgs.map((tfg, index) => (
-                        <TFGcard key={index} tfg={tfg} />
+                        <TFGcard key={index} tfg={tfg} className="w-full md:w-[48%] lg:w-[32%]" />
                     ))}
                 </div>
             ) : (

@@ -1,9 +1,9 @@
 'use client';
-import PutTFG from '../../../components/lib/PutTFG';
-import GetTFG from '../../../components/lib/GetTFG';
-import GetAdvisors from '../../../components/lib/GetAdvisors';
-import GetDegrees from '../../../components/lib/GetDegrees';
-import GetYears from '../../../components/lib/GetYears';
+import PutTFG from '../../../../components/lib/PutTFG';
+import GetTFG from '../../../../components/lib/GetTFG';
+import GetAdvisors from '../../../../components/lib/GetAdvisors';
+import GetDegrees from '../../../../components/lib/GetDegrees';
+import GetYears from '../../../../components/lib/GetYears';
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

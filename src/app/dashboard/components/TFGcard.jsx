@@ -18,15 +18,15 @@ export default function TFGcard({ tfg }) {
             <Link href={`/dashboard/tfg/${tfg._id}?id=${tfg._id}`}>
                 <div className="cursor-pointer">
                     <div className="bg-[#e5e9ec] p-5">
-                        <h2>{truncateText(tfg.tfgTitle, 100)}</h2>
-                        <h3>{tfg.degree}</h3>
-                        <p>{truncateText(tfg.abstract, 300)}</p>
+                        <h2 className="text-lg md:text-xl lg:text-2xl">{truncateText(tfg.tfgTitle, 100)}</h2>
+                        <h3 className="text-md md:text-lg lg:text-xl">{tfg.degree}</h3>
+                        <p className="text-sm md:text-md lg:text-lg">{truncateText(tfg.abstract, 300)}</p>
                     </div>
                 </div>
             </Link>
             <div className="flex gap-2 flex-wrap bg-[#F2F2F2] pt-2 pl-3">
                 {tfg.keywords.map((element, index) => (
-                    <p key={index} className="border border-gray-500 rounded-md px-2 py-1">
+                    <p key={index} className="border border-gray-500 rounded-md px-2 py-1 text-xs md:text-sm lg:text-md">
                         {element}
                     </p>
                 ))}

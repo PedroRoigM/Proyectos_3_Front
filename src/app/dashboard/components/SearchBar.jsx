@@ -33,23 +33,26 @@ export default function SearchBar({ search }) {
         search(formDataSearch);
     }
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-black">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-black p-4">
+            {/* Input de búsqueda */}
             <input
                 type="text"
                 name="search"
                 value={formDataSearch.search}
                 onChange={handleChange}
                 placeholder="Buscar..."
-                className="border border-gray-500 rounded-md px-2 py-1 w-full"
+                className="border border-gray-500 rounded-md px-3 py-2 w-full text-lg"
             />
 
-            <div className="flex gap-4">
-                <div className="flex flex-col w-full mb-4">
+            {/* Contenedor responsive */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Select Año */}
+                <div className="w-full">
                     <select
                         name="year"
                         value={formDataSearch.year}
                         onChange={handleChange}
-                        className="border border-gray-500 rounded-md px-2 py-1"
+                        className="border border-gray-500 rounded-md px-3 py-2 w-full text-lg"
                     >
                         {years.map((year, index) => (
                             <option key={year?.year || `year-${index}`} value={year?.year || ""}>
@@ -59,12 +62,13 @@ export default function SearchBar({ search }) {
                     </select>
                 </div>
 
-                <div className="flex flex-col w-full mb-4">
+                {/* Select Grado */}
+                <div className="w-full">
                     <select
                         name="degree"
                         value={formDataSearch.degree}
                         onChange={handleChange}
-                        className="border border-gray-500 rounded-md px-2 py-1"
+                        className="border border-gray-500 rounded-md px-3 py-2 w-full text-lg"
                     >
                         {degrees.map((degree, index) => (
                             <option key={degree?._id || `degree-${index}`} value={degree?.degree || ""}>
@@ -74,12 +78,13 @@ export default function SearchBar({ search }) {
                     </select>
                 </div>
 
-                <div className="flex flex-col w-full mb-4">
+                {/* Select Tutor */}
+                <div className="w-full">
                     <select
                         name="advisor"
                         value={formDataSearch.advisor}
                         onChange={handleChange}
-                        className="border border-gray-500 rounded-md px-2 py-1"
+                        className="border border-gray-500 rounded-md px-3 py-2 w-full text-lg"
                     >
                         {advisors.map((advisor, index) => (
                             <option key={advisor?._id || `advisor-${index}`} value={advisor?.advisor || ""}>
@@ -88,15 +93,16 @@ export default function SearchBar({ search }) {
                         ))}
                     </select>
                 </div>
+
+                {/* Botón de búsqueda */}
                 <button
                     type="submit"
-                    className="border border-gray-500 rounded-md w-full bg-blue-500 text-white hover:bg-blue-600"
+                    className="w-full bg-blue-500 text-white font-bold rounded-md px-3 py-2 text-lg hover:bg-blue-600 transition-all"
                 >
                     Buscar
                 </button>
             </div>
-
-
         </form>
+
     )
 }

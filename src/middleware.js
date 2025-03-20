@@ -23,7 +23,10 @@ export function middleware(request) {
             if (!decoded?.verified && !request.nextUrl.pathname.startsWith('/validation')) {
                 return NextResponse.redirect(new URL('/validation', request.url));
             }
-
+            // Controlar el acceso a las carpetas admin
+            if (!decoded?.role.includes('admin') && request.nextUrl.pathname.includes('/admin')) {
+                return NextResponse.redirect(new URL('/dashboard', request.url));
+            }
         } catch (error) {
             console.error("Error decoding token:", error);
             return NextResponse.redirect(new URL('/', request.url)); // Si el token es inválido, mandar a inicio
