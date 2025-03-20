@@ -22,7 +22,7 @@ export default function Page() {
     const [degrees, setDegrees] = useState([]);
     const [error, setError] = useState('');
     const [inputValue, setInputValue] = useState("");
-
+    const [showConfirmation, setShowConfirmation] = useState(false); // Estado para el cuadro de confirmación
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
 
@@ -51,12 +51,14 @@ export default function Page() {
             [name]: value
         });
     };
+
     const handleFileChange = (e) => {
         setFormData({
             ...formData,
             file: e.target.files[0]
         });
     };
+
     const handleInputChange = (e) => setInputValue(e.target.value);
 
     const handleAddKeyword = () => {
@@ -76,21 +78,20 @@ export default function Page() {
         });
     };
 
+    const handleConfirmSubmit = async (isConfirmed) => {
+        if (isConfirmed) {
+            // Llamar al método de envío del formulario solo si el usuario confirma
+            await handleSubmit();
+        }
+        setShowConfirmation(false); // Cierra el cuadro de confirmación
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const confirmation = window.confirm("¿Estás seguro de que quieres enviar el TFG?\n El TFG pasará a ser propiedad de la universidad.\nNo podrás editar el TFG una vez enviado.\nDeberás enviar un mensaje a coordinación para solicitar cambios.");
-        if (!confirmation) {
-            // Si el usuario selecciona "No", no hacemos nada.
-            return;
-        }
-    
-
         setLoading(true);
-        setErrors({}); //reset errores
+        setErrors({}); // Resetear errores
         try {
             let validationErrors = {};
-
 
             // Validación de campos
             if (!formData.year) validationErrors.year = 'El año es obligatorio.';
@@ -108,13 +109,11 @@ export default function Page() {
                 return;
             }
 
-
             const { file, ...dataWithoutFile } = formData;
             const response = await PostTFG(dataWithoutFile);
 
-
             if (response.error) {
-                setError({general: response.error});
+                setError({ general: response.error });
                 setLoading(false);
                 return;
             }
@@ -208,7 +207,33 @@ export default function Page() {
                         </ul>
                     )}
 
-                    <button onClick={handleSubmit} type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-700 transition">Enviar</button>
+                    <button onClick={(e) => { e.preventDefault(); setShowConfirmation(true); }} type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-700 transition">Enviar</button>
+
+                    
+                    {showConfirmation && (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-70">
+                    <div className="bg-white p-8 rounded-lg shadow-lg w-[300px]">
+                        <p className="text-lg text-center mb-4">¿Estás seguro de que quieres enviar el TFG?</p>
+                        <div className="flex justify-around">
+                            <button
+                                type="button"
+                                onClick={() => handleConfirmSubmit(true)}
+                                className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
+                            >
+                                Sí
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleConfirmSubmit(false)}
+                                className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
+                            >
+                                No
+                            </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                
                 </form>
             </div>
         </div>
