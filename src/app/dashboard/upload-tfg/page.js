@@ -94,79 +94,79 @@ export default function Page() {
     };
 
     return (
-        <div>
-            <h1>Subir TFG</h1>
-            {error && <p className="text-red-500 mb-2">{error}</p>}
-            <div>
-                <label>Año</label>
-                <select name="year" value={formData.year} onChange={handleChange}>
-                    {years.map(year => <option key={year._id} value={year.year}>{year.year}</option>)}
-                </select>
-            </div>
-            <div>
-                <label>Grado</label>
-                <select name="degree" value={formData.degree} onChange={handleChange}>
-                    {degrees.map(degree => <option key={degree._id} value={degree.degree}>{degree.degree}</option>)}
-                </select>
-            </div>
-            <div>
-                <label>Estudiante</label>
-                <input type="text" name="student" value={formData.student} onChange={handleChange} />
-            </div>
-            <div>
-                <label>Director</label>
-                <select name="advisor" value={formData.advisor} onChange={handleChange}>
-                    {advisors.map(advisor => <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>)}
-                </select>
-            </div>
+        <div className="flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-300">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-1/2 lg:w-1/3">
+                <h1 className="text-gray-800 font-bold text-2xl text-center mb-4">Subir TFG</h1>
+                {error && <p className={`text-center text-lg mb-3 ${error.includes("✅") ? "text-green-500" : "text-red-500"}`}>{error}</p>}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="text-gray-700 block mb-1">Año</label>
+                        <select name="year" value={formData.year} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300">
+                            <option value="">Selecciona un año</option>
+                            {years.map(year => <option key={year._id} value={year.year}>{year.year}</option>)}
+                        </select>
+                    </div>
 
-            <div>
-                <label>Título</label>
-                <input type="text" name="tfgTitle" value={formData.tfgTitle} onChange={handleChange} />
-            </div>
-            <div>
-                <label>Resumen</label>
-                <textarea name="abstract" value={formData.abstract} onChange={handleChange}></textarea>
-            </div>
-            <div>
-                <label>Archivo</label>
-                <input type="file" name="file" onChange={handleFileChange} />
-            </div>
-            {/* Palabras clave */}
-            <label className="block text-[#0065ef] font-semibold">Palabras clave</label>
-            <div className="flex gap-2">
-                <input
-                    type="text"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                    placeholder="Añadir palabra clave..."
-                />
-                <button
-                    type="button"
-                    onClick={handleAddKeyword}
-                    className="bg-[#0065ef] text-white font-bold px-4 py-2 rounded-md hover:bg-blue-700 transition"
-                >
-                    +
-                </button>
-            </div>
+                    <div>
+                        <label className="text-gray-700 block mb-1">Grado</label>
+                        <select name="degree" value={formData.degree} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300">
+                            <option value="">Selecciona un Grado</option>
+                            {degrees.map(degree => <option key={degree._id} value={degree.degree}>{degree.degree}</option>)}
+                        </select>
+                    </div>
 
-            {/* Lista de palabras clave */}
-            <ul className="mt-3 space-y-2">
-                {formData.keywords.map((keyword, index) => (
-                    <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md">
-                        <span className="text-gray-800">{keyword}</span>
-                        <button
-                            type="button"
-                            onClick={() => handleRemoveKeyword(index)}
-                            className="text-red-500 hover:text-red-700"
-                        >
-                            ❌
-                        </button>
-                    </li>
-                ))}
-            </ul>
-            <button onClick={handleSubmit}>Enviar</button>
+                    <div>
+                        <label className="text-gray-700 block mb-1">Estudiante</label>
+                        <input type="text" name="student" value={formData.student} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300" />
+                    </div>
+
+                    <div>
+                        <label className="text-gray-700 block mb-1">Tutor</label>
+                        <select name="advisor" value={formData.advisor} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300">
+                            <option value="">Selecciona tu Tutor</option>
+                            {advisors.map(advisor => <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>)}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="text-gray-700 block mb-1">Título</label>
+                        <input type="text" name="tfgTitle" value={formData.tfgTitle} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300" />
+                    </div>
+
+                    <div>
+                        <label className="text-gray-700 block mb-1">Resumen</label>
+                        <textarea name="abstract" value={formData.abstract} onChange={handleChange} className="w-full p-2 rounded-md border border-gray-300"></textarea>
+                    </div>
+
+                    <div>
+                        <label className="text-gray-700 block mb-1">Archivo</label>
+                        <input type="file" name="file" onChange={handleFileChange} className="w-full p-2 rounded-md border border-gray-300" />
+                    </div>
+
+                    {/* Palabras clave */}
+                    <div>
+                        <label className="text-gray-700 block mb-1">Palabras clave</label>
+                        <div className="flex items-center gap-2">
+                            <input type="text" value={inputValue} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Añadir palabra clave..." />
+                            <button type="button" onClick={handleAddKeyword} className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition">+</button>
+                        </div>
+                    </div>
+
+                    {/* Lista de palabras clave */}
+                    {formData.keywords.length > 0 && (
+                        <ul className="mt-3 space-y-2">
+                            {formData.keywords.map((keyword, index) => (
+                                <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md">
+                                    <span className="text-gray-800">{keyword}</span>
+                                    <button type="button" onClick={() => handleRemoveKeyword(index)} className="text-red-500 hover:text-red-700">❌</button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+
+                    <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-700 transition">Enviar</button>
+                </form>
+            </div>
         </div>
-    )
+    );
 }
