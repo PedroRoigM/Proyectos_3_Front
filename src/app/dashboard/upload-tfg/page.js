@@ -78,6 +78,14 @@ export default function Page() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const confirmation = window.confirm("¿Estás seguro de que quieres enviar el TFG?\n El TFG pasará a ser propiedad de la universidad.\nNo podrás editar el TFG una vez enviado.\nDeberás enviar un mensaje a coordinación para solicitar cambios.");
+        if (!confirmation) {
+            // Si el usuario selecciona "No", no hacemos nada.
+            return;
+        }
+    
+
         setLoading(true);
         setErrors({}); //reset errores
         try {
