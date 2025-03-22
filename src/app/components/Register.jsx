@@ -4,13 +4,10 @@
 // Debe de mostrar un mensaje de error si algún campo está vacío.
 // Debe de mostrar un mensaje de éxito si el login se ha realizado correctamente.
 // Debe de mostrar un spinner de carga mientras se realiza el login.
-
 "use client";
 
 import { useState } from 'react';
 import PostRegister from './lib/register';
-
-
 
 export default function Register({ changeToLogin }) {
     const [formData, setFormData] = useState({
@@ -23,6 +20,7 @@ export default function Register({ changeToLogin }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        setErrors({ ...errors, [name]: null });
         setFormData({
             ...formData,
             [name]: value
@@ -49,8 +47,17 @@ export default function Register({ changeToLogin }) {
                 setLoading(false);
                 return;
             }
-            if (formData.password.length < 6) {
-                setErrors({ password: 'La contraseña debe tener al menos 6 caracteres.' });
+            // Que cumpla con el formato nombre.apellido@u-tad.com o nombre.apellidoN@live.u-tad.com
+            if (!/^[a-zA-Z]+\.[a-zA-Z]+\d?@(u-tad\.com|live\.u-tad\.com)$/.test(formData.email)) {
+                setErrors({ email: 'El email debe tener el formato nombre.apellido@u-tad.com o nombre.apellidoN@live.u-tad.com.' });
+                setLoading(false);
+                return;
+            }
+
+
+            // Contraseña de más de 6 caracteres y tiene que contener al menos una mayuscula, una minuscula y un número
+            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{7,}$/.test(formData.password)) {
+                setErrors({ password: 'La contraseña no es válida.' });
                 setLoading(false);
                 return;
             }

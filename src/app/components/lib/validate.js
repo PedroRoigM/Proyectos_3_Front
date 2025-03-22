@@ -26,12 +26,10 @@ export default async function PatchValidation(code) {
             throw new Error('User not found');
         }
         // Borrar cookie
-        (await cookies()).set({
-            name: 'bytoken',
-            value: '',
-        });
-        redirect('/');
+        (await cookies()).delete('bytoken');
     } catch (error) {
         console.error("Error validating user:", error);
     }
+    redirect('/');
+
 }
