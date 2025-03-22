@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import PostTFG from '../components/lib/PostTFG';
 import PatchTfgFile from '../components/lib/PatchTfgFile';
 import GetAdvisors from '../components/lib/GetAdvisors';
@@ -7,6 +8,7 @@ import GetDegrees from '../components/lib/GetDegrees';
 import GetYears from '../components/lib/GetYears';
 
 export default function Page() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         year: '',
         degree: '',
@@ -115,6 +117,9 @@ export default function Page() {
 
                 await PatchTfgFile(response._id, file);
                 setErrors({ general: "✅ TFG subido correctamente." });
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 500);
             } catch {
                 setErrors({ general: '❌ Ha ocurrido un error, intenta de nuevo.' });
             }
