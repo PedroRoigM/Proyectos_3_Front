@@ -26,6 +26,9 @@ export default function Page() {
     const [years, setYears] = useState([]);
     const [inputValue, setInputValue] = useState("");
 
+    const [errors, setErrors] = useState({});
+    const [showConfirmation, setShowConfirmation] = useState(false);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -82,8 +85,35 @@ export default function Page() {
         });
     };
 
-    const handleSubmit = async () => {
-        await PutTFG(id, formData);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setShowConfirmation(true);
+    };
+
+    const handleConfirmSubmit = async (confirm) => {
+        setShowConfirmation(false);
+        if (!confirm) return;
+
+        const validationErrors = {};
+        if (!formData.year) validationErrors.year = 'El año es obligatorio.';
+        if (!formData.degree) validationErrors.degree = 'El grado es obligatorio.';
+        if (!formData.student) validationErrors.student = 'El nombre del estudiante es obligatorio.';
+        if (!formData.advisor) validationErrors.advisor = 'El tutor es obligatorio.';
+        if (!formData.tfgTitle) validationErrors.tfgTitle = 'El título del TFG es obligatorio.';
+        if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
+        if (formData.keywords.length < 3) validationErrors.keywords = 'Añade al menos 3 palabras claves.';
+
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+
+        try {
+            await PutTFG(id, formData);
+            setErrors({ general: "✅ TFG actualizado correctamente." });
+        } catch {
+            setErrors({ general: '❌ Ha ocurrido un error, intenta de nuevo.' });
+        }
     };
 
     if (loading) {
@@ -91,125 +121,138 @@ export default function Page() {
     }
 
     return (
-        <div className="w-full mx-auto bg-white shadow-lg rounded-lg p-6">
-            <h1 className="text-2xl font-bold text-[#0065ef] mb-4">Editar TFG</h1>
-            <form className="space-y-4">
-                {/* Título */}
-                <label className="block text-[#0065ef] font-semibold">Título</label>
-                <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                />
-
-                {/* Resumen */}
-                <label className="block text-[#0065ef] font-semibold">Resumen</label>
-                <textarea
-
-                    name="abstract"
-                    value={formData.abstract}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                />
-
-                {/* Año */}
-                <label className="block text-[#0065ef] font-semibold">Año</label>
-                <select
-                    name="year"
-                    value={formData.year}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                >
-                    <option value="" disabled>{formData.year || "Selecciona un año"}</option>
-                    {years.map((year) => (
-                        <option key={year._id} value={year.year}>{year.year}</option>
-                    ))}
-                </select>
-
-                {/* Grado */}
-                <label className="block text-[#0065ef] font-semibold">Grado</label>
-                <select
-                    name="degree"
-                    value={formData.degree}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                >
-                    <option value="" disabled>{formData.degree || "Selecciona un grado"}</option>
-                    {degrees.map((degree) => (
-                        <option key={degree._id} value={degree.degree}>{degree.degree}</option>
-                    ))}
-                </select>
-
-                {/* Asesor */}
-                <label className="block text-[#0065ef] font-semibold">Asesor</label>
-                <select
-                    name="advisor"
-                    value={formData.advisor}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                >
-                    <option value="" disabled>{formData.advisor || "Selecciona un asesor"}</option>
-                    {advisors.map((advisor) => (
-                        <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>
-                    ))}
-                </select>
-
-                {/* Alumno */}
-                <label className="block text-[#0065ef] font-semibold">Alumno</label>
-                <input
-                    type="text"
-                    name="student"
-                    value={formData.student}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                />
-
-                {/* Palabras clave */}
-                <label className="block text-[#0065ef] font-semibold">Palabras clave</label>
-                <div className="flex gap-2">
+        <div className="flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-400">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[50%] lg:w-[50%]">
+                <h1 className="text-gray-800 font-bold text-2xl text-center mb-4">Subir TFG</h1>
+                <form className="space-y-4">
+                    {/* Título */}
+                    <div>
+                    <label className="block text-[#0065ef] font-semibold">Título</label>
                     <input
                         type="text"
-                        value={inputValue}
-                        onChange={handleInputChange}
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                        placeholder="Añadir palabra clave..."
                     />
+                    </div>
+                    {/* Resumen */}
+                    <label className="block text-[#0065ef] font-semibold">Resumen</label>
+                    <textarea
+
+                        name="abstract"
+                        value={formData.abstract}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                    />
+
+                    {/* Año */}
+                    <div>
+                    <label className="block text-[#0065ef] font-semibold">Año</label>
+                    <select
+                        name="year"
+                        value={formData.year}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                    >
+                        <option value="" disabled>{formData.year || "Selecciona un año"}</option>
+                        {years.map((year) => (
+                            <option key={year._id} value={year.year}>{year.year}</option>
+                        ))}
+                        {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
+                    </select>
+                    </div>
+
+                    {/* Grado */}
+                    <div>
+                    <label className="block text-[#0065ef] font-semibold">Grado</label>
+                    <select
+                        name="degree"
+                        value={formData.degree}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                    >
+                        <option value="" disabled>{formData.degree || "Selecciona un grado"}</option>
+                        {degrees.map((degree) => (
+                            <option key={degree._id} value={degree.degree}>{degree.degree}</option>
+                        ))}
+                        {errors.degree && <p className="text-red-500 text-sm">{errors.degree}</p>}
+                    </select>
+                    </div>
+
+                    {/* Asesor */}
+                    <div>
+                    <label className="block text-[#0065ef] font-semibold">Asesor</label>
+                    <select
+                        name="advisor"
+                        value={formData.advisor}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                    >
+                        <option value="" disabled>{formData.advisor || "Selecciona un asesor"}</option>
+                        {advisors.map((advisor) => (
+                            <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>
+                        ))}
+                    </select>
+                    </div>
+                    {/* Alumno */}
+                    <div>
+                        <label className="block text-[#0065ef] font-semibold">Alumno</label>
+                        <input
+                            type="text"
+                            name="student"
+                            value={formData.student}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                        />
+                        {errors.student && <p className="text-red-500 text-sm">{errors.student}</p>}
+                    </div>
+
+                    {/* Palabras clave */}
+                    <label className="block text-[#0065ef] font-semibold">Palabras clave</label>
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={inputValue}
+                            onChange={handleInputChange}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                            placeholder="Añadir palabra clave..."
+                        />
+                        <button
+                            type="button"
+                            onClick={handleAddKeyword}
+                            className="bg-[#0065ef] text-white font-bold px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                        >
+                            +
+                        </button>
+                    </div>
+
+                    {/* Lista de palabras clave */}
+                    <ul className="mt-3 space-y-2">
+                        {formData.keywords.map((keyword, index) => (
+                            <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md">
+                                <span className="text-gray-800">{keyword}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveKeyword(index)}
+                                    className="text-red-500 hover:text-red-700"
+                                >
+                                    ❌
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Botón */}
                     <button
                         type="button"
-                        onClick={handleAddKeyword}
-                        className="bg-[#0065ef] text-white font-bold px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                        onClick={handleConfirmSubmit}
+                        className="w-full bg-[#0065ef] text-white font-bold py-2 rounded-md hover:bg-blue-700 transition duration-200"
                     >
-                        +
+                        Actualizar
                     </button>
-                </div>
-
-                {/* Lista de palabras clave */}
-                <ul className="mt-3 space-y-2">
-                    {formData.keywords.map((keyword, index) => (
-                        <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md">
-                            <span className="text-gray-800">{keyword}</span>
-                            <button
-                                type="button"
-                                onClick={() => handleRemoveKeyword(index)}
-                                className="text-red-500 hover:text-red-700"
-                            >
-                                ❌
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-
-                {/* Botón */}
-                <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="w-full bg-[#0065ef] text-white font-bold py-2 rounded-md hover:bg-blue-700 transition duration-200"
-                >
-                    Enviar
-                </button>
-            </form>
+                </form>
+            </div>
         </div>
     );
 }
