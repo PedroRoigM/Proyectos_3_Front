@@ -19,7 +19,7 @@ export default async function GetYears() {
             throw new Error(response.statusText)
         }
         const data = await response.json();
-        return data;
+        return data.data;
     } catch (err) {
         console.log(err)
     }

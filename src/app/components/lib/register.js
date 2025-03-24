@@ -28,6 +28,8 @@ export default async function PostRegister(dataForm) {
     } catch (error) {
         console.error("Error registering user:", error);
     }
-
-    redirect('/validation');
+    if (user) {
+        return redirect('/validation');
+    }
+    return null;
 }

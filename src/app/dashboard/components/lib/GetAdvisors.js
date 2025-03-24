@@ -19,7 +19,8 @@ export default async function GetAdvisors() {
             throw new Error(response.statusText);
         }
         const data = await response.json();
-        return data;
+
+        return data.data;
     } catch (err) {
         console.log(err)
     }

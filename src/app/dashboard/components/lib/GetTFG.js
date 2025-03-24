@@ -19,8 +19,8 @@ export default async function GetTFG(id) {
             throw new Error(response.statusText);
         }
 
-        const data = response.json();
-        return data;
+        const data = await response.json();
+        return data._doc;
     } catch (err) {
         console.log(err)
     }

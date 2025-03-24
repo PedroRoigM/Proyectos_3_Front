@@ -20,7 +20,7 @@ export default async function GetDegrees() {
         }
         const data = await response.json();
 
-        return data;
+        return data.data;
     } catch (err) {
         console.log(err)
     }

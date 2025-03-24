@@ -47,6 +47,10 @@ export default function Page() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        setErrors({
+            ...errors,
+            [name]: null
+        });
         setFormData({
             ...formData,
             [name]: value
@@ -89,40 +93,41 @@ export default function Page() {
         setLoading(true);
         setErrors({});
 
-            const validationErrors = {};
-            if (!formData.year) validationErrors.year = 'El año es obligatorio.';
-            if (!formData.degree) validationErrors.degree = 'El grado es obligatorio.';
-            if (!formData.student) validationErrors.student = 'El nombre del estudiante es obligatorio.';
-            if (!formData.advisor) validationErrors.advisor = 'El tutor es obligatorio.';
-            if (!formData.tfgTitle) validationErrors.tfgTitle = 'El título del TFG es obligatorio.';
-            if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
-            if (!formData.file) validationErrors.file = 'El archivo es obligatorio.';
-            if (formData.keywords.length < 3) validationErrors.keywords = 'Añade al menos 3 palabras claves.';
+        const validationErrors = {};
+        if (!formData.year) validationErrors.year = 'El año es obligatorio.';
+        if (!formData.degree) validationErrors.degree = 'El grado es obligatorio.';
+        if (!formData.student) validationErrors.student = 'El nombre del estudiante es obligatorio.';
+        if (!formData.advisor) validationErrors.advisor = 'El tutor es obligatorio.';
+        if (!formData.tfgTitle) validationErrors.tfgTitle = 'El título del TFG es obligatorio.';
+        if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
+        if (!formData.file) validationErrors.file = 'El archivo es obligatorio.';
+        if (formData.keywords.length < 3) validationErrors.keywords = 'Añade al menos 3 palabras claves.';
 
-            if (Object.keys(validationErrors).length > 0) {
-                setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const { file, ...dataWithoutFile } = formData;
+            const response = await PostTFG(dataWithoutFile);
+            if (response.error) {
+                setErrors({ general: response.error });
                 setLoading(false);
                 return;
             }
 
-            try {
-                const { file, ...dataWithoutFile } = formData;
-                const response = await PostTFG(dataWithoutFile);
-                console.log(response)
-                if (response.error) {
-                    setErrors({ general: response.error });
-                    setLoading(false);
-                    return;
-                }
-
-                await PatchTfgFile(response._id, file);
-                setErrors({ general: "✅ TFG subido correctamente." });
-                setTimeout(() => {
-                    router.push('/dashboard');
-                }, 500);
-            } catch {
-                setErrors({ general: '❌ Ha ocurrido un error, intenta de nuevo.' });
+            const response_file = await PatchTfgFile(response._id, file);
+            if (response_file.error) {
+                setErrors({ general: response_file.error });
+                setLoading(false);
+                return;
             }
+            router.push('/dashboard');
+        } catch {
+            setErrors({ file: '❌ Ha ocurrido un error, intenta de nuevo.' });
+        }
         setLoading(false);
     };
 
@@ -190,7 +195,7 @@ export default function Page() {
                     <div>
                         <label className="text-gray-700 block mb-1">Palabras clave</label>
                         <div className="flex items-center gap-2">
-                        <input type="text" value={inputValue} onChange={handleInputChange} className={`w-full p-2 rounded-md border ${errors.file ? 'border-red-500' : 'border-gray-300'}`} />
+                            <input type="text" value={inputValue} onChange={handleInputChange} className={`w-full p-2 rounded-md border ${errors.file ? 'border-red-500' : 'border-gray-300'}`} />
                             <button type="button" onClick={handleAddKeyword} className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition">+</button>
                         </div>
                         {errors.keywords && <p className="text-red-500 text-sm">{errors.keywords}</p>}
@@ -214,7 +219,7 @@ export default function Page() {
                     {showConfirmation && (
                         <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-70">
                             <div className="bg-white p-8 rounded-lg shadow-lg w-[300px]">
-                                <p className="text-lg text-center mb-4">¿Estás seguro de que quieres enviar el TFG? <br/> El TFG pasará a pertenecer a la universidad y solo se podrá editar contactando con coordinación.</p>
+                                <p className="text-lg text-center mb-4">¿Estás seguro de que quieres enviar el TFG? <br /> El TFG pasará a pertenecer a la universidad y solo se podrá editar contactando con coordinación.</p>
                                 <div className="flex justify-around">
                                     <button
                                         type="button"

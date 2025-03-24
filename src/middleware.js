@@ -10,6 +10,7 @@ export function middleware(request) {
         try {
             // Decodificar el token (ajusta tu clave secreta si es JWT)
             const decoded = jwt.decode(token);
+            console.log(decoded);
             if (decoded?.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
                 const response = NextResponse.redirect(new URL('/', request.url));
                 response.cookies.delete('bytoken'); // Eliminar cookie
