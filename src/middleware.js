@@ -36,20 +36,12 @@ export function middleware(request) {
             }
 
             // Control de acceso por roles
-            const userRole = decoded?.role || 'user';
-
+            const userRole = decoded?.role || 'usuario';
+            console.log("Rol del usuario:", userRole);
             // Restricciones de acceso para rutas administrativas
             if (request.nextUrl.pathname.includes('/admin')) {
                 // Solo admins pueden acceder a rutas /admin
-                if (userRole !== 'admin') {
-                    return NextResponse.redirect(new URL('/dashboard', request.url));
-                }
-            }
-
-            // Restricciones para coordinadores
-            if (request.nextUrl.pathname.includes('/coordinator')) {
-                // Solo coordinadores y admins pueden acceder
-                if (userRole !== 'coordinator' && userRole !== 'admin') {
+                if (userRole !== 'administrador') {
                     return NextResponse.redirect(new URL('/dashboard', request.url));
                 }
             }
@@ -57,7 +49,7 @@ export function middleware(request) {
             // Rutas para verificación de TFGs (para coordinadores y admins)
             if (request.nextUrl.pathname.includes('/search/admin') ||
                 request.nextUrl.pathname.includes('/verify')) {
-                if (userRole !== 'coordinator' && userRole !== 'admin') {
+                if (userRole !== 'coordinador' && userRole !== 'administrador') {
                     return NextResponse.redirect(new URL('/dashboard', request.url));
                 }
             }
@@ -72,7 +64,11 @@ export function middleware(request) {
     } else {
         // Si no hay token y está intentando acceder a rutas protegidas
         if (request.nextUrl.pathname.startsWith('/dashboard') ||
-            request.nextUrl.pathname === '/validation') {
+            request.nextUrl.pathname === '/validation' ||
+            request.nextUrl.pathname.startsWith('/admin') ||
+            request.nextUrl.pathname.startsWith('/coordinador') ||
+            request.nextUrl.pathname.includes('/search/admin') ||
+            request.nextUrl.pathname.includes('/verify')) {
             return NextResponse.redirect(new URL('/', request.url));
         }
     }

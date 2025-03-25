@@ -26,15 +26,13 @@ export default function SearchResults() {
                     setSearch(parsedSearch);  // Actualiza el estado con la búsqueda
                     setCurrentPage(page_number);
                     await getSearchResult(page_number, parsedSearch);
-                } else {
-                    setLoading(false);
-                    setNoResults(true);
                 }
             } catch (error) {
                 console.error("Error al procesar la búsqueda:", error);
                 setLoading(false);
                 setNoResults(true);
             }
+
         };
 
         fetchData();
@@ -45,8 +43,10 @@ export default function SearchResults() {
             Object.entries(dataForm).filter(([key, value]) => value !== "")
         );
         PostTenTFGs(page_number, sanitizedFormData).then((response) => {
+
             setTfgs(response.tfgs);
             setPages(response.totalPages);
+            setLoading(false);
         });
     };
     const setTfgsResults = (search) => {
