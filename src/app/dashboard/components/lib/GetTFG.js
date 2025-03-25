@@ -15,11 +15,13 @@ export default async function GetTFG(id) {
                 'Authorization': `Bearer ${token}`,
             },
         });
+        console.log(response)
         if (!response.ok) {
             throw new Error(response.statusText);
         }
 
         const data = await response.json();
+
         return data._doc;
     } catch (err) {
         console.log(err)

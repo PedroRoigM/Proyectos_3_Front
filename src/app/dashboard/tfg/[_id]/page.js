@@ -1,27 +1,40 @@
 'use client';
 import GetTFG from "../../components/lib/GetTFG";
 import GetTFGpdf from "../../components/lib/GetTFGpdf";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 export default function Page() {
     const id = useSearchParams().get('id');
     const [tfg, setTfg] = useState(null);
-
+    const [loading, setLoading] = useState(true);
     const [showAll, setShowAll] = useState(false);
     const maxVisible = 3; // Número de palabras clave visibles por defecto
     useEffect(() => {
-        const getTFG = async () => {
-            const tfg = await GetTFG(id);
-            setTfg(tfg);
+        const fetchData = async () => {
+            try {
+                const tfgData = await GetTFG(id);
+                setTfg(tfgData);
+
+                try {
+                    const pdfData = await GetTFGpdf({ id: id });
+                    setTfg(prevTfg => ({ ...prevTfg, pdf: pdfData }));
+                } catch (error) {
+                    console.error("Error al cargar el PDF:", error);
+                }
+            } catch (error) {
+                console.error("Error al cargar los detalles del TFG:", error);
+            } finally {
+                setLoading(false);
+            }
         };
-        const getTFGpdf = async () => {
-            const pdf = await GetTFGpdf({ id: id });
-            setTfg(prevTfg => ({ ...prevTfg, pdf }));
-        }
-        getTFG();
-        getTFGpdf();
+
+        fetchData();
     }, [id]);
-    if (!tfg) return <div>Loading...</div>;
+
+    if (loading) {
+        return <LoadingSpinner message="Cargando detalles del proyecto..." />;
+    }
     return (
         <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]">
             <div>
