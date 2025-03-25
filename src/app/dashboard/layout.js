@@ -1,4 +1,5 @@
-import TopBar from "./components/TopBar";
+import TopBarSelector from "./components/TopBarSelector";
+import { UserProvider } from "./components/UserContext";
 
 export default function DashboardLayout({ children }) {
     return (
@@ -6,7 +7,9 @@ export default function DashboardLayout({ children }) {
             <div className="flex-1 flex flex-col">
                 {/* Dashboard Topbar */}
                 <div className="text-black">
-                    <TopBar />
+                    <UserProvider>
+                        <TopBarSelector />
+                    </UserProvider>
                 </div>
 
                 {/* Main Content */}
@@ -14,6 +17,6 @@ export default function DashboardLayout({ children }) {
                     {children}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
