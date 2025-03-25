@@ -37,7 +37,6 @@ export function middleware(request) {
 
             // Control de acceso por roles
             const userRole = decoded?.role || 'usuario';
-            console.log("Rol del usuario:", userRole);
             // Restricciones de acceso para rutas administrativas
             if (request.nextUrl.pathname.includes('/admin')) {
                 // Solo admins pueden acceder a rutas /admin

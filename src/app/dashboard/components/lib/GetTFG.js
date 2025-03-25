@@ -15,7 +15,6 @@ export default async function GetTFG(id) {
                 'Authorization': `Bearer ${token}`,
             },
         });
-        console.log(response)
         if (!response.ok) {
             throw new Error(response.statusText);
         }

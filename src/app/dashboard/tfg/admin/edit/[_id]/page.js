@@ -4,6 +4,7 @@ import GetTFG from '../../../../components/lib/GetTFG';
 import GetAdvisors from '../../../../components/lib/GetAdvisors';
 import GetDegrees from '../../../../components/lib/GetDegrees';
 import GetYears from '../../../../components/lib/GetYears';
+import LoadingSpinner from '../../../../components/LoadingSpinner';
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,6 +19,7 @@ export default function Page() {
         advisor: '',
         student: '',
         keywords: [],
+        file: null //Initialize file as null
     });
 
     const id = useSearchParams().get('id');
@@ -66,6 +68,13 @@ export default function Page() {
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleFileChange = (e) => {
+        setFormData({
+            ...formData,
+            file: e.target.files[0]
+        });
+    };
+
     const handleInputChange = (e) => setInputValue(e.target.value);
 
     const handleAddKeyword = () => {
@@ -101,6 +110,7 @@ export default function Page() {
         if (!formData.advisor) validationErrors.advisor = 'El tutor es obligatorio.';
         if (!formData.tfgTitle) validationErrors.tfgTitle = 'El título del TFG es obligatorio.';
         if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
+        if (!formData.file) validationErrors.file = 'El archivo es obligatorio.';
         if (formData.keywords.length < 3) validationErrors.keywords = 'Añade al menos 3 palabras claves.';
 
         if (Object.keys(validationErrors).length > 0) {
@@ -117,13 +127,13 @@ export default function Page() {
     };
 
     if (loading) {
-        return <div className="text-center text-[#0065ef] font-bold text-lg">Cargando...</div>;
+        return <LoadingSpinner message="Cargando formulario..." />;
     }
 
     return (
         <div className="flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-400">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[50%] lg:w-[50%]">
-                <h1 className="text-gray-800 font-bold text-2xl text-center mb-4">Subir TFG</h1>
+                <h1 className="text-gray-800 font-bold text-2xl text-center mb-4">Actualizar TFG</h1>
                 <form className="space-y-4">
                     {/* Título */}
                     <div>
@@ -207,6 +217,14 @@ export default function Page() {
                         />
                         {errors.student && <p className="text-red-500 text-sm">{errors.student}</p>}
                     </div>
+                    {/*fichero*/}
+                    <div>
+                        <label className="text-gray-700 block mb-1">Archivo</label>
+                        <input type="file" name="file" onChange={handleFileChange}
+                        className={`w-full p-2 rounded-md border ${errors.file ? 'border-red-500' : 'border-gray-300'}`}
+                        accept=".pdf" />
+                        {errors.file && <p className="text-red-500 text-sm">{errors.file}</p>}
+                    </div>
 
                     {/* Palabras clave */}
                     <label className="block text-[#0065ef] font-semibold">Palabras clave</label>
@@ -246,12 +264,35 @@ export default function Page() {
                     {/* Botón */}
                     <button
                         type="button"
-                        onClick={handleConfirmSubmit}
+                        onClick={handleSubmit}
                         className="w-full bg-[#0065ef] text-white font-bold py-2 rounded-md hover:bg-blue-700 transition duration-200"
                     >
                         Actualizar
                     </button>
                 </form>
+                {showConfirmation && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
+                            <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
+                            <p className="text-lg text-center mb-4">¿Estás seguro de actualizar el TFG?</p>
+                            <div className="flex justify-around">
+                                <button
+                                    type="button"
+                                    onClick={() => handleConfirmSubmit(true)}
+                                    className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
+                                >
+                                    Sí
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleConfirmSubmit(false)}
+                                    className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
+                                >
+                                    No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
