@@ -4,8 +4,6 @@ import { useUser } from './UserContext';
 import UserTopBar from './topbars/UserTopBar';
 import CoordinatorTopBar from './topbars/CoordinatorTopBar';
 import AdminTopBar from './topbars/AdminTopBar';
-import LoadingSpinner from './LoadingSpinner';
-
 export default function TopBarSelector() {
     const { role, isLoading } = useUser();
 
@@ -21,9 +19,9 @@ export default function TopBarSelector() {
     }
 
     // Seleccionar el TopBar según el rol
-    if (role === 'admin') {
+    if (role === 'administrador') {
         return <AdminTopBar />;
-    } else if (role === 'coordinator') {
+    } else if (role === 'coordinador') {
         return <CoordinatorTopBar />;
     } else {
         return <UserTopBar />;
