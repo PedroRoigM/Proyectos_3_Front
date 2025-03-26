@@ -33,18 +33,11 @@ export default function AdminTopBar() {
                         Subir TFG
                     </Link>
                     <Link
-                        href="/dashboard/search/admin"
+                        href="/dashboard/admin/search"
                         className="flex items-center gap-1 text-[#0065ef] hover:text-[#14192c] transition duration-300 font-medium"
                     >
                         <Search size={18} />
                         <span>Revisión</span>
-                    </Link>
-                    <Link
-                        href="/dashboard/admin/verify"
-                        className="flex items-center gap-1 text-[#0065ef] hover:text-[#14192c] transition duration-300 font-medium"
-                    >
-                        <FileCheck size={18} />
-                        <span>Pendientes</span>
                     </Link>
 
                     {/* Menú de administrador */}
