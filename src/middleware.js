@@ -1,5 +1,20 @@
-import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+/**
+ * Este middleware gestiona la autenticación y autorización de usuarios en la aplicación.
+ * - Verifica si el usuario tiene un token válido en las cookies.
+ * - Redirige a diferentes páginas según el estado del token y el rol del usuario.
+ * 
+ * Páginas mencionadas:
+ * - `/`: Página de inicio o login para usuarios no autenticados.
+ * - `/validation`: Página para validar la cuenta de usuario (por ejemplo, confirmación de email).
+ * - `/recover-password`: Página para recuperar la contraseña.
+ * - `/dashboard`: Página principal para usuarios autenticados.
+ * - `/admin`: Rutas administrativas, accesibles solo por usuarios con rol "administrador".
+ * - `/search/admin` y `/verify`: Rutas para la verificación de TFGs, accesibles solo por "coordinadores" y "administradores".
+ * - Recursos estáticos (`/_next`, `/public`): Rutas que no requieren autenticación.
+ */
+
+import { NextResponse } from 'next/server'; // Importa NextResponse para manejar respuestas en el middleware.
+import jwt from 'jsonwebtoken'; // Importa la librería jwt para decodificar tokens JWT.
 
 export function middleware(request) {
     const token = request.cookies.get('bytoken')?.value;

@@ -1,28 +1,49 @@
-'use server';
+// Este archivo define una función para realizar una solicitud HTTP POST al servidor.
+// Se utiliza para crear un nuevo TFG (Trabajo de Fin de Grado) en el servidor.
+// La función recibe los datos del formulario como parámetro.
 
-import { cookies } from "next/headers";
+'use server'; // Indica que esta función se ejecuta en el servidor.
+import { cookies } from "next/headers"; // Importa la utilidad para manejar cookies en Next.js.
 
-export default async function GetTFG(id) {
+export default async function PostTFG(formData) {
     try {
-        const url = `${process.env.SERVER_URL}/tfgs/verify/${id}`;
+        // Mostrar los datos del formulario en la consola para depuración.
+        console.log(formData);
+
+        // Construir la URL del endpoint para crear un nuevo TFG.
+        const url = `${process.env.SERVER_URL}/tfgs`;
+
+        // Obtener el token de autenticación desde las cookies.
         const token = await cookies().then(c => c.get('bytoken')?.value);
+
+        // Si no se encuentra el token, lanzar un error.
         if (!token) {
-            throw new Error('Token not found');
-        }
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
-        });
-        if (!response.ok) {
-            throw new Error(response.statusText);
+            throw new Error('Token not found'); // Error personalizado si no hay token.
         }
 
-        const data = response.json();
-        return data;
+        // Convertir los datos del formulario a una cadena JSON.
+        const body = JSON.stringify(formData);
+
+        // Realizar la solicitud HTTP POST al servidor.
+        const response = await fetch(url, {
+            method: 'POST', // Método HTTP para crear recursos.
+            headers: {
+                'Content-Type': 'application/json', // Indica que el cuerpo de la solicitud es JSON.
+                'Authorization': `Bearer ${token}`, // Incluye el token en el encabezado de autorización.
+            },
+            body: body, // Cuerpo de la solicitud con los datos del formulario.
+        });
+
+        // Si la respuesta no es exitosa (status >= 400), lanzar un error.
+        if (!response.ok) {
+            throw new Error(response.statusText); // Usa el texto del estado como mensaje de error.
+        }
+
+        // Parsear la respuesta como JSON y devolver los datos.
+        const data = await response.json();
+        return data; // Devuelve los datos obtenidos del servidor.
     } catch (err) {
-        console.log(err)
+        // Si ocurre un error, mostrarlo en la consola para depuración.
+        console.log(err);
     }
 }

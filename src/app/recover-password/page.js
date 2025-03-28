@@ -1,20 +1,40 @@
-// Página para enviar el correo y, al recibir la respuesta, tiene que pedir el codigo de 6 digitos y la nueva contraseña
+// Página para recuperar la contraseña del usuario.
+// En el primer paso, se solicita el correo electrónico para enviar un código de recuperación.
+// En el segundo paso, se solicita el código de 6 dígitos y la nueva contraseña.
+// Finalmente, se confirma el cambio de contraseña.
 
-'use client';
+'use client'; // Indica que este archivo se ejecuta en el cliente.
 import { useEffect, useState } from "react";
-import PostRecoverPassword from "../components/lib/PostRecoverPassword";
-import PatchRecoverPassword from "../components/lib/PatchRecoverPassword";
-import TopBar from "../components/TopBar";
+import PostRecoverPassword from "../components/lib/PostRecoverPassword"; // Función para enviar el correo de recuperación.
+import PatchRecoverPassword from "../components/lib/PatchRecoverPassword"; // Función para validar el código y cambiar la contraseña.
+import TopBar from "../components/TopBar"; // Componente de barra superior.
 
+// Componente principal de la página
+/**
+ * Page es el componente principal que gestiona la lógica de recuperación de contraseña.
+ * 
+ * @returns {JSX.Element} - Devuelve la interfaz de usuario para recuperar la contraseña.
+ */
 export default function Page() {
+    // Estado para almacenar los datos del formulario
     const [formData, setFormData] = useState({
         email: '',
         code: '',
         password: '',
     });
+
+    // Estado para controlar el paso actual del proceso
     const [step, setStep] = useState(1);
+
+    // Estado para almacenar los errores del formulario
     const [errors, setErrors] = useState({});
 
+    // Función para manejar los cambios en los campos del formulario
+    /**
+     * handleChange actualiza el estado del formulario cuando el usuario escribe en un campo.
+     * 
+     * @param {Object} e - El evento del cambio en el input.
+     */
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -26,9 +46,15 @@ export default function Page() {
         });
     }
 
+    // Función para manejar el envío del formulario
+    /**
+     * handleSubmit valida los datos del formulario y realiza las acciones correspondientes
+     * según el paso actual del proceso.
+     */
     const handleSubmit = async () => {
         let newErrors = {};
         if (step === 1) {
+            // Validación del correo electrónico
             if (!formData.email) {
                 newErrors.email = 'El email es obligatorio';
             }
@@ -36,13 +62,15 @@ export default function Page() {
                 setErrors(newErrors);
                 return;
             }
+            // Enviar el correo de recuperación
             const response = await PostRecoverPassword(formData.email);
             if (response === null) {
                 setErrors({ email: 'El email no existe' });
                 return;
             }
-            setStep(2);
+            setStep(2); // Avanzar al siguiente paso
         } else if (step === 2) {
+            // Validación del código y la nueva contraseña
             if (!formData.code) {
                 newErrors.code = 'El código es obligatorio';
             }
@@ -53,18 +81,23 @@ export default function Page() {
                 setErrors(newErrors);
                 return;
             }
+            // Validar el código y cambiar la contraseña
             const response = await PatchRecoverPassword(formData);
             if (response === null) {
                 setErrors({ code: 'El código es incorrecto' });
                 return;
             }
-            setStep(3);
+            setStep(3); // Avanzar al paso final
         }
     }
 
+    // Función para manejar el retroceso en los pasos
+    /**
+     * handleRollback retrocede al paso anterior o redirige al usuario a la página principal.
+     */
     const handleRollback = () => {
         if (step === 1) {
-            window.location.href = '/';
+            window.location.href = '/'; // Redirigir a la página principal
             return;
         }
         if (step === 2) {
@@ -74,9 +107,10 @@ export default function Page() {
                 password: '',
             });
         }
-        setStep(step - 1);
+        setStep(step - 1); // Retroceder un paso
     }
 
+    // Renderizado de la interfaz de usuario
     return (
         <div className="font-montserrat rounded-md from-white to-gray-400 bg-gradient-to-b h-screen">
             <div className="flex items-center justify-center mt-[8%]">

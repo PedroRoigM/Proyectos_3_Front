@@ -1,26 +1,41 @@
-'use server'
-import { cookies } from "next/headers";
+// Este archivo define una función para realizar una solicitud HTTP GET al servidor.
+// Se utiliza para obtener una lista de años disponibles desde el servidor.
+
+'use server'; // Indica que esta función se ejecuta en el servidor.
+import { cookies } from "next/headers"; // Importa la utilidad para manejar cookies en Next.js.
 
 export default async function GetYears() {
     try {
+        // Construir la URL del endpoint para obtener los años.
         const url = `${process.env.SERVER_URL}/years`;
+
+        // Obtener el token de autenticación desde las cookies.
         const token = await cookies().then(c => c.get('bytoken')?.value);
+
+        // Si no se encuentra el token, lanzar un error.
         if (!token) {
-            throw new Error('Token not found');
+            throw new Error('Token not found'); // Error personalizado si no hay token.
         }
+
+        // Realizar la solicitud HTTP GET al servidor.
         const response = await fetch(url, {
-            method: 'GET',
+            method: 'GET', // Método HTTP para obtener recursos.
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json', // Indica que el cuerpo de la solicitud es JSON.
+                'Authorization': `Bearer ${token}`, // Incluye el token en el encabezado de autorización.
             },
         });
+
+        // Si la respuesta no es exitosa (status >= 400), lanzar un error.
         if (!response.ok) {
-            throw new Error(response.statusText)
+            throw new Error(response.statusText); // Usa el texto del estado como mensaje de error.
         }
+
+        // Parsear la respuesta como JSON y devolver los datos.
         const data = await response.json();
-        return data.data;
+        return data.data; // Devuelve la lista de años obtenida del servidor.
     } catch (err) {
-        console.log(err)
+        // Si ocurre un error, mostrarlo en la consola para depuración.
+        console.log(err);
     }
 }

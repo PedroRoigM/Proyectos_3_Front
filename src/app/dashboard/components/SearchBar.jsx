@@ -1,105 +1,112 @@
-'use client';
+// Este componente es una barra de búsqueda que permite filtrar TFGs (Trabajos de Fin de Grado) 
+// según diferentes criterios: año, grado, tutor y texto de búsqueda.
+// Utiliza datos obtenidos de funciones externas para rellenar los filtros dinámicamente.
+// Recibe una función `search` como prop para manejar la búsqueda.
+
+'use client'; // Indica que este componente se ejecuta en el cliente.
 import { useState, useEffect } from "react";
-import GetDegrees from "./lib/GetDegrees";
-import GetAdvisors from "./lib/GetAdvisors";
-import GetYears from "./lib/GetYears";
-import GetTFGsNames from "./lib/GetTFGsNames";
+import GetDegrees from "./lib/GetDegrees"; // Función para obtener los grados.
+import GetAdvisors from "./lib/GetAdvisors"; // Función para obtener los tutores.
+import GetYears from "./lib/GetYears"; // Función para obtener los años.
+import GetTFGsNames from "./lib/GetTFGsNames"; // Función para obtener los nombres de los TFGs.
 
 export default function SearchBar({ search }) {
+    // Estado para almacenar los datos del formulario de búsqueda.
     const [formDataSearch, setFormDataSearch] = useState({
-        year: "",
-        degree: "",
-        advisor: "",
-        search: ""
+        year: "", // Año seleccionado.
+        degree: "", // Grado seleccionado.
+        advisor: "", // Tutor seleccionado.
+        search: "" // Texto de búsqueda.
     });
 
-    // Inicializar con arrays vacíos
-    const [degrees, setDegrees] = useState([]);
-    const [years, setYears] = useState([]);
-    const [advisors, setAdvisors] = useState([]);
-    const [tfgs, setTfgs] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // Estados para almacenar los datos dinámicos de los filtros.
+    const [degrees, setDegrees] = useState([]); // Lista de grados.
+    const [years, setYears] = useState([]); // Lista de años.
+    const [advisors, setAdvisors] = useState([]); // Lista de tutores.
+    const [tfgs, setTfgs] = useState([]); // Lista de nombres de TFGs.
+    const [loading, setLoading] = useState(true); // Estado de carga.
 
+    // useEffect para cargar los datos al montar el componente.
     useEffect(() => {
-        // Función para cargar todos los datos
+        // Función para cargar todos los datos necesarios para los filtros.
         const loadData = async () => {
             try {
-                // Cargar datos en paralelo
+                // Cargar datos en paralelo usando Promise.all.
                 const [degreesData, yearsData, advisorsData, tfgsData] = await Promise.all([
-                    GetDegrees().catch(() => []),
-                    GetYears().catch(() => []),
-                    GetAdvisors().catch(() => []),
-                    GetTFGsNames().catch(() => [])
+                    GetDegrees().catch(() => []), // Obtener grados.
+                    GetYears().catch(() => []), // Obtener años.
+                    GetAdvisors().catch(() => []), // Obtener tutores.
+                    GetTFGsNames().catch(() => []) // Obtener nombres de TFGs.
                 ]);
 
-                // Verificar y establecer los datos de grados
+                // Configurar los datos de grados.
                 if (Array.isArray(degreesData) && degreesData.length > 0) {
-                    setDegrees([{ degree: "Grado" }, ...degreesData]);
+                    setDegrees([{ degree: "Grado" }, ...degreesData]); // Agregar opción por defecto.
                 } else {
-                    setDegrees([{ degree: "Grado" }]);
+                    setDegrees([{ degree: "Grado" }]); // Solo opción por defecto si no hay datos.
                 }
 
-                // Verificar y establecer los datos de años
+                // Configurar los datos de años.
                 if (Array.isArray(yearsData) && yearsData.length > 0) {
-                    setYears([{ year: "Año" }, ...yearsData]);
+                    setYears([{ year: "Año" }, ...yearsData]); // Agregar opción por defecto.
                 } else {
-                    setYears([{ year: "Año" }]);
+                    setYears([{ year: "Año" }]); // Solo opción por defecto si no hay datos.
                 }
 
-                // Verificar y establecer los datos de tutores
+                // Configurar los datos de tutores.
                 if (Array.isArray(advisorsData) && advisorsData.length > 0) {
-                    setAdvisors([{ advisor: "Tutor" }, ...advisorsData]);
+                    setAdvisors([{ advisor: "Tutor" }, ...advisorsData]); // Agregar opción por defecto.
                 } else {
-                    setAdvisors([{ advisor: "Tutor" }]);
+                    setAdvisors([{ advisor: "Tutor" }]); // Solo opción por defecto si no hay datos.
                 }
 
+                // Configurar los nombres de TFGs.
                 if (Array.isArray(tfgsData)) {
-                    setTfgs(tfgsData);
-                    // Registrar el primer elemento para verificar su estructura
+                    setTfgs(tfgsData); // Guardar los datos si son un array.
                     if (tfgsData.length > 0) {
-                        console.log("Primer TFG:", tfgsData[0]);
+                        console.log("Primer TFG:", tfgsData[0]); // Log para verificar estructura.
                     }
                 } else {
-                    // Transformar el objeto en un array de objetos
-                    setTfgs([tfgsData]);
+                    setTfgs([tfgsData]); // Transformar en array si no lo es.
                 }
 
-                setLoading(false);
+                setLoading(false); // Finalizar estado de carga.
             } catch (error) {
-                console.error("Error al cargar datos:", error);
+                console.error("Error al cargar datos:", error); // Manejo de errores.
                 setLoading(false);
             }
         };
 
-        // Llamar a la función de carga
-        loadData();
+        loadData(); // Llamar a la función de carga.
     }, []);
 
+    // Manejar cambios en los inputs del formulario.
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target; // Obtener nombre y valor del input.
         setFormDataSearch(prev => ({
-            ...prev,
-            [name]: value
+            ...prev, // Mantener el estado anterior.
+            [name]: value // Actualizar el campo correspondiente.
         }));
     };
 
+    // Manejar el envío del formulario.
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevenir el comportamiento por defecto.
         if (typeof search === 'function') {
-            search(formDataSearch);
+            search(formDataSearch); // Llamar a la función de búsqueda con los datos del formulario.
         } else {
-            console.error("La prop 'search' no es una función");
+            console.error("La prop 'search' no es una función"); // Manejo de error si `search` no es una función.
         }
     };
 
-    // Mostrar estado de carga
+    // Mostrar un mensaje de carga mientras se obtienen los datos.
     if (loading) {
-        return <div className="text-center py-4"></div>;
+        return <div className="text-center py-4">Cargando...</div>;
     }
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-black">
-            {/* Input de búsqueda con datalist */}
+            {/* Input de búsqueda con sugerencias (datalist) */}
             <div className="relative">
                 <input
                     type="text"
@@ -111,8 +118,6 @@ export default function SearchBar({ search }) {
                     list="tfgSuggestions"
                     autoComplete="on"
                 />
-
-                {/* Datalist para sugerencias - mantener estructura original */}
                 <datalist id="tfgSuggestions">
                     {tfgs.map((tfg, index) => (
                         <option

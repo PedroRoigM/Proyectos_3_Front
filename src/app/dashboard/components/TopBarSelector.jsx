@@ -1,3 +1,9 @@
+// Este archivo define un contexto de usuario para gestionar el estado global del usuario en la aplicación.
+// El contexto permite acceder al rol del usuario y su estado de carga en cualquier parte de la aplicación.
+// Utiliza un token almacenado en las cookies para determinar el rol del usuario y actualizar el estado global.
+
+
+
 'use client';
 
 import { useUser } from './UserContext';
