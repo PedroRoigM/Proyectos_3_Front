@@ -1,15 +1,15 @@
 'use server';
 import { cookies } from "next/headers";
 
-export default async function GetTFGsNames() {
+export default async function DeleteTFG(id) {
     try {
-        const url = `${process.env.SERVER_URL}/tfgs/names`;
+        const url = `${process.env.SERVER_URL}/tfgs/${id}`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('Token not found');
         }
         const response = await fetch(url, {
-            method: 'GET',
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -19,8 +19,8 @@ export default async function GetTFGsNames() {
             throw new Error(response.statusText);
         }
 
-        const data = await response.json();
-        return data;
+        // Retornar un okey si la respuesta es correcta
+        return true;
     } catch (err) {
         console.log(err)
     }

@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 
-export default async function GetTFG(id) {
+export default async function PatchValidateTFG(id) {
     try {
         const url = `${process.env.SERVER_URL}/tfgs/verify/${id}`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
@@ -10,7 +10,7 @@ export default async function GetTFG(id) {
             throw new Error('Token not found');
         }
         const response = await fetch(url, {
-            method: 'GET',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
