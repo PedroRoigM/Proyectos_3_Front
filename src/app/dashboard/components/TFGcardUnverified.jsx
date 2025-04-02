@@ -56,7 +56,7 @@ export default function TFGcard({ tfg }) {
 
     return (
         <div className="border border-gray-400 rounded-lg overflow-hidden shadow-md mb-4">
-            <Link href={`/dashboard/tfg/admin/${tfg._id}?id=${tfg._id}`}>
+            <Link href={`/dashboard/admin/tfg/${tfg._id}?id=${tfg._id}`}>
                 <div className="cursor-pointer bg-gray-100 p-4">
                     <h2 className="text-lg font-semibold">{truncateText(tfg.tfgTitle, 80)}</h2>
                     <h3 className="text-sm text-gray-700">{tfg.degree}</h3>

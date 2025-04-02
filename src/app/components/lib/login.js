@@ -14,13 +14,15 @@ export default async function PostLogin(dataForm) {
     if (!response.ok) {
         return null;
     }
-    const user = await response.json();
-    if (!user) {
+    const responseData = await response.json();
+
+    const { token, user } = responseData.data;
+    if (!token || !user) {
         return null;
     }
     (await cookies()).set({
         name: 'bytoken',
-        value: user.token,
+        value: token,
         path: '/',
     });
     redirect('/dashboard');

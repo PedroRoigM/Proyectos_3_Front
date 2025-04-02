@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 
 export default async function PatchTfgFile(id, file) {
     try {
+        console.log("ID:", id);
         const url = `${process.env.SERVER_URL}/tfgs/pdf/${id}`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
@@ -10,15 +11,14 @@ export default async function PatchTfgFile(id, file) {
         }
 
         // Crear el FormData
-        const body = new FormData();
-        body.append('file', file);
-
+        const formData = new FormData();
+        formData.append('file', file);
         const response = await fetch(url, {
             method: 'PATCH',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${token}`
             },
-            body
+            body: formData
         });
         console.log(response)
         if (!response.ok) {
