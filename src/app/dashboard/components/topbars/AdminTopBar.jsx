@@ -53,7 +53,7 @@ export default function AdminTopBar() {
                         {showAdminMenu && (
                             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-10 border border-gray-200">
                                 <Link
-                                    href="/dashboard/admin/users"
+                                    href="/dashboard/admin/roles"
                                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                 >
                                     <Users size={16} />
