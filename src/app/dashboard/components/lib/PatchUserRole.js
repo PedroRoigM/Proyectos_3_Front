@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 export async function PatchUserRole(userId, role) {
     try {
-        const url = `${process.env.SERVER_URL}/users/role/${userId}`;
+        const url = `${process.env.SERVER_URL}/users/role/32135468798`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
         const response = await fetch(url, {
             method: "PATCH",
@@ -13,6 +13,7 @@ export async function PatchUserRole(userId, role) {
             },
             body: JSON.stringify({ role }),
         });
+
         if (!response.ok) {
             throw new Error("Failed to update user role");
         }

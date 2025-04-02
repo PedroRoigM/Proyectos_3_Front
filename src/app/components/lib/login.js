@@ -12,6 +12,9 @@ export default async function PostLogin(dataForm) {
         body: body,
     });
     if (!response.ok) {
+        // Llamar a la funcion de errores
+        // devolver el diccionario con el campo y el error
+
         return null;
     }
     const responseData = await response.json();
