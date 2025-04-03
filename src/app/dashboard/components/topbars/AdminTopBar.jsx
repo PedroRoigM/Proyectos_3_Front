@@ -60,22 +60,10 @@ export default function AdminTopBar() {
                                     <span>Gestionar Usuarios</span>
                                 </Link>
                                 <Link
-                                    href="/dashboard/admin/degrees"
+                                    href="/dashboard/admin/control-panel"
                                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                 >
                                     <span>Gestionar Grados</span>
-                                </Link>
-                                <Link
-                                    href="/dashboard/admin/years"
-                                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    <span>Gestionar Años</span>
-                                </Link>
-                                <Link
-                                    href="/dashboard/admin/advisors"
-                                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    <span>Gestionar Tutores</span>
                                 </Link>
                             </div>
                         )}

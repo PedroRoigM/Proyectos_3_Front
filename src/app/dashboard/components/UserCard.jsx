@@ -40,7 +40,7 @@ const UserCard = ({ user }) => {
         <div className="flex justify-between items-center border border-gray-400 rounded-lg overflow-hidden shadow-md mb-4">
             <div className="cursor-pointer bg-gray-100 p-4">
                 <h2 className="text-lg font-semibold mb-2">{user.name}</h2>
-                <p className="text-gray-600">Email: {user.email}</p>
+                <p className="text-gray-600">{user.email}</p>
             </div>
             <div className="p-4">
                 <select
