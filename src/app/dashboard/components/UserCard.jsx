@@ -6,9 +6,9 @@ import { PatchUserRole } from './lib/PatchUserRole';
 const UserCard = ({ user }) => {
     const [role, setRole] = useState(user.role);
     const [roles, setRoles] = useState([
-        { name: 'Administrador' },
-        { name: 'Usuario' },
-        { name: 'Coordinador' },
+        { name: 'administrador' },
+        { name: 'usuario' },
+        { name: 'coordinador' },
     ]);
 
     // Asegura que el rol del usuario coincida con alguna de las opciones disponibles

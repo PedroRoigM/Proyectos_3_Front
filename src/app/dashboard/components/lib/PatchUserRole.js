@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 
 export async function PatchUserRole(userId, role) {
     try {
+        console.log("Updating user role:", userId, role);
         const url = `${process.env.SERVER_URL}/users/role/${userId}`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
         const body = JSON.stringify({ role });
