@@ -4,6 +4,7 @@ import GetTFG from '../../../../components/lib/GetTFG';
 import GetAdvisors from '../../../../components/lib/GetAdvisors';
 import GetDegrees from '../../../../components/lib/GetDegrees';
 import GetYears from '../../../../components/lib/GetYears';
+import GetTFGpdf from '../../../../components/lib/GetTFGpdf';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 
 import { useSearchParams } from "next/navigation";
@@ -34,11 +35,12 @@ export default function Page() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [advisorsRes, degreesRes, yearsRes, tfgRes] = await Promise.all([
+                const [advisorsRes, degreesRes, yearsRes, tfgRes, file] = await Promise.all([
                     GetAdvisors(),
                     GetDegrees(),
                     GetYears(),
                     GetTFG(id),
+                    GetTFGpdf(id)
                 ]);
 
                 setAdvisors(advisorsRes);
@@ -51,7 +53,8 @@ export default function Page() {
                     student: tfgRes.student,
                     keywords: tfgRes.keywords,
                     year: tfgRes.year,
-                    degree: tfgRes.degree
+                    degree: tfgRes.degree,
+                    file: file,
                 });
             } catch (error) {
                 console.error("Error al cargar los datos:", error);
@@ -137,14 +140,14 @@ export default function Page() {
                 <form className="space-y-4">
                     {/* Título */}
                     <div>
-                    <label className="block text-[#0065ef] font-semibold">Título</label>
-                    <input
-                        type="text"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                    />
+                        <label className="block text-[#0065ef] font-semibold">Título</label>
+                        <input
+                            type="text"
+                            name="title"
+                            value={formData.title}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                        />
                     </div>
                     {/* Resumen */}
                     <label className="block text-[#0065ef] font-semibold">Resumen</label>
@@ -158,52 +161,52 @@ export default function Page() {
 
                     {/* Año */}
                     <div>
-                    <label className="block text-[#0065ef] font-semibold">Año</label>
-                    <select
-                        name="year"
-                        value={formData.year}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                    >
-                        <option value="" disabled>{formData.year || "Selecciona un año"}</option>
-                        {years.map((year) => (
-                            <option key={year._id} value={year.year}>{year.year}</option>
-                        ))}
-                        {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
-                    </select>
+                        <label className="block text-[#0065ef] font-semibold">Año</label>
+                        <select
+                            name="year"
+                            value={formData.year}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                        >
+                            <option value="" disabled>{formData.year || "Selecciona un año"}</option>
+                            {years.map((year) => (
+                                <option key={year._id} value={year.year}>{year.year}</option>
+                            ))}
+                            {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
+                        </select>
                     </div>
 
                     {/* Grado */}
                     <div>
-                    <label className="block text-[#0065ef] font-semibold">Grado</label>
-                    <select
-                        name="degree"
-                        value={formData.degree}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                    >
-                        <option value="" disabled>{formData.degree || "Selecciona un grado"}</option>
-                        {degrees.map((degree) => (
-                            <option key={degree._id} value={degree.degree}>{degree.degree}</option>
-                        ))}
-                        {errors.degree && <p className="text-red-500 text-sm">{errors.degree}</p>}
-                    </select>
+                        <label className="block text-[#0065ef] font-semibold">Grado</label>
+                        <select
+                            name="degree"
+                            value={formData.degree}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                        >
+                            <option value="" disabled>{formData.degree || "Selecciona un grado"}</option>
+                            {degrees.map((degree) => (
+                                <option key={degree._id} value={degree.degree}>{degree.degree}</option>
+                            ))}
+                            {errors.degree && <p className="text-red-500 text-sm">{errors.degree}</p>}
+                        </select>
                     </div>
 
                     {/* Asesor */}
                     <div>
-                    <label className="block text-[#0065ef] font-semibold">Asesor</label>
-                    <select
-                        name="advisor"
-                        value={formData.advisor}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
-                    >
-                        <option value="" disabled>{formData.advisor || "Selecciona un asesor"}</option>
-                        {advisors.map((advisor) => (
-                            <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>
-                        ))}
-                    </select>
+                        <label className="block text-[#0065ef] font-semibold">Asesor</label>
+                        <select
+                            name="advisor"
+                            value={formData.advisor}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                        >
+                            <option value="" disabled>{formData.advisor || "Selecciona un asesor"}</option>
+                            {advisors.map((advisor) => (
+                                <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>
+                            ))}
+                        </select>
                     </div>
                     {/* Alumno */}
                     <div>
@@ -217,16 +220,24 @@ export default function Page() {
                         />
                         {errors.student && <p className="text-red-500 text-sm">{errors.student}</p>}
                     </div>
-                    {/*fichero*/}
                     <div>
                         <label className="text-gray-700 block mb-1">Archivo</label>
-                        <input type="file" name="file" onChange={handleFileChange}
-                        className={`w-full p-2 rounded-md border ${errors.file ? 'border-red-500' : 'border-gray-300'}`}
-                        accept=".pdf" />
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="file"
+                                name="file"
+                                onChange={handleFileChange}
+                                className={`w-full p-2 rounded-md border ${errors.file ? 'border-red-500' : 'border-gray-300'}`}
+                                accept=".pdf"
+                            />
+                            {formData.file && (
+                                <span className="text-gray-600 text-sm truncate">
+                                    {typeof formData.file === 'string' ? formData.file : formData.file.name}
+                                </span>
+                            )}
+                        </div>
                         {errors.file && <p className="text-red-500 text-sm">{errors.file}</p>}
                     </div>
-
-                    {/* Palabras clave */}
                     <label className="block text-[#0065ef] font-semibold">Palabras clave</label>
                     <div className="flex gap-2">
                         <input
@@ -271,8 +282,8 @@ export default function Page() {
                     </button>
                 </form>
                 {showConfirmation && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
-                            <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
+                        <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
                             <p className="text-lg text-center mb-4">¿Estás seguro de actualizar el TFG?</p>
                             <div className="flex justify-around">
                                 <button

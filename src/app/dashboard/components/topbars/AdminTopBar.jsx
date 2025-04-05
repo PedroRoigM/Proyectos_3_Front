@@ -63,7 +63,7 @@ export default function AdminTopBar() {
                                     href="/dashboard/admin/control-panel"
                                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                 >
-                                    <span>Gestionar Grados</span>
+                                    <span>Panel de Control</span>
                                 </Link>
                             </div>
                         )}
@@ -133,21 +133,7 @@ export default function AdminTopBar() {
                             className="flex items-center gap-2 py-2 justify-center text-[#14192c] hover:text-[#0065ef]"
                             onClick={() => setIsOpen(false)}
                         >
-                            <span>Gestionar Grados</span>
-                        </Link>
-                        <Link
-                            href="/dashboard/admin/years"
-                            className="flex items-center gap-2 py-2 justify-center text-[#14192c] hover:text-[#0065ef]"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            <span>Gestionar Años</span>
-                        </Link>
-                        <Link
-                            href="/dashboard/admin/advisors"
-                            className="flex items-center gap-2 py-2 justify-center text-[#14192c] hover:text-[#0065ef]"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            <span>Gestionar Tutores</span>
+                            <span>Panel de Control</span>
                         </Link>
                     </div>
 

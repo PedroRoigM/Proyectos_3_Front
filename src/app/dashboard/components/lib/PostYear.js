@@ -14,7 +14,6 @@ export default async function postYear() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify(degree)
         });
         if (!response.ok) {
             throw new Error(response.statusText);

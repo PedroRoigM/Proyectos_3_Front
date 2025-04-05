@@ -1,6 +1,7 @@
 'use server';
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import errorHandler from "../errors/Errors";
 export default async function PostLogin(dataForm) {
     const url = `${process.env.SERVER_URL}/users/login`;
     const body = JSON.stringify(dataForm);
@@ -12,10 +13,8 @@ export default async function PostLogin(dataForm) {
         body: body,
     });
     if (!response.ok) {
-        // Llamar a la funcion de errores
-        // devolver el diccionario con el campo y el error
-
-        return null;
+        const data = await response.json();
+        return errorHandler(data)
     }
     const responseData = await response.json();
 

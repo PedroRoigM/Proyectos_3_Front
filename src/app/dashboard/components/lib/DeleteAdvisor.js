@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export default async function DeleteAdvisor(id) {
     try {
         const url = `${process.env.SERVER_URL}/advisors/${id}`;
-        const token = await cookies().then(c => c.get('bytoken')?.value);
+        const token = (await cookies()).get('bytoken')?.value;
         if (!token) {
             throw new Error('Token not found');
         }

@@ -3,6 +3,7 @@ import GetTFG from "../../../components/lib/GetTFG";
 import GetTFGpdf from "../../../components/lib/GetTFGpdf";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 export default function Page() {
     const id = useSearchParams().get('id');
     const [tfg, setTfg] = useState(null);
@@ -15,7 +16,7 @@ export default function Page() {
             setTfg(tfg);
         };
         const getTFGpdf = async () => {
-            const pdf = await GetTFGpdf({ id: id });
+            const pdf = await GetTFGpdf(id);
             setTfg(prevTfg => ({ ...prevTfg, pdf }));
         }
         getTFG();
@@ -33,9 +34,11 @@ export default function Page() {
                     <h3>{tfg.degree}</h3>
                 </div>
                 <div className="flex gap-10">
-                    <button className='bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#14192c] transition'>
-                        <a href={`/dashboard/tfg/admin/edit/${id}`}>Editar</a>
-                    </button>
+                    <Link
+                        href={`/dashboard/admin/tfg/edit/${tfg._id}?id=${tfg._id}`}
+                        className='bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#14192c] transition'>
+                        <p>Editar</p>
+                    </Link>
                     <button className=' text-black  border-gray-400 border-2 font-bold px-4 py-2 rounded-md hover:bg-[#9da3a7] transition'>
                         <p onClick={downdoadPDF}>Descargar</p>
                     </button>

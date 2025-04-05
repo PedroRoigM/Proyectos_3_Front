@@ -49,14 +49,8 @@ export default function Login({ changeToRegister }) {
 
         try {
             const response = await PostLogin(formData);
-            if (!response) {
-                setErrors({ global: 'El email o la contraseña son incorrectos.' });
-                setLoading(false);
-                return;
-            }
-
-            // Redirigir a la página de dashboard
-            window.location.href = '/dashboard';
+            setErrors(response);
+            setLoading(false);
         } catch (err) {
             setErrors({ global: 'Ha ocurrido un error. Inténtalo de nuevo.' });
             setLoading(false);
@@ -69,7 +63,7 @@ export default function Login({ changeToRegister }) {
                 <h1 className="text-gray-800 font-bold text-2xl mb-4">Login</h1>
 
                 {loading && <p className="text-gray-500">Cargando...</p>}
-                {errors.global && <p className="text-red-500">{errors.global}</p>}
+                {errors.account && <p className="text-red-500">{errors.account}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="text-left">
@@ -80,10 +74,9 @@ export default function Login({ changeToRegister }) {
                             placeholder="Email"
                             value={formData.email}
                             onChange={handleChange}
-                            className={`w-full p-2 rounded-md border focus:outline-none ${errors.email ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full p-2 rounded-md border focus:outline-none ${errors.account ? 'border-red-500' : 'border-gray-300'
                                 }`}
                         />
-                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
 
                     <div className="text-left">
@@ -94,10 +87,9 @@ export default function Login({ changeToRegister }) {
                             placeholder="Contraseña"
                             value={formData.password}
                             onChange={handleChange}
-                            className={`w-full p-2 rounded-md border focus:outline-none ${errors.password ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full p-2 rounded-md border focus:outline-none ${errors.account ? 'border-red-500' : 'border-gray-300'
                                 }`}
                         />
-                        {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                     </div>
 
                     <a href="/recover-password" className="text-blue-600 text-sm block text-left">

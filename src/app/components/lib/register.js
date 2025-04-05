@@ -1,6 +1,7 @@
 'use server';
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import errorHandler from "../errors/Errors";
 export default async function PostRegister(dataForm) {
     try {
         const url = `${process.env.SERVER_URL}/users/register`;
@@ -13,16 +14,13 @@ export default async function PostRegister(dataForm) {
             body: body,
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data);
         }
         const user = await response.json();
-
-        if (!user) {
-            return null;
-        }
         (await cookies()).set({
             name: 'bytoken',
-            value: user.token,
+            value: user.data.token,
             path: '/',
         });
     } catch (error) {

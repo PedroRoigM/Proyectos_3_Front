@@ -27,6 +27,7 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {!isDashboard && <TopBar />} {/* Solo se muestra si NO es dashboard */}
         {children}
+        {/*footer*/}
       </body>
     </html>
   );

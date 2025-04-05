@@ -3,21 +3,20 @@ import { useState } from "react";
 export default function Validation({ sendCode }) {
     // codigo de 6 digitos
     const [code, setCode] = useState('');
-    const [error, setError] = useState('');
-
+    const [errors, setErrors] = useState({});
     const handleChange = (e) => {
         setCode(e.target.value);
-        setError(''); // Clear error message when user starts typing
+        setErrors('');
     }
     const handleSubmit = async () => {
         if (!code) {
-            setError('El código es obligatorio');
+            setErrors({ code: 'El código es obligatorio' });
             return;
         }
-        const result = await sendCode(code);
-        if (!result) {
-            setError('Código incorrecto o error en la validación.');
-        }
+        const response = await sendCode(code);
+        console.log(response);
+        setErrors(response);
+
     }
     return (
         <div className="flex items-center justify-center">
@@ -39,7 +38,7 @@ export default function Validation({ sendCode }) {
                         Validar
                     </button>
                 </form>
-                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                {errors.account && <p className="text-red-500 text-sm mt-2">{errors.account}</p>}
             </div>
         </div>
     )

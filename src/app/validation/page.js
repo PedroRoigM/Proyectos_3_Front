@@ -6,10 +6,7 @@ export default async function Page() {
 
     async function handleSubmit(code) {
         "use server"
-        const result = await PatchValidation(code);
-        if (!result) {
-            return null; // Si hay un error, se mostrará el mensaje de error
-        }
+        return await PatchValidation(code);
     };
 
     return <Validation sendCode={handleSubmit} />;

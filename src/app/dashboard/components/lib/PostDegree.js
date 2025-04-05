@@ -1,7 +1,7 @@
 'use server';
 import { cookies } from "next/headers";
 
-export default async function postDegree({ degree }) {
+export default async function postDegree(degree) {
     try {
         const url = `${process.env.SERVER_URL}/degrees`;
         const token = await cookies().then(c => c.get('bytoken')?.value);

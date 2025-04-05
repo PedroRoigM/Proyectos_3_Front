@@ -1,6 +1,7 @@
 'use server';
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import errorHandler from "../errors/Errors";
 export default async function PatchValidation(code) {
     try {
         const url = `${process.env.SERVER_URL}/users/validate`;
@@ -19,11 +20,8 @@ export default async function PatchValidation(code) {
             body: body,
         });
         if (!response.ok) {
-            return null;
-        }
-        const user = await response.json();
-        if (!user) {
-            throw new Error('User not found');
+            const data = await response.json();
+            return errorHandler(data);
         }
         // Borrar cookie
         (await cookies()).delete('bytoken');

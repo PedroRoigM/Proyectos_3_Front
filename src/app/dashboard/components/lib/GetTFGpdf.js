@@ -1,7 +1,7 @@
 'use server';
 import { cookies } from "next/headers";
 
-export default async function GetTFGpdf({ id }) {
+export default async function GetTFGpdf(id) {
     try {
         const url = `${process.env.SERVER_URL}/tfgs/pdf/${id}`;
         const token = await cookies().then(c => c.get('bytoken')?.value);

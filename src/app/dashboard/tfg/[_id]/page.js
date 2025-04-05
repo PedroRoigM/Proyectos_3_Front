@@ -17,7 +17,7 @@ export default function Page() {
                 setTfg(tfgData);
 
                 try {
-                    const pdfData = await GetTFGpdf({ id: id });
+                    const pdfData = await GetTFGpdf(id);
                     setTfg(prevTfg => ({ ...prevTfg, pdf: pdfData }));
                 } catch (error) {
                     console.error("Error al cargar el PDF:", error);
