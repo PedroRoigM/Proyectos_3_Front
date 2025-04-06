@@ -1,13 +1,8 @@
-// Componente: Login
-// Devuelve un formulario de login con los campos de email y contraseña.
-// Debe de mostrar un mensaje de error si el email no es válido.
-// Debe de mostrar un mensaje de error si algún campo está vacío.
-// Debe de mostrar un mensaje de éxito si el login se ha realizado correctamente.
-// Debe de mostrar un spinner de carga mientras se realiza el login.
 "use client";
 
 import { useState } from 'react';
 import PostRegister from './lib/register';
+import { styles, classNames } from './styles/components';
 
 export default function Register({ changeToLogin }) {
     const [formData, setFormData] = useState({
@@ -26,6 +21,7 @@ export default function Register({ changeToLogin }) {
             [name]: value
         });
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -54,7 +50,6 @@ export default function Register({ changeToLogin }) {
                 return;
             }
 
-
             // Contraseña de más de 6 caracteres y tiene que contener al menos una mayuscula, una minuscula y un número
             if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{7,}$/.test(formData.password)) {
                 setErrors({ password: 'La contraseña no es válida.' });
@@ -75,55 +70,65 @@ export default function Register({ changeToLogin }) {
             return;
         }
     };
-    return (
-        <div className="flex items-center justify-center ">
-            <div className="bg-white mt-[10%] p-10 rounded-lg shadow-lg w-full max-w-md text-center">
-                <h1 className="text-gray-800 font-bold text-2xl mb-4">Registro</h1>
 
-                {loading && <p className="text-gray-500">Cargando...</p>}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="text-left">
-                        <label className="text-gray-700 block mb-1">Usuario</label>
+    return (
+        <div className={styles.layout.flexCenter}>
+            <div className={styles.container.form}>
+                <h1 className={styles.headings.h1}>Registro</h1>
+
+                {loading && <p className={styles.form.loading}>Cargando...</p>}
+                <form onSubmit={handleSubmit} className={styles.form.container}>
+                    <div className={styles.form.group}>
+                        <label className={styles.form.label}>Usuario</label>
                         <input
                             type="text"
                             name="name"
                             placeholder="Nombre"
                             value={formData.name}
                             onChange={handleChange}
-                            className={`w-full p-2 rounded-md border ${errors.name ? 'border-red-500' : 'border-gray-300'} focus:outline-none`}
+                            className={classNames(
+                                styles.form.input.base,
+                                errors.name ? styles.form.input.error : styles.form.input.valid
+                            )}
                         />
-                        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+                        {errors.name && <p className={styles.form.error}>{errors.name}</p>}
                     </div>
-                    <div className="text-left">
-                        <label className="text-gray-700 block mb-1">Email</label>
+                    <div className={styles.form.group}>
+                        <label className={styles.form.label}>Email</label>
                         <input
                             type="email"
                             name="email"
                             placeholder="Email"
                             value={formData.email}
                             onChange={handleChange}
-                            className={`w-full p-2 rounded-md border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:outline-none`}
+                            className={classNames(
+                                styles.form.input.base,
+                                errors.email ? styles.form.input.error : styles.form.input.valid
+                            )}
                         />
-                        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+                        {errors.email && <p className={styles.form.error}>{errors.email}</p>}
                     </div>
-                    <div className="text-left">
-                        <label className="text-gray-700 block mb-1">Contraseña</label>
+                    <div className={styles.form.group}>
+                        <label className={styles.form.label}>Contraseña</label>
                         <input
                             type="password"
                             name="password"
                             placeholder="Contraseña"
                             value={formData.password}
                             onChange={handleChange}
-                            className={`w-full p-2 rounded-md border ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:outline-none`}
+                            className={classNames(
+                                styles.form.input.base,
+                                errors.password ? styles.form.input.error : styles.form.input.valid
+                            )}
                         />
-                        {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+                        {errors.password && <p className={styles.form.error}>{errors.password}</p>}
                     </div>
 
-                    <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mt-2">
+                    <button type="submit" className={styles.buttons.primary}>
                         Registrarse
                     </button>
 
-                    <p onClick={changeToLogin} className="cursor-pointer text-blue-600 text-sm">¿Ya tiene cuenta?</p>
+                    <p onClick={changeToLogin} className={styles.buttons.link}>¿Ya tiene cuenta?</p>
                 </form>
             </div>
         </div>

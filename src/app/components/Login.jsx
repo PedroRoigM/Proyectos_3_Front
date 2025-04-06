@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import PostLogin from './lib/login';
+import { styles, inputClassName } from './styles/components';
 
 export default function Login({ changeToRegister }) {
     const [formData, setFormData] = useState({
@@ -58,49 +59,47 @@ export default function Login({ changeToRegister }) {
     };
 
     return (
-        <div className="flex items-center justify-center">
-            <div className="bg-white mt-[10%] p-10 rounded-lg shadow-lg w-full max-w-md text-center">
-                <h1 className="text-gray-800 font-bold text-2xl mb-4">Login</h1>
+        <div className={styles.layout.flexCenter}>
+            <div className={styles.container.form}>
+                <h1 className={styles.headings.h1}>Login</h1>
 
-                {loading && <p className="text-gray-500">Cargando...</p>}
-                {errors.account && <p className="text-red-500">{errors.account}</p>}
+                {loading && <p className={styles.form.loading}>Cargando...</p>}
+                {errors.account && <p className={styles.errors.text}>{errors.account}</p>}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="text-left">
-                        <label className="text-gray-700 block mb-1">Email</label>
+                <form onSubmit={handleSubmit} className={styles.form.container}>
+                    <div className={styles.form.group}>
+                        <label className={styles.form.label}>Email</label>
                         <input
                             type="email"
                             name="email"
                             placeholder="Email"
                             value={formData.email}
                             onChange={handleChange}
-                            className={`w-full p-2 rounded-md border focus:outline-none ${errors.account ? 'border-red-500' : 'border-gray-300'
-                                }`}
+                            className={inputClassName(errors.account)}
                         />
                     </div>
 
-                    <div className="text-left">
-                        <label className="text-gray-700 block mb-1">Contraseña</label>
+                    <div className={styles.form.group}>
+                        <label className={styles.form.label}>Contraseña</label>
                         <input
                             type="password"
                             name="password"
                             placeholder="Contraseña"
                             value={formData.password}
                             onChange={handleChange}
-                            className={`w-full p-2 rounded-md border focus:outline-none ${errors.account ? 'border-red-500' : 'border-gray-300'
-                                }`}
+                            className={inputClassName(errors.account)}
                         />
                     </div>
 
-                    <a href="/recover-password" className="text-blue-600 text-sm block text-left">
+                    <a href="/recover-password" className={styles.buttons.link + " block text-left"}>
                         ¿Has olvidado tu contraseña?
                     </a>
 
-                    <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md mt-2">
+                    <button type="submit" className={styles.buttons.primary}>
                         Iniciar sesión
                     </button>
 
-                    <p onClick={changeToRegister} className="cursor-pointer text-blue-600 text-sm">
+                    <p onClick={changeToRegister} className={styles.buttons.link}>
                         ¿No tiene cuenta?
                     </p>
                 </form>
