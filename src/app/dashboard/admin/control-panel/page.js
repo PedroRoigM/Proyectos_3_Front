@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { styles, inputClassName } from '../components/styles/components'
 import GetAdvisors from '../../components/lib/GetAdvisors';
 import GetDegrees from '../../components/lib/GetDegrees';
 import GetYears from '../../components/lib/GetYears';
@@ -245,41 +246,41 @@ export default function ControlPanel() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100 p-6">
+        <div className={styles.layout.flexCenter}>
             {/* Encabezado */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h1 className="text-3xl font-bold text-gray-800">Panel de Control</h1>
-                <p className="text-gray-600 mt-2">
+            <div className={styles.layout.card}>
+                <h1 className={styles.layout.title}>Panel de Control</h1>
+                <p className={styles.layout.subtitle}>
                     Administra tutores, grados académicos y años lectivos para la plataforma de TFGs.
                 </p>
             </div>
 
             {/* Contenedor principal con tabs */}
-            <div className="bg-white rounded-lg shadow-md mb-6">
+            <div className={styles.tabs.container}>
                 {/* Navegación por pestañas */}
-                <div className="flex border-b border-gray-200">
+                <div className={styles.tabs.container_window}>
                     <button
-                        className={`flex-1 py-4 px-6 font-medium ${activeTab === 'advisors'
-                            ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                        className={`${styles.tabs.window_layout}${activeTab === 'advisors'
+                            ? styles.tabs.active_window
+                            : styles.tabs.inactive_window
                             }`}
                         onClick={() => setActiveTab('advisors')}
                     >
                         Tutores
                     </button>
                     <button
-                        className={`flex-1 py-4 px-6 font-medium ${activeTab === 'degrees'
-                            ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                        className={`${styles.tabs.window_layout} ${activeTab === 'degrees'
+                            ? styles.tabs.active_window
+                            : styles.tabs.inactive_window
                             }`}
                         onClick={() => setActiveTab('degrees')}
                     >
                         Grados
                     </button>
                     <button
-                        className={`flex-1 py-4 px-6 font-medium ${activeTab === 'years'
-                            ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                        className={`${styles.tabs.window_layout} ${activeTab === 'years'
+                            ? styles.tabs.active_window
+                            : styles.tabs.inactive_window
                             }`}
                         onClick={() => setActiveTab('years')}
                     >
@@ -288,25 +289,20 @@ export default function ControlPanel() {
                 </div>
 
                 {/* Contenido del panel */}
-                <div className="p-6">
+                <div className={styles.panel.container}>
                     {/* Controles superiores: filtro y formulario de creación */}
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0">
+                    <div className={styles.panel.controlers}>
                         {/* Toggle para mostrar inactivos */}
-                        <div className="flex items-center">
-                            <label className="inline-flex items-center cursor-pointer">
+                        <div className={styles.panel.toggle.container}>
+                            <label className={styles.panel.toggle.label}>
                                 <input
                                     type="checkbox"
                                     checked={showInactive}
                                     onChange={() => setShowInactive(!showInactive)}
-                                    className="sr-only peer"
+                                    className={styles.panel.toggle.input}
                                 />
-                                <div className="relative w-11 h-6 bg-gray-200 rounded-full peer 
-                                    peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
-                                    peer-checked:after:translate-x-full peer-checked:after:border-white 
-                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
-                                    after:bg-white after:border-gray-300 after:border after:rounded-full 
-                                    after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                <span className="ml-3 text-sm font-medium text-gray-700">
+                                <div className={styles.panel.toggle.switch}></div>
+                                <span className={styles.panel.toggle.text}>
                                     Mostrar elementos inactivos
                                 </span>
                             </label>
@@ -314,18 +310,18 @@ export default function ControlPanel() {
 
                         {/* Formularios de creación según la pestaña activa */}
                         {activeTab === 'advisors' && (
-                            <form onSubmit={handleCreateAdvisor} className="flex space-x-2">
+                            <form onSubmit={handleCreateAdvisor} className={styles.panel.foms.container}>
                                 <input
                                     type="text"
                                     value={newAdvisor}
                                     onChange={(e) => setNewAdvisor(e.target.value)}
                                     placeholder="Nombre del tutor"
-                                    className="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className={styles.panel.foms.input}
                                     required
                                 />
                                 <button
                                     type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                                    className={styles.panel.foms.button}
                                 >
                                     Añadir
                                 </button>
@@ -333,18 +329,18 @@ export default function ControlPanel() {
                         )}
 
                         {activeTab === 'degrees' && (
-                            <form onSubmit={handleCreateDegree} className="flex space-x-2">
+                            <form onSubmit={handleCreateDegree} className={styles.panel.foms.container}>
                                 <input
                                     type="text"
                                     value={newDegree}
                                     onChange={(e) => setNewDegree(e.target.value)}
                                     placeholder="Nombre del grado"
-                                    className="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className={styles.panel.foms.input}
                                     required
                                 />
                                 <button
                                     type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                                    className={styles.panel.foms.button}
                                 >
                                     Añadir
                                 </button>
@@ -352,10 +348,10 @@ export default function ControlPanel() {
                         )}
 
                         {activeTab === 'years' && (
-                            <form onSubmit={handleCreateYear} className="flex space-x-2">
+                            <form onSubmit={handleCreateYear} className={styles.panel.foms.container}>
                                 <button
                                     type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                                    className={styles.panel.foms.button}
                                 >
                                     Añadir
                                 </button>
@@ -365,11 +361,11 @@ export default function ControlPanel() {
 
                     {/* Contenido específico de cada pestaña - Usando CategoryCard */}
                     {activeTab === 'advisors' && (
-                        <div className="space-y-4">
-                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Gestión de Tutores</h2>
+                        <div className={styles.panel.content.container}>
+                            <h2 className={styles.panel.content.title}>Gestión de Tutores</h2>
 
                             {filteredAdvisors.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className={styles.panel.content.filter}>
                                     {filteredAdvisors.map((advisor) => (
                                         <CategoryCard
                                             key={advisor._id}
@@ -383,8 +379,8 @@ export default function ControlPanel() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="bg-gray-50 rounded-lg p-8 text-center">
-                                    <p className="text-gray-500">
+                                <div className={styles.panel.content.nofiltered}>
+                                    <p className={styles.panel.content.text}>
                                         {showInactive
                                             ? "No hay tutores disponibles."
                                             : "No hay tutores activos. Activa el interruptor para ver todos los tutores."}
@@ -395,11 +391,11 @@ export default function ControlPanel() {
                     )}
 
                     {activeTab === 'degrees' && (
-                        <div className="space-y-4">
-                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Gestión de Grados</h2>
+                        <div className={styles.panel.content.container}>
+                            <h2 className={styles.panel.content.title}>Gestión de Grados</h2>
 
                             {filteredDegrees.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className={styles.panel.content.filter}>
                                     {filteredDegrees.map((degree) => (
                                         <CategoryCard
                                             key={degree._id}
@@ -413,8 +409,8 @@ export default function ControlPanel() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="bg-gray-50 rounded-lg p-8 text-center">
-                                    <p className="text-gray-500">
+                                <div className={styles.panel.content.nofiltered}>
+                                    <p className={styles.panel.content.text}>
                                         {showInactive
                                             ? "No hay grados disponibles."
                                             : "No hay grados activos. Activa el interruptor para ver todos los grados."}
@@ -425,11 +421,11 @@ export default function ControlPanel() {
                     )}
 
                     {activeTab === 'years' && (
-                        <div className="space-y-4">
-                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Gestión de Años Académicos</h2>
+                        <div className={styles.panel.content.container}>
+                            <h2 className={styles.panel.content.title}>Gestión de Años Académicos</h2>
 
                             {filteredYears.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className={styles.panel.content.filter}>
                                     {filteredYears.map((year) => (
                                         <CategoryCard
                                             key={year._id}
@@ -443,8 +439,8 @@ export default function ControlPanel() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="bg-gray-50 rounded-lg p-8 text-center">
-                                    <p className="text-gray-500">
+                                <div className={styles.panel.content.nofiltered}>
+                                    <p className={styles.panel.content.text}>
                                         {showInactive
                                             ? "No hay años disponibles."
                                             : "No hay años activos. Activa el interruptor para ver todos los años."}
@@ -458,30 +454,30 @@ export default function ControlPanel() {
 
             {/* Modal de confirmación */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                        <h3 className="text-xl font-semibold mb-4">
+                <div className={styles.panel.confirmation.overlay}>
+                    <div className={styles.panel.confirmation.container}>
+                        <h3 className={styles.panel.confirmation.title}>
                             {modalType.startsWith('delete')
                                 ? '¿Confirmar eliminación?'
                                 : '¿Confirmar cambio de estado?'}
                         </h3>
-                        <p className="mb-6 text-gray-600">
+                        <p className={styles.panel.confirmation.message}>
                             {modalType.startsWith('delete')
                                 ? 'Esta acción eliminará este elemento de forma permanente.'
                                 : 'Esta acción cambiará la visibilidad del elemento en el sistema.'}
                         </p>
-                        <div className="flex justify-end space-x-3">
+                        <div className={styles.panel.confirmation.button_container}>
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                                className={styles.panel.confirmation.cancel_button}
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={confirmModalAction}
-                                className={`px-4 py-2 text-white rounded-md transition ${modalType.startsWith('delete')
-                                    ? 'bg-red-600 hover:bg-red-700'
-                                    : 'bg-blue-600 hover:bg-blue-700'
+                                className={`${styles.panel.confirmation.confirm_button} ${modalType.startsWith('delete')
+                                    ? styles.panel.confirmation.red_cancel
+                                    : styles.panel.confirmation.overlay
                                     }`}
                             >
                                 {modalType.startsWith('delete') ? 'Eliminar' : 'Confirmar'}
