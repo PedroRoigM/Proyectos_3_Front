@@ -477,7 +477,7 @@ export default function ControlPanel() {
                                 onClick={confirmModalAction}
                                 className={`${styles.panel.confirmation.confirm_button} ${modalType.startsWith('delete')
                                     ? styles.panel.confirmation.red_cancel
-                                    : styles.panel.confirmation.overlay
+                                    : styles.panel.confirmation.blue_cancel
                                     }`}
                             >
                                 {modalType.startsWith('delete') ? 'Eliminar' : 'Confirmar'}
