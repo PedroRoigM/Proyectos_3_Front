@@ -21,7 +21,6 @@ export default function Dashboard() {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, []);
     const setTfgsResults = (search) => {
@@ -29,6 +28,7 @@ export default function Dashboard() {
         const searchQuery = encodeURIComponent(JSON.stringify(search));
         window.location.href = `/dashboard/search?search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
+
     return (
         <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%] md:max-w-[80%] lg:max-w-[70%]">
             <SearchBar search={setTfgsResults} />

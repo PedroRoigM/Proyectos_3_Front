@@ -30,16 +30,19 @@ export default function Page() {
         let newErrors = {};
         if (step === 1) {
             if (!formData.email) {
-                newErrors.email = 'El email es obligatorio';
+                newErrors.account = 'El email es obligatorio';
             }
             if (Object.keys(newErrors).length > 0) {
                 setErrors(newErrors);
                 return;
             }
             const response = await PostRecoverPassword(formData.email);
-            if (response === null) {
-                setErrors({ email: 'El email no existe' });
+            console.log(response);
+            if (!response.success) {
+                setErrors({ account: 'El email no existe' });
                 return;
+            } else {
+                setErrors({ account: '' });
             }
             setStep(2);
         } else if (step === 2) {
@@ -47,16 +50,18 @@ export default function Page() {
                 newErrors.code = 'El código es obligatorio';
             }
             if (!formData.password) {
-                newErrors.password = 'La contraseña es obligatoria';
+                newErrors.account = 'La contraseña es obligatoria';
             }
             if (Object.keys(newErrors).length > 0) {
                 setErrors(newErrors);
                 return;
             }
             const response = await PatchRecoverPassword(formData);
-            if (response === null) {
-                setErrors({ code: 'El código es incorrecto' });
+            if (!response.success) {
+                setErrors(response);
                 return;
+            } else {
+                setErrors({ code: '', account: '' });
             }
             setStep(3);
         }
@@ -69,9 +74,8 @@ export default function Page() {
         }
         if (step === 2) {
             setFormData({
-                email: '',
+                account: '',
                 code: '',
-                password: '',
             });
         }
         setStep(step - 1);
@@ -91,8 +95,8 @@ export default function Page() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className={`border-2 ${errors.email ? 'border-red-500' : 'border-black'} mb-[20%] p-2 rounded-md w-full`} />
-                            {errors.email && <p className="text-red-500">{errors.email}</p>}
+                                className={`border-2 ${errors.account ? 'border-red-500' : 'border-black'} mb-[20%] p-2 rounded-md w-full`} />
+                            {errors.account && <p className="text-red-500">{errors.account}</p>}
                         </div>
                     )}
                     {step === 2 && (
@@ -104,8 +108,8 @@ export default function Page() {
                             </div>
                             <div>
                                 <p>Introduce tu nueva contraseña</p>
-                                <input type="password" name="password" value={formData.password} onChange={handleChange} className={`border-2 ${errors.password ? 'border-red-500' : 'border-black'} p-2 rounded-md w-full`} />
-                                {errors.password && <p className="text-red-500">{errors.password}</p>}
+                                <input type="password" name="password" value={formData.account} onChange={handleChange} className={`border-2 ${errors.account ? 'border-red-500' : 'border-black'} p-2 rounded-md w-full`} />
+                                {errors.account && <p className="text-red-500">{errors.account}</p>}
                             </div>
                         </div>
                     )}

@@ -1,5 +1,5 @@
 'use server';
-
+import errorHandler from "../errors/Errors";
 export default async function PostRecoverPassword(email) {
     try {
         const url = `${process.env.SERVER_URL}/users/recover-password`;
@@ -12,7 +12,8 @@ export default async function PostRecoverPassword(email) {
             body: body,
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data);
         }
         const data = await response.json();
         return data;

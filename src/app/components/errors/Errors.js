@@ -13,7 +13,7 @@ export default function errorHandler(error) {
         case 'Contraseña incorrecta':
             return { account: 'Correo o contraseña incorrectos' };
         case 'Código de verificación inválido':
-            return { account: 'Código de verificación inválido' };
+            return { code: 'Código de verificación inválido' };
         case 'Número máximo de intentos excedido':
             return { account: 'Número máximo de intentos excedido' };
         case 'Cuenta bloqueada por demasiados intentos fallidos':

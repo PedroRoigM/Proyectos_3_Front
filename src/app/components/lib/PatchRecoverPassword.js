@@ -1,5 +1,6 @@
 'use server';
 import { redirect } from "next/navigation";
+import errorHandler from "../errors/Errors";
 export default async function PatchRecoverPassword(formData) {
     try {
         console.log(process.env.SERVER_URL);
@@ -17,7 +18,8 @@ export default async function PatchRecoverPassword(formData) {
             body: body,
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data);
         }
         // Llevar al usuario a la página de login
         redirect('/');
