@@ -46,11 +46,26 @@ export function middleware(request) {
             }
 
             // Rutas para verificación de TFGs (para coordinadores y admins)
-            if (request.nextUrl.pathname.includes('/search/admin') ||
+            if (request.nextUrl.pathname.includes('/admin') ||
                 request.nextUrl.pathname.includes('/verify')) {
                 if (userRole !== 'coordinador' && userRole !== 'administrador') {
                     return NextResponse.redirect(new URL('/dashboard', request.url));
                 }
+            }
+
+            // Acceso a control-panel solo para administradores
+            if (request.nextUrl.pathname.includes('/control-panel')
+                || request.nextUrl.pathname.includes('/roles')) {
+                if (userRole !== 'administrador') {
+                    return NextResponse.redirect(new URL('/dashboard', request.url));
+                }
+            }
+
+            // Redirigir a /dashboard/admin/tfg si es coordinador o administrador y está intentando acceder a /dashboard/tfg
+            if ((userRole === 'coordinador' || userRole === 'administrador') &&
+                request.nextUrl.pathname.startsWith('/dashboard/tfg')) {
+                const id = request.nextUrl.searchParams.get('id');
+                return NextResponse.redirect(new URL(`/dashboard/admin/tfg/${id}?id=${id}`, request.url));
             }
 
         } catch (error) {
