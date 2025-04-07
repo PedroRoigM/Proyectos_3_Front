@@ -69,6 +69,7 @@ export default function Page() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+        setErrors({ ...errors, [name]: "" }); // Limpiar errores al cambiar el valor
     };
 
     const handleFileChange = (e) => {
@@ -102,9 +103,10 @@ export default function Page() {
         setShowConfirmation(true);
     };
 
-    const handleConfirmSubmit = async (confirm) => {
+    const handleConfirmSubmit = async () => {
+
         setShowConfirmation(false);
-        if (!confirm) return;
+        //if (!confirm) return;
 
         const validationErrors = {};
         if (!formData.year) validationErrors.year = 'El año es obligatorio.';
@@ -115,14 +117,16 @@ export default function Page() {
         if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
         if (!formData.file) validationErrors.file = 'El archivo es obligatorio.';
         if (formData.keywords.length < 3) validationErrors.keywords = 'Añade al menos 3 palabras claves.';
-
+        console.log(Object.keys(validationErrors))
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
-
+        console.log("HANDLE SUBMIT")
         try {
-            await PutTFG(id, formData);
+            console.log("formData", formData);
+            const response = await PutTFG(id, formData);
+            console.log(response);
             setErrors({ general: "✅ TFG actualizado correctamente." });
         } catch {
             setErrors({ general: '❌ Ha ocurrido un error, intenta de nuevo.' });
@@ -275,7 +279,7 @@ export default function Page() {
                     {/* Botón */}
                     <button
                         type="button"
-                        onClick={handleSubmit}
+                        onClick={handleConfirmSubmit}
                         className="w-full bg-[#0065ef] text-white font-bold py-2 rounded-md hover:bg-blue-700 transition duration-200"
                     >
                         Actualizar

@@ -69,14 +69,38 @@ export default function Page() {
                 <h2>Resumen</h2>
                 <p>{tfg.abstract}</p>
             </div>
+            {/* PDF */}
             {tfg.pdf && (
-                <div>
-                    <object
-                        data={`data:application/pdf;base64,${Buffer.from(tfg.pdf).toString('base64')}`}
-                        type="application/pdf"
-                        width="100%" height="600">
-                        <p>PDF cannot be displayed.</p>
-                    </object>
+                <div className="mt-4">
+                    <h2 className="text-xl font-semibold mb-4">Documento TFG</h2>
+
+                    {/* Contenedor del PDF con posición relativa */}
+                    <div className="relative w-full h-[600px] overflow-hidden rounded bg-gray-100 shadow-lg" onContextMenu={handleContextMenu}>
+                        {/* Marca de agua */}
+                        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                            <div className="transform rotate-45 text-gray-400 text-5xl font-bold opacity-10 whitespace-nowrap">
+                                SOLO VISUALIZACIÓN
+                            </div>
+                        </div>
+
+                        {/* Contenedor para object con desplazamiento negativo */}
+                        <div className="w-full h-full overflow-hidden">
+                            <object
+                                data={`data:application/pdf;base64,${Buffer.from(tfg.pdf).toString('base64')}`}
+                                type="application/pdf"
+                                className="w-full h-[calc(100%+40px)] -mt-10 border-0"
+                            >
+                                <p className="p-4 text-center">Tu navegador no puede mostrar PDFs.</p>
+                            </object>
+                        </div>
+
+                        {/* Capa superior para bloquear selectivamente interacciones */}
+                        <div className="absolute top-0 left-0 right-0 h-10 bg-white opacity-0 z-20"></div>
+                    </div>
+
+                    <div className="bg-gray-100 p-3 rounded text-center text-sm text-gray-600 mt-2">
+                        Este documento está protegido. Visualización solo con fines académicos.
+                    </div>
                 </div>
             )}
         </div>

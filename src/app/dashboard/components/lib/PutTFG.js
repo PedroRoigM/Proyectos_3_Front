@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 
 export default async function PutTFG(id, dataForm) {
     try {
+        console.log("PUTTFG", id, dataForm);
         const url = `${process.env.SERVER_URL}/tfgs/${id}`;
         const body = JSON.stringify(dataForm);
         const token = await cookies().then(c => c.get('bytoken')?.value);
@@ -19,6 +20,7 @@ export default async function PutTFG(id, dataForm) {
             },
             body: body,
         });
+        console.log(response);
         if (!response.ok) {
             throw new Error(response.statusText);
         }
