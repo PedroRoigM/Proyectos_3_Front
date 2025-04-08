@@ -1,6 +1,6 @@
 'use server';
 import { cookies } from "next/headers";
-
+import errorHandler from "../../../components/errors/Errors";
 export default async function DeleteAdvisor(id) {
     try {
         const url = `${process.env.SERVER_URL}/advisors/${id}`;
@@ -12,11 +12,12 @@ export default async function DeleteAdvisor(id) {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Authentication': `Bearer ${token}`,
+                'Authorization': `Bearer ${token}`,
             },
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const error = await response.json();
+            throw new Error(error.message || 'Error desconocido');
         }
         const data = await response.json();
         return data;

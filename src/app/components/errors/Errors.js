@@ -1,15 +1,21 @@
-export default function errorHandler(error) {
+'use server';
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+export default async function errorHandler(error) {
     const errorMessage = error.message || 'Error desconocido';
     const errorCode = error.status || 500;
 
     switch (errorMessage) {
         // 401 - No autorizado
         case 'No se proporcionó token de autenticación':
-            return { autenticationError: 'No se proporcionó token de autenticación' };
+            (await cookies()).delete('bytoken');
+            redirect('/');
         case 'Token de autenticación inválido':
-            return { autenticationError: 'Token de autenticación inválido' };
+            (await cookies()).delete('bytoken');
+            redirect('/');
         case 'El correo electrónico no ha sido validado':
-            return { validationError: 'El correo electrónico no ha sido validado' };
+            (await cookies()).delete('bytoken');
+            redirect('/');
         case 'Contraseña incorrecta':
             return { account: 'Correo o contraseña incorrectos' };
         case 'Código de verificación inválido':
@@ -21,8 +27,10 @@ export default function errorHandler(error) {
 
         // 403 - Prohibido
         case 'No tienes permisos para realizar esta acción':
+            redirect('/');
             return { autenticationError: 'No tienes permisos para realizar esta acción' };
         case 'Acción no autorizada':
+            redirect('/');
             return { autenticationError: 'Acción no autorizada' };
         case 'El TFG no está verificado':
             return { tfg: 'El TFG no está verificado' };

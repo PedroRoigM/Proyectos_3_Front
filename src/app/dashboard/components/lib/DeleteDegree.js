@@ -12,7 +12,7 @@ export default async function DeleteDegree({ id }) {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Authentication': `Bearer ${token}`,
+                'Authorization': `Bearer ${token}`,
             },
         });
         if (!response.ok) {
