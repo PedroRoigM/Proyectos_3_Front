@@ -52,7 +52,12 @@ export const styles = {
             red_cancel: "bg-red-600 hover:bg-red-700",
             blue_cancel: "bg-blue-600 hover:bg-blue-700"
         }     
-    }
+    },
+
+    roles:{
+        container: "container mx-auto p-4",
+        title: "text-2xl font-bold mb-4"
+    },
 
 };
 
