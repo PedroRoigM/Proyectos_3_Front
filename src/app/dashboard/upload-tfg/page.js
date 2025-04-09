@@ -7,6 +7,12 @@ import GetAdvisors from '../components/lib/GetAdvisors';
 import GetDegrees from '../components/lib/GetDegrees';
 import GetYears from '../components/lib/GetYears';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { 
+    uploadTfgStyles, 
+    inputClassName, 
+    selectClassName, 
+    textareaClassName 
+} from '../components/styles/upload-tfg';
 
 export default function Page() {
     const router = useRouter();
@@ -18,13 +24,13 @@ export default function Page() {
         keywords: [],
         tfgTitle: '',
         abstract: '',
-        file: null, // Initialize file as null
+        file: null,
     });
     const [advisors, setAdvisors] = useState([]);
     const [years, setYears] = useState([]);
     const [degrees, setDegrees] = useState([]);
     const [inputValue, setInputValue] = useState("");
-    const [showConfirmation, setShowConfirmation] = useState(false); // Estado para el cuadro de confirmación
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -94,7 +100,7 @@ export default function Page() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setShowConfirmation(true); // Muestra la confirmación cuando se haga clic en enviar
+        setShowConfirmation(true);
     };
 
     const handleConfirmSubmit = async (confirm) => {
@@ -145,9 +151,9 @@ export default function Page() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-400">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[50%] lg:w-[50%]">
-                <h1 className="text-gray-800 font-bold text-2xl text-center mb-4">Subir TFG</h1>
+        <div className={uploadTfgStyles.layout.container}>
+            <div className={uploadTfgStyles.layout.formContainer}>
+                <h1 className={uploadTfgStyles.headings.title}>Subir TFG</h1>
 
                 {isSubmitting ? (
                     <div className="py-10">
@@ -155,119 +161,170 @@ export default function Page() {
                     </div>
                 ) : (
                     <>
-                        {errors.general &&
-                            <div className={`p-3 mb-4 rounded-md ${errors.general.includes('✅') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        {errors.general && (
+                            <div className={errors.general.includes('✅') ? 
+                                uploadTfgStyles.feedback.success : 
+                                uploadTfgStyles.feedback.error}>
                                 {errors.general}
                             </div>
-                        }
+                        )}
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className={uploadTfgStyles.form.container}>
                             <div>
-                                <label className="text-gray-700 block mb-1">Año</label>
-                                <select name="year" value={formData.year} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.year ? 'border-red-500' : 'border-gray-300'}`}>
+                                <label className={uploadTfgStyles.form.label}>Año</label>
+                                <select 
+                                    name="year" 
+                                    value={formData.year} 
+                                    onChange={handleChange} 
+                                    className={selectClassName(errors.year)}
+                                >
                                     <option value="">Selecciona un año</option>
                                     {years.map(year => <option key={year._id} value={year.year}>{year.year}</option>)}
                                 </select>
-                                {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
+                                {errors.year && <p className={uploadTfgStyles.form.error}>{errors.year}</p>}
                             </div>
 
                             <div>
-                                <label className="text-gray-700 block mb-1">Grado</label>
-                                <select name="degree" value={formData.degree} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.degree ? 'border-red-500' : 'border-gray-300'}`}>
+                                <label className={uploadTfgStyles.form.label}>Grado</label>
+                                <select 
+                                    name="degree" 
+                                    value={formData.degree} 
+                                    onChange={handleChange} 
+                                    className={selectClassName(errors.degree)}
+                                >
                                     <option value="">Selecciona un Grado</option>
                                     {degrees.map(degree => <option key={degree._id} value={degree.degree}>{degree.degree}</option>)}
                                 </select>
-                                {errors.degree && <p className="text-red-500 text-sm">{errors.degree}</p>}
+                                {errors.degree && <p className={uploadTfgStyles.form.error}>{errors.degree}</p>}
                             </div>
 
                             <div>
-                                <label className="text-gray-700 block mb-1">Estudiante</label>
-                                <input type="text" name="student" value={formData.student} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.student ? 'border-red-500' : 'border-gray-300'}`} />
-                                {errors.student && <p className="text-red-500 text-sm">{errors.student}</p>}
+                                <label className={uploadTfgStyles.form.label}>Estudiante</label>
+                                <input 
+                                    type="text" 
+                                    name="student" 
+                                    value={formData.student} 
+                                    onChange={handleChange} 
+                                    className={inputClassName(errors.student)} 
+                                />
+                                {errors.student && <p className={uploadTfgStyles.form.error}>{errors.student}</p>}
                             </div>
 
                             <div>
-                                <label className="text-gray-700 block mb-1">Tutor</label>
-                                <select name="advisor" value={formData.advisor} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.advisor ? 'border-red-500' : 'border-gray-300'}`}>
+                                <label className={uploadTfgStyles.form.label}>Tutor</label>
+                                <select 
+                                    name="advisor" 
+                                    value={formData.advisor} 
+                                    onChange={handleChange} 
+                                    className={selectClassName(errors.advisor)}
+                                >
                                     <option value="">Selecciona tu Tutor</option>
                                     {advisors.map(advisor => <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>)}
                                 </select>
-                                {errors.advisor && <p className="text-red-500 text-sm">{errors.advisor}</p>}
+                                {errors.advisor && <p className={uploadTfgStyles.form.error}>{errors.advisor}</p>}
                             </div>
 
                             <div>
-                                <label className="text-gray-700 block mb-1">Título</label>
-                                <input type="text" name="tfgTitle" value={formData.tfgTitle} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.tfgTitle ? 'border-red-500' : 'border-gray-300'}`} />
-                                {errors.tfgTitle && <p className="text-red-500 text-sm">{errors.tfgTitle}</p>}
+                                <label className={uploadTfgStyles.form.label}>Título</label>
+                                <input 
+                                    type="text" 
+                                    name="tfgTitle" 
+                                    value={formData.tfgTitle} 
+                                    onChange={handleChange} 
+                                    className={inputClassName(errors.tfgTitle)} 
+                                />
+                                {errors.tfgTitle && <p className={uploadTfgStyles.form.error}>{errors.tfgTitle}</p>}
                             </div>
 
                             <div>
-                                <label className="text-gray-700 block mb-1">Resumen</label>
-                                <textarea name="abstract" value={formData.abstract} onChange={handleChange} className={`w-full p-2 rounded-md border ${errors.abstract ? 'border-red-500' : 'border-gray-300'}`}></textarea>
-                                {errors.abstract && <p className="text-red-500 text-sm">{errors.abstract}</p>}
+                                <label className={uploadTfgStyles.form.label}>Resumen</label>
+                                <textarea 
+                                    name="abstract" 
+                                    value={formData.abstract} 
+                                    onChange={handleChange} 
+                                    className={textareaClassName(errors.abstract)}
+                                ></textarea>
+                                {errors.abstract && <p className={uploadTfgStyles.form.error}>{errors.abstract}</p>}
                             </div>
 
                             <div>
-                                <label className="text-gray-700 block mb-1">Archivo</label>
-                                <input type="file" name="file" onChange={handleFileChange} className={`w-full p-2 rounded-md border ${errors.file ? 'border-red-500' : 'border-gray-300'}`} accept=".pdf" />
-                                {errors.file && <p className="text-red-500 text-sm">{errors.file}</p>}
+                                <label className={uploadTfgStyles.form.label}>Archivo</label>
+                                <input 
+                                    type="file" 
+                                    name="file" 
+                                    onChange={handleFileChange} 
+                                    className={inputClassName(errors.file)} 
+                                    accept=".pdf" 
+                                />
+                                {errors.file && <p className={uploadTfgStyles.form.error}>{errors.file}</p>}
                             </div>
 
                             {/* Palabras clave */}
                             <div>
-                                <label className="text-gray-700 block mb-1">Palabras clave</label>
-                                <div className="flex items-center gap-2">
+                                <label className={uploadTfgStyles.form.label}>Palabras clave</label>
+                                <div className={uploadTfgStyles.form.keywordInput.container}>
                                     <input
                                         type="text"
                                         value={inputValue}
                                         onChange={handleInputChange}
                                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
-                                        className={`w-full p-2 rounded-md border ${errors.keywords ? 'border-red-500' : 'border-gray-300'}`}
+                                        className={errors.keywords ? 
+                                            `${uploadTfgStyles.form.keywordInput.input} ${uploadTfgStyles.form.input.error}` : 
+                                            `${uploadTfgStyles.form.keywordInput.input} ${uploadTfgStyles.form.input.valid}`}
                                         placeholder="Añadir palabra clave..."
                                     />
                                     <button
                                         type="button"
                                         onClick={handleAddKeyword}
-                                        className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition"
+                                        className={uploadTfgStyles.form.keywordInput.button}
                                     >
                                         +
                                     </button>
                                 </div>
-                                {errors.keywords && <p className="text-red-500 text-sm">{errors.keywords}</p>}
+                                {errors.keywords && <p className={uploadTfgStyles.form.error}>{errors.keywords}</p>}
                             </div>
 
                             {/* Lista de palabras clave */}
                             {formData.keywords.length > 0 && (
-                                <ul className="mt-3 space-y-2">
+                                <ul className={uploadTfgStyles.form.keywordList.container}>
                                     {formData.keywords.map((keyword, index) => (
-                                        <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md">
-                                            <span className="text-gray-800">{keyword}</span>
-                                            <button type="button" onClick={() => handleRemoveKeyword(index)} className="text-red-500 hover:text-red-700">❌</button>
+                                        <li key={index} className={uploadTfgStyles.form.keywordList.item}>
+                                            <span className={uploadTfgStyles.form.keywordList.text}>{keyword}</span>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => handleRemoveKeyword(index)} 
+                                                className={uploadTfgStyles.form.keywordList.removeButton}
+                                            >
+                                                ❌
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>
                             )}
 
-                            <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-700 transition">Enviar</button>
+                            <button type="submit" className={uploadTfgStyles.buttons.primary}>Enviar</button>
                         </form>
 
                         {/* Cuadro de confirmación */}
                         {showConfirmation && (
-                            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
-                                <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
-                                    <p className="text-lg text-center mb-4">¿Estás seguro de que quieres enviar el TFG? <br /> El TFG pasará a pertenecer a la universidad y solo se podrá editar contactando con coordinación.</p>
-                                    <div className="flex justify-around">
+                            <div className={uploadTfgStyles.modal.overlay}>
+                                <div className={uploadTfgStyles.modal.container}>
+                                    <p className={uploadTfgStyles.modal.message}>
+                                        ¿Estás seguro de que quieres enviar el TFG? <br /> 
+                                        El TFG pasará a pertenecer a la universidad y solo se podrá editar contactando con coordinación.
+                                    </p>
+                                    <div className={uploadTfgStyles.modal.buttonsContainer}>
                                         <button
                                             type="button"
                                             onClick={() => handleConfirmSubmit(true)}
-                                            className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
+                                            className={uploadTfgStyles.modal.confirmButton}
                                         >
                                             Sí
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => handleConfirmSubmit(false)}
-                                            className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
+                                            className={uploadTfgStyles.modal.cancelButton}
                                         >
                                             No
                                         </button>
