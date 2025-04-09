@@ -5,6 +5,8 @@ import PostTenTFGs from '../components/lib/PostTenTFGs';
 import { useEffect, useState } from "react";
 import SearchBar from '../components/SearchBar';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { searchStyles, paginationButtonClass } from '../components/styles/search';
+
 export default function SearchResults() {
     const [tfgs, setTfgs] = useState(null);
     const [search, setSearch] = useState({});
@@ -32,7 +34,6 @@ export default function SearchResults() {
                 setLoading(false);
                 setNoResults(true);
             }
-
         };
 
         fetchData();
@@ -43,64 +44,60 @@ export default function SearchResults() {
             Object.entries(dataForm).filter(([key, value]) => value !== "")
         );
         PostTenTFGs(page_number, sanitizedFormData).then((response) => {
-
             setTfgs(response.tfgs);
             setPages(response.totalPages);
             setLoading(false);
         });
     };
+    
     const setTfgsResults = (search) => {
         // Redirigir a la página de resultados y pasar la búsqueda a través de parámetros de la URL
         const searchQuery = encodeURIComponent(JSON.stringify(search));
         window.location.href = `/dashboard/search?search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
+    
     const changePage = (page_number) => {
         const searchQuery = encodeURIComponent(JSON.stringify(search));
         window.location.href = `/dashboard/search?page_number=${page_number}&search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
+    
     return (
-        <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%] md:max-w-[80%] lg:max-w-[70%]">
+        <div className={searchStyles.layout.container}>
             <SearchBar search={setTfgsResults} />
-            <h1 className="text-4xl font-bold mb-4">Resultados de la búsqueda</h1>
+            <h1 className={searchStyles.headings.title}>Resultados de la búsqueda</h1>
 
             {loading ? (
                 <LoadingSpinner message="Buscando proyectos..." />
             ) : noResults ? (
-                <div className="text-center py-10">
-                    <p className="text-gray-500 text-lg">No se encontraron resultados para esta búsqueda.</p>
+                <div className={searchStyles.results.emptyState}>
+                    <p className={searchStyles.results.emptyText}>No se encontraron resultados para esta búsqueda.</p>
                 </div>
             ) : (
                 <>
-                    <div className="flex flex-col gap-4">
+                    <div className={searchStyles.results.container}>
                         {tfgs.map((tfg, index) => (
                             <TFGcard key={index} tfg={tfg} />
                         ))}
                     </div>
 
                     {/* Botones para paginación */}
-                    <div className="flex justify-between mt-6">
+                    <div className={searchStyles.pagination.container}>
                         <button
                             onClick={() => changePage(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className={`px-4 py-2 rounded-md transition ${currentPage === 1
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-gray-300 hover:bg-gray-400'
-                                }`}
+                            className={paginationButtonClass(currentPage === 1)}
                         >
                             Anterior
                         </button>
 
-                        <span className="flex items-center px-4">
+                        <span className={searchStyles.pagination.pageCounter}>
                             Página {currentPage} de {pages}
                         </span>
 
                         <button
                             onClick={() => changePage(currentPage + 1)}
                             disabled={currentPage >= pages}
-                            className={`px-4 py-2 rounded-md transition ${currentPage >= pages
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-gray-300 hover:bg-gray-400'
-                                }`}
+                            className={paginationButtonClass(currentPage >= pages)}
                         >
                             Siguiente
                         </button>
