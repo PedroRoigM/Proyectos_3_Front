@@ -14,7 +14,7 @@ import PostYear from '../../components/lib/PostYear';
 import UpdateAdvisor from '../../components/lib/UpdateAdvisor';
 import UpdateDegree from '../../components/lib/UpdateDegree';
 import UpdateYear from '../../components/lib/UpdateYear';
-import CategoryCard from '../../components/CategoryCard';
+import CategoryCard from '../components/CategoryCard';
 
 export default function ControlPanel() {
     // Estados principales para los datos

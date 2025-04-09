@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useState, useEffect } from 'react';
-import UserCard from '../../components/UserCard';
+import UserCard from '../components/UserCard';
 import { getUsers } from '../../components/lib/GetUsers';
 import { styles, inputClassName } from '../components/styles/components'
 

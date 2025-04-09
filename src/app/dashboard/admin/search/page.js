@@ -1,6 +1,6 @@
 'use client';
 
-import TFGcardUnverified from '../../components/TFGcardUnverified';
+import TFGcardUnverified from '../components/TFGcardUnverified';
 import GetUnverifiedTFGs from '../../components/lib/GetUnverifiedTFGs';
 import { useEffect, useState } from "react";
 import SearchBar from '../../components/SearchBar';
