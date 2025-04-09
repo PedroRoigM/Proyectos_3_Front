@@ -18,7 +18,7 @@ export default function TFGcard({ tfg }) {
             <Link href={`/dashboard/tfg/${tfg._id}?id=${tfg._id}`} className="block">
                 <div className="bg-gray-200 p-4 hover:bg-gray-300 transition">
                     <h2 className="text-lg md:text-xl font-semibold">{truncateText(tfg.tfgTitle, 80)}</h2>
-                    <h3 className="text-sm md:text-md text-gray-700">{tfg.degree}</h3>
+                    <h3 className="text-sm md:text-md text-gray-700">{tfg.degree.degree}</h3>
                     <p className="text-xs md:text-sm text-gray-600">{truncateText(tfg.abstract, 180)}</p>
                 </div>
             </Link>

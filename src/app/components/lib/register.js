@@ -13,6 +13,7 @@ export default async function PostRegister(dataForm) {
             },
             body: body,
         });
+        console.log(response);
         if (!response.ok) {
             const data = await response.json();
             return errorHandler(data);

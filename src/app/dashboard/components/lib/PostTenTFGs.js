@@ -18,7 +18,6 @@ export default async function PostTenTFGs(number, dataForm) {
             },
             body: body,
         });
-
         if (!response.ok) {
             throw new Error(response.statusText);
         }

@@ -4,7 +4,7 @@ import GetTFGpdf from "../../components/lib/GetTFGpdf";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { tfgDetailsStyles } from "../../components/styles/tfg-details";
+import { tfgDetailsStyles } from "../../components/styles/tfg-datails";
 
 export default function Page() {
     const id = useSearchParams().get('id');
@@ -49,7 +49,7 @@ export default function Page() {
         <div className={tfgDetailsStyles.layout.container}>
             <div className={tfgDetailsStyles.header.container}>
                 <h2 className={tfgDetailsStyles.header.title}>{tfg.tfgTitle}</h2>
-                <h3 className={tfgDetailsStyles.header.degree}>{tfg.degree}</h3>
+                <h3 className={tfgDetailsStyles.header.degree}>{tfg.degree.degree}</h3>
             </div>
 
             <div className={tfgDetailsStyles.metadata.container}>
@@ -72,8 +72,8 @@ export default function Page() {
 
                 {/* Información de Año y Tutor */}
                 <div className={tfgDetailsStyles.metadata.infoContainer}>
-                    <p><strong className={tfgDetailsStyles.metadata.infoLabel}>Año:</strong> {tfg.year}</p>
-                    <p><strong className={tfgDetailsStyles.metadata.infoLabel}>Tutor:</strong> {tfg.advisor}</p>
+                    <p><strong className={tfgDetailsStyles.metadata.infoLabel}>Año:</strong> {tfg.year.year}</p>
+                    <p><strong className={tfgDetailsStyles.metadata.infoLabel}>Tutor:</strong> {tfg.advisor.advisor}</p>
                 </div>
             </div>
 

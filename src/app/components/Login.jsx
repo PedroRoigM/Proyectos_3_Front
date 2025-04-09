@@ -30,7 +30,7 @@ export default function Login({ changeToRegister }) {
         // Validación de email
         if (!formData.email) {
             newErrors.email = 'El email es obligatorio.';
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        } else if (!/^[a-zA-Z]+\.[a-zA-Z]+\d?@(u-tad\.com|live\.u-tad\.com)$/.test(formData.email)) {
             newErrors.email = 'El email no es válido.';
         }
 
@@ -77,6 +77,7 @@ export default function Login({ changeToRegister }) {
                             onChange={handleChange}
                             className={inputClassName(errors.account)}
                         />
+                        {errors.email && <p className={styles.errors.text}>{errors.email}</p>}
                     </div>
 
                     <div className={styles.form.group}>
@@ -89,6 +90,7 @@ export default function Login({ changeToRegister }) {
                             onChange={handleChange}
                             className={inputClassName(errors.account)}
                         />
+                        {errors.password && <p className={styles.errors.text}>{errors.password}</p>}
                     </div>
 
                     <a href="/recover-password" className={styles.buttons.link + " block text-left"}>
