@@ -172,7 +172,7 @@ export default function Page() {
                             onChange={handleChange}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
                         >
-                            <option value="" disabled>{formData.year || "Selecciona un año"}</option>
+                            <option value="" disabled>{formData.year.year || "Selecciona un año"}</option>
                             {years.map((year) => (
                                 <option key={year._id} value={year.year}>{year.year}</option>
                             ))}
@@ -189,7 +189,7 @@ export default function Page() {
                             onChange={handleChange}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
                         >
-                            <option value="" disabled>{formData.degree || "Selecciona un grado"}</option>
+                            <option value="" disabled>{formData.degree.degree || "Selecciona un grado"}</option>
                             {degrees.map((degree) => (
                                 <option key={degree._id} value={degree.degree}>{degree.degree}</option>
                             ))}
@@ -206,7 +206,7 @@ export default function Page() {
                             onChange={handleChange}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
                         >
-                            <option value="" disabled>{formData.advisor || "Selecciona un asesor"}</option>
+                            <option value="" disabled>{formData.advisor.advisor || "Selecciona un asesor"}</option>
                             {advisors.map((advisor) => (
                                 <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>
                             ))}
