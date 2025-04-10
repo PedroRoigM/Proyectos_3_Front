@@ -115,7 +115,28 @@ export const styles = {
     },
 
     edit:{
-        
+        container: "flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-400", //Container del fondo.
+        form:{
+            container: "bg-white p-8 rounded-lg shadow-lg w-full md:w-[50%] lg:w-[50%]",
+            title: "text-gray-800 font-bold text-2xl text-center mb-4",
+            space: "space-y-4",
+            subtitle: "block text-[#0065ef] font-semibold",
+            input: "w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]",
+            error: "text-red-500 text-sm",
+        },
+
+        file:{
+            button: "w-full p-2 rounded-md border",
+            error: "border-red-500",
+            normal: "border-gray-300", 
+        },
+
+        keywords:{
+            container: "flex gap-2",
+            addbutton: "bg-[#0065ef] text-white font-bold px-4 py-2 rounded-md hover:bg-blue-700 transition"
+        }
+    
+    
     },
 
 

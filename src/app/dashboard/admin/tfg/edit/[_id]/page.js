@@ -6,6 +6,7 @@ import GetDegrees from '../../../../components/lib/GetDegrees';
 import GetYears from '../../../../components/lib/GetYears';
 import GetTFGpdf from '../../../../components/lib/GetTFGpdf';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
+import { styles } from '../../../components/styles/components';
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -138,73 +139,73 @@ export default function Page() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-400">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[50%] lg:w-[50%]">
-                <h1 className="text-gray-800 font-bold text-2xl text-center mb-4">Actualizar TFG</h1>
-                <form className="space-y-4">
+        <div className={styles.edit.container}>
+            <div className={styles.edit.form.container}>
+                <h1 className={styles.edit.form.title}>Actualizar TFG</h1>
+                <form className={styles.edit.form.space}>
                     {/* Título */}
                     <div>
-                        <label className="block text-[#0065ef] font-semibold">Título</label>
+                        <label className={styles.edit.form.subtitle}>Título</label>
                         <input
                             type="text"
                             name="title"
                             value={formData.title}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                            className={styles.edit.form.input}
                         />
                     </div>
                     {/* Resumen */}
-                    <label className="block text-[#0065ef] font-semibold">Resumen</label>
+                    <label className={styles.edit.form.subtitle}>Resumen</label>
                     <textarea
 
                         name="abstract"
                         value={formData.abstract}
                         onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                        className={styles.edit.form.input}
                     />
 
                     {/* Año */}
                     <div>
-                        <label className="block text-[#0065ef] font-semibold">Año</label>
+                        <label className={styles.edit.form.subtitle}>Año</label>
                         <select
                             name="year"
                             value={formData.year}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                            className={styles.edit.form.input}
                         >
                             <option value="" disabled>{formData.year.year || "Selecciona un año"}</option>
                             {years.map((year) => (
                                 <option key={year._id} value={year.year}>{year.year}</option>
                             ))}
-                            {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
+                            {errors.year && <p className={styles.edit.form.error}>{errors.year}</p>}
                         </select>
                     </div>
 
                     {/* Grado */}
                     <div>
-                        <label className="block text-[#0065ef] font-semibold">Grado</label>
+                        <label className={styles.edit.form.subtitle}>Grado</label>
                         <select
                             name="degree"
                             value={formData.degree}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                            className={styles.edit.form.input}
                         >
                             <option value="" disabled>{formData.degree.degree || "Selecciona un grado"}</option>
                             {degrees.map((degree) => (
                                 <option key={degree._id} value={degree.degree}>{degree.degree}</option>
                             ))}
-                            {errors.degree && <p className="text-red-500 text-sm">{errors.degree}</p>}
+                            {errors.degree && <p className={styles.edit.form.error}>{errors.degree}</p>}
                         </select>
                     </div>
 
                     {/* Asesor */}
                     <div>
-                        <label className="block text-[#0065ef] font-semibold">Asesor</label>
+                        <label className={styles.edit.form.subtitle}>Asesor</label>
                         <select
                             name="advisor"
                             value={formData.advisor}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                            className={styles.edit.form.input}
                         >
                             <option value="" disabled>{formData.advisor.advisor || "Selecciona un asesor"}</option>
                             {advisors.map((advisor) => (
@@ -214,24 +215,24 @@ export default function Page() {
                     </div>
                     {/* Alumno */}
                     <div>
-                        <label className="block text-[#0065ef] font-semibold">Alumno</label>
+                        <label className={styles.edit.form.subtitle}>Alumno</label>
                         <input
                             type="text"
                             name="student"
                             value={formData.student}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                            className={styles.edit.form.input}
                         />
-                        {errors.student && <p className="text-red-500 text-sm">{errors.student}</p>}
+                        {errors.student && <p className={styles.edit.form.error}>{errors.student}</p>}
                     </div>
+                    {/*Archivo*/}
                     <div>
-                        <label className="text-gray-700 block mb-1">Archivo</label>
-                        <div className="flex items-center gap-2">
+                        <label className={styles.edit.form.subtitle}>Archivo</label>
                             <input
                                 type="file"
                                 name="file"
                                 onChange={handleFileChange}
-                                className={`w-full p-2 rounded-md border ${errors.file ? 'border-red-500' : 'border-gray-300'}`}
+                                className={`${styles.edit.file.button} ${errors.file ? styles.edit.file.error : styles.edit.file.normal}`}
                                 accept=".pdf"
                             />
                             {formData.file && (
@@ -239,16 +240,16 @@ export default function Page() {
                                     {typeof formData.file === 'string' ? formData.file : formData.file.name}
                                 </span>
                             )}
-                        </div>
-                        {errors.file && <p className="text-red-500 text-sm">{errors.file}</p>}
+                        {errors.file && <p className={styles.edit.form.error}>{errors.file}</p>}
                     </div>
-                    <label className="block text-[#0065ef] font-semibold">Palabras clave</label>
-                    <div className="flex gap-2">
+                    {/*Palabras clave*/}
+                    <label className={styles.edit.form.subtitle}>Palabras clave</label>
+                    <div className={styles.edit.keywords.container}>
                         <input
                             type="text"
                             value={inputValue}
                             onChange={handleInputChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-[#0065ef] focus:border-[#0065ef]"
+                            className={styles.edit.form.input}
                             placeholder="Añadir palabra clave..."
                         />
                         <button
@@ -268,7 +269,6 @@ export default function Page() {
                                 <button
                                     type="button"
                                     onClick={() => handleRemoveKeyword(index)}
-                                    className="text-red-500 hover:text-red-700"
                                 >
                                     ❌
                                 </button>
