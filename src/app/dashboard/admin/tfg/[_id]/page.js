@@ -80,7 +80,7 @@ export default function Page() {
             <div className="flex items-center justify-between p-5 pr-3 pl-3 rounded-md max-w-full overflow-hidden text-black">
                 <div>
                     <h2>{tfg.tfgTitle}</h2>
-                    <h3>{tfg.degree}</h3>
+                    <h3>{tfg.degree.degree}</h3>
                 </div>
                 <div className="flex gap-10">
                     <Link
@@ -113,8 +113,8 @@ export default function Page() {
 
                 {/* Información de Año y Tutor */}
                 <div className="flex ml-auto text-right gap-x-4">
-                    <p><strong>Año:</strong> {tfg.year}</p>
-                    <p><strong>Tutor:</strong> {tfg.advisor}</p>
+                    <p><strong>Año:</strong> {tfg.year.year}</p>
+                    <p><strong>Tutor:</strong> {tfg.advisor.advisor}</p>
                 </div>
             </div>
             <div className="mt-2 mb-8 bg-[#BEBEBE] p-5 border border-[#000000]">

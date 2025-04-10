@@ -31,11 +31,11 @@ export const styles = {
 
     // Navigation Styles
     navigation: {
-        desktop: "hidden md:flex items-center gap-6",
-        mobile: "md:hidden flex flex-col items-center gap-4 py-4 text-lg border-t border-gray-300",
-        link: "hover:text-[#14192c] transition duration-300 font-medium",
-        adminLink: "flex items-center gap-1 text-[#0065ef] hover:text-[#14192c] transition duration-300 font-medium",
-        logoutButton: "flex items-center gap-1 text-red-600 hover:text-red-800 transition-colors"
+        desktop: "hidden md:flex items-center gap-6 mx-10",
+        mobile: "md:hidden flex flex-col items-center gap-4 py-4 text-lg border-t border-gray-300 mx-4",
+        link: "hover:text-[#14192c] transition duration-300 font-medium mx-2",
+        adminLink: "flex items-center gap-1 text-[#0065ef] hover:text-[#14192c] transition duration-300 font-medium mx-2",
+        logoutButton: "flex items-center gap-1 text-red-600 hover:text-red-800 transition-colors mx-2"
     },
 
     // Dropdown Styles
