@@ -59,6 +59,67 @@ export const styles = {
         title: "text-2xl font-bold mb-4"
     },
 
+    search:{
+        container: "font-montserrat w-full h-full flex flex-col justify-center  mx-auto my-[50px] rounded-md max-w-[90%] md:max-w-[80%] lg:max-w-[70%]",
+        title: "text-4xl font-bold mb-4",
+        TFG_result: "flex-col gap-4",
+        button_container: "flex justify-between mt-4",
+        button: "px-4 py-2 bg-gray-300 rounded-md"            
+    },
+
+    specific_tfg:{
+        id:{
+            container: "font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]",
+            title: "flex items-center justify-between p-5 pr-3 pl-3 rounded-md max-w-full overflow-hidden text-black",
+            button:{
+                container: "flex gap-10",
+                edit: "bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#14192c] transition",
+                download: "text-black border-gray-400 border-2 font-bold px-4 py-2 rounded-md hover:bg-[#9da3a7] transition",
+            },       
+            info:{
+                container: "bg-[#e5e9ec] flex flex-wrap items-center justify-between p-5 pr-3 pl-3 rounded-md max-w-full overflow-hidden",
+                //Contenedor de los datos: palabras clave + tutor y año
+                keywords:{
+                    container: "flex gap-2 flex-wrap", //Container de las palabras calve
+                    keyword: "border border-gray-500 rounded-md px-2 py-1", //Una palabra clave
+                    extend: "text-blue-500 underline ml-2" //Botón de extender palabras clave
+                },
+                tutoryear: "flex ml-auto text-right gap-x-4", //Container que tiene el tutor y el año
+            },
+            resumen:"mt-2 mb-8 bg-[#BEBEBE] p-5 border border-[#000000]", //Contenedor del resumen. bg para color de fondo, border para color del borde.
+            
+            pdf:{
+                margin: "mt-4", //Margen
+                title: "text-xl font-semibold mb-4", //Texto de "Documento TFG"
+                image:{ 
+                    container: "relative w-full h-[800px] overflow-hidden rounded bg-gray-100 shadow-lg",
+                    //Contenedor de la imagen
+                    watermark: "absolute inset-0 flex items-center justify-center z-10 pointer-events-none",
+                    //Marca de agua
+                    warning: "transform rotate-45 text-gray-400 text-5xl font-bold opacity-10 whitespace-nowrap",
+                    //Texto de aviso de la marca de agua
+                },
+
+                notvisualizable:{
+                    container:"w-full h-full overflow-hidden",
+                    object: "w-full h-[calc(100%+40px)] -mt-10 border-0",
+                    text: "p-4 text-center", //Mensaje de no puede verse por el navegador
+                },
+
+                blocker: "absolute top-0 left-0 right-0 h-10 bg-white opacity-0 z-20", //Bloquedor de interacciones
+                text: "bg-gray-100 p-3 rounded text-center text-sm text-gray-600 mt-2" //Mensaje de aviso de protección 
+            },
+        },
+        
+    
+    },
+
+    edit:{
+        
+    },
+
+
+
 };
 
 // Función para combinar clases de estilo
