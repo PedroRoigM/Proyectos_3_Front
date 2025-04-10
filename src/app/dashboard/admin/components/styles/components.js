@@ -129,12 +129,20 @@ export const styles = {
             button: "w-full p-2 rounded-md border",
             error: "border-red-500",
             normal: "border-gray-300", 
+            text: "text-gray-600 text-sm truncate",
         },
 
         keywords:{
             container: "flex gap-2",
-            addbutton: "bg-[#0065ef] text-white font-bold px-4 py-2 rounded-md hover:bg-blue-700 transition"
-        }
+            addbutton: "bg-[#0065ef] text-white font-bold px-4   rounded-md hover:bg-blue-700 transition",
+            list: "flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md",
+        },
+
+        button: "w-full bg-[#0065ef] text-white font-bold py-2 rounded-md hover:bg-blue-700 transition duration-200",
+
+        confirmation:{
+
+        },
     
     
     },

@@ -106,8 +106,12 @@ export default function Page() {
 
     const handleConfirmSubmit = async () => {
 
+        if (!confirm){
+            setShowConfirmation(false);
+            return;
+        } 
         setShowConfirmation(false);
-        //if (!confirm) return;
+        
 
         const validationErrors = {};
         if (!formData.year) validationErrors.year = 'El año es obligatorio.';
@@ -236,7 +240,7 @@ export default function Page() {
                                 accept=".pdf"
                             />
                             {formData.file && (
-                                <span className="text-gray-600 text-sm truncate">
+                                <span className={styles.edit.file.text}>
                                     {typeof formData.file === 'string' ? formData.file : formData.file.name}
                                 </span>
                             )}
@@ -255,17 +259,17 @@ export default function Page() {
                         <button
                             type="button"
                             onClick={handleAddKeyword}
-                            className="bg-[#0065ef] text-white font-bold px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                            className={styles.edit.keywords.addbutton}
                         >
                             +
                         </button>
                     </div>
 
                     {/* Lista de palabras clave */}
-                    <ul className="mt-3 space-y-2">
+  
                         {formData.keywords.map((keyword, index) => (
-                            <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md">
-                                <span className="text-gray-800">{keyword}</span>
+                            <li key={index} className={styles.edit.keywords.list}>
+                                <span>{keyword}</span>
                                 <button
                                     type="button"
                                     onClick={() => handleRemoveKeyword(index)}
@@ -274,13 +278,13 @@ export default function Page() {
                                 </button>
                             </li>
                         ))}
-                    </ul>
+
 
                     {/* Botón */}
                     <button
                         type="button"
-                        onClick={handleConfirmSubmit}
-                        className="w-full bg-[#0065ef] text-white font-bold py-2 rounded-md hover:bg-blue-700 transition duration-200"
+                        onClick={handleSubmit}
+                        className={styles.edit.button}
                     >
                         Actualizar
                     </button>
