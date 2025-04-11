@@ -1,19 +1,21 @@
 'use server'
 import { cookies } from "next/headers";
 
-export default async function GetYears() {
+export default async function GetYears(dataForm) {
     try {
-        const url = `${process.env.SERVER_URL}/years`;
+        const url = `${process.env.SERVER_URL}/years/get`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
         if (!token) {
             throw new Error('Token not found');
         }
+        const body = JSON.stringify(dataForm) || null;
         const response = await fetch(url, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
+            body: body,
         });
         if (!response.ok) {
             throw new Error(response.statusText)

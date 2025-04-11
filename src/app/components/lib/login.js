@@ -27,6 +27,10 @@ export default async function PostLogin(dataForm) {
         name: 'bytoken',
         value: token,
         path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 3600 * 24, // 1 day
     });
     redirect('/dashboard');
 }

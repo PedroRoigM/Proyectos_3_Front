@@ -37,9 +37,9 @@ export default function Page() {
         const fetchData = async () => {
             try {
                 const [advisorsRes, degreesRes, yearsRes, tfgRes, file] = await Promise.all([
-                    GetAdvisors(),
-                    GetDegrees(),
-                    GetYears(),
+                    GetAdvisors({ active: true }),
+                    GetDegrees({ active: true }),
+                    GetYears({ active: true }),
                     GetTFG(id),
                     GetTFGpdf(id)
                 ]);
@@ -106,12 +106,12 @@ export default function Page() {
 
     const handleConfirmSubmit = async () => {
 
-        if (!confirm){
+        if (!confirm) {
             setShowConfirmation(false);
             return;
-        } 
+        }
         setShowConfirmation(false);
-        
+
 
         const validationErrors = {};
         if (!formData.year) validationErrors.year = 'El año es obligatorio.';
@@ -232,18 +232,18 @@ export default function Page() {
                     {/*Archivo*/}
                     <div>
                         <label className={styles.edit.form.subtitle}>Archivo</label>
-                            <input
-                                type="file"
-                                name="file"
-                                onChange={handleFileChange}
-                                className={`${styles.edit.file.button} ${errors.file ? styles.edit.file.error : styles.edit.file.normal}`}
-                                accept=".pdf"
-                            />
-                            {formData.file && (
-                                <span className={styles.edit.file.text}>
-                                    {typeof formData.file === 'string' ? formData.file : formData.file.name}
-                                </span>
-                            )}
+                        <input
+                            type="file"
+                            name="file"
+                            onChange={handleFileChange}
+                            className={`${styles.edit.file.button} ${errors.file ? styles.edit.file.error : styles.edit.file.normal}`}
+                            accept=".pdf"
+                        />
+                        {formData.file && (
+                            <span className={styles.edit.file.text}>
+                                {typeof formData.file === 'string' ? formData.file : formData.file.name}
+                            </span>
+                        )}
                         {errors.file && <p className={styles.edit.form.error}>{errors.file}</p>}
                     </div>
                     {/*Palabras clave*/}
@@ -266,18 +266,18 @@ export default function Page() {
                     </div>
 
                     {/* Lista de palabras clave */}
-  
-                        {formData.keywords.map((keyword, index) => (
-                            <li key={index} className={styles.edit.keywords.list}>
-                                <span>{keyword}</span>
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveKeyword(index)}
-                                >
-                                    ❌
-                                </button>
-                            </li>
-                        ))}
+
+                    {formData.keywords.map((keyword, index) => (
+                        <li key={index} className={styles.edit.keywords.list}>
+                            <span>{keyword}</span>
+                            <button
+                                type="button"
+                                onClick={() => handleRemoveKeyword(index)}
+                            >
+                                ❌
+                            </button>
+                        </li>
+                    ))}
 
 
                     {/* Botón */}

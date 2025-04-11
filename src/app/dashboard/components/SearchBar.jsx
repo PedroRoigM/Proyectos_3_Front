@@ -26,9 +26,9 @@ export default function SearchBar({ search }) {
             try {
                 // Cargar datos en paralelo
                 const [degreesData, yearsData, advisorsData, tfgsData] = await Promise.all([
-                    GetDegrees().catch(() => []),
-                    GetYears().catch(() => []),
-                    GetAdvisors().catch(() => []),
+                    GetDegrees({ active: true }).catch(() => []),
+                    GetYears({ active: true }).catch(() => []),
+                    GetAdvisors({ active: true }).catch(() => []),
                     GetTFGsNames().catch(() => [])
                 ]);
 

@@ -13,16 +13,19 @@ export default async function PostRegister(dataForm) {
             },
             body: body,
         });
-        console.log(response);
+
         if (!response.ok) {
             const data = await response.json();
             return errorHandler(data);
         }
-        const user = await response.json();
         (await cookies()).set({
             name: 'bytoken',
-            value: user.data.token,
+            value: token,
             path: '/',
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 60 * 5, // 5 minutes
         });
     } catch (error) {
         console.error("Error registering user:", error);

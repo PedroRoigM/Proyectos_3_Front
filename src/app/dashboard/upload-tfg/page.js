@@ -7,11 +7,11 @@ import GetAdvisors from '../components/lib/GetAdvisors';
 import GetDegrees from '../components/lib/GetDegrees';
 import GetYears from '../components/lib/GetYears';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { 
-    uploadTfgStyles, 
-    inputClassName, 
-    selectClassName, 
-    textareaClassName 
+import {
+    uploadTfgStyles,
+    inputClassName,
+    selectClassName,
+    textareaClassName
 } from '../components/styles/upload-tfg';
 
 export default function Page() {
@@ -40,9 +40,9 @@ export default function Page() {
         const fetchData = async () => {
             try {
                 const [advisorsData, yearsData, degreesData] = await Promise.all([
-                    GetAdvisors(),
-                    GetYears(),
-                    GetDegrees()
+                    GetAdvisors({ active: true }),
+                    GetYears({ active: true }),
+                    GetDegrees({ active: true })
                 ]);
 
                 setAdvisors(advisorsData || []);
@@ -162,8 +162,8 @@ export default function Page() {
                 ) : (
                     <>
                         {errors.general && (
-                            <div className={errors.general.includes('✅') ? 
-                                uploadTfgStyles.feedback.success : 
+                            <div className={errors.general.includes('✅') ?
+                                uploadTfgStyles.feedback.success :
                                 uploadTfgStyles.feedback.error}>
                                 {errors.general}
                             </div>
@@ -172,10 +172,10 @@ export default function Page() {
                         <form onSubmit={handleSubmit} className={uploadTfgStyles.form.container}>
                             <div>
                                 <label className={uploadTfgStyles.form.label}>Año</label>
-                                <select 
-                                    name="year" 
-                                    value={formData.year} 
-                                    onChange={handleChange} 
+                                <select
+                                    name="year"
+                                    value={formData.year}
+                                    onChange={handleChange}
                                     className={selectClassName(errors.year)}
                                 >
                                     <option value="">Selecciona un año</option>
@@ -186,10 +186,10 @@ export default function Page() {
 
                             <div>
                                 <label className={uploadTfgStyles.form.label}>Grado</label>
-                                <select 
-                                    name="degree" 
-                                    value={formData.degree} 
-                                    onChange={handleChange} 
+                                <select
+                                    name="degree"
+                                    value={formData.degree}
+                                    onChange={handleChange}
                                     className={selectClassName(errors.degree)}
                                 >
                                     <option value="">Selecciona un Grado</option>
@@ -200,22 +200,22 @@ export default function Page() {
 
                             <div>
                                 <label className={uploadTfgStyles.form.label}>Estudiante</label>
-                                <input 
-                                    type="text" 
-                                    name="student" 
-                                    value={formData.student} 
-                                    onChange={handleChange} 
-                                    className={inputClassName(errors.student)} 
+                                <input
+                                    type="text"
+                                    name="student"
+                                    value={formData.student}
+                                    onChange={handleChange}
+                                    className={inputClassName(errors.student)}
                                 />
                                 {errors.student && <p className={uploadTfgStyles.form.error}>{errors.student}</p>}
                             </div>
 
                             <div>
                                 <label className={uploadTfgStyles.form.label}>Tutor</label>
-                                <select 
-                                    name="advisor" 
-                                    value={formData.advisor} 
-                                    onChange={handleChange} 
+                                <select
+                                    name="advisor"
+                                    value={formData.advisor}
+                                    onChange={handleChange}
                                     className={selectClassName(errors.advisor)}
                                 >
                                     <option value="">Selecciona tu Tutor</option>
@@ -226,22 +226,22 @@ export default function Page() {
 
                             <div>
                                 <label className={uploadTfgStyles.form.label}>Título</label>
-                                <input 
-                                    type="text" 
-                                    name="tfgTitle" 
-                                    value={formData.tfgTitle} 
-                                    onChange={handleChange} 
-                                    className={inputClassName(errors.tfgTitle)} 
+                                <input
+                                    type="text"
+                                    name="tfgTitle"
+                                    value={formData.tfgTitle}
+                                    onChange={handleChange}
+                                    className={inputClassName(errors.tfgTitle)}
                                 />
                                 {errors.tfgTitle && <p className={uploadTfgStyles.form.error}>{errors.tfgTitle}</p>}
                             </div>
 
                             <div>
                                 <label className={uploadTfgStyles.form.label}>Resumen</label>
-                                <textarea 
-                                    name="abstract" 
-                                    value={formData.abstract} 
-                                    onChange={handleChange} 
+                                <textarea
+                                    name="abstract"
+                                    value={formData.abstract}
+                                    onChange={handleChange}
                                     className={textareaClassName(errors.abstract)}
                                 ></textarea>
                                 {errors.abstract && <p className={uploadTfgStyles.form.error}>{errors.abstract}</p>}
@@ -249,12 +249,12 @@ export default function Page() {
 
                             <div>
                                 <label className={uploadTfgStyles.form.label}>Archivo</label>
-                                <input 
-                                    type="file" 
-                                    name="file" 
-                                    onChange={handleFileChange} 
-                                    className={inputClassName(errors.file)} 
-                                    accept=".pdf" 
+                                <input
+                                    type="file"
+                                    name="file"
+                                    onChange={handleFileChange}
+                                    className={inputClassName(errors.file)}
+                                    accept=".pdf"
                                 />
                                 {errors.file && <p className={uploadTfgStyles.form.error}>{errors.file}</p>}
                             </div>
@@ -268,8 +268,8 @@ export default function Page() {
                                         value={inputValue}
                                         onChange={handleInputChange}
                                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
-                                        className={errors.keywords ? 
-                                            `${uploadTfgStyles.form.keywordInput.input} ${uploadTfgStyles.form.input.error}` : 
+                                        className={errors.keywords ?
+                                            `${uploadTfgStyles.form.keywordInput.input} ${uploadTfgStyles.form.input.error}` :
                                             `${uploadTfgStyles.form.keywordInput.input} ${uploadTfgStyles.form.input.valid}`}
                                         placeholder="Añadir palabra clave..."
                                     />
@@ -290,9 +290,9 @@ export default function Page() {
                                     {formData.keywords.map((keyword, index) => (
                                         <li key={index} className={uploadTfgStyles.form.keywordList.item}>
                                             <span className={uploadTfgStyles.form.keywordList.text}>{keyword}</span>
-                                            <button 
-                                                type="button" 
-                                                onClick={() => handleRemoveKeyword(index)} 
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveKeyword(index)}
                                                 className={uploadTfgStyles.form.keywordList.removeButton}
                                             >
                                                 ❌
@@ -310,7 +310,7 @@ export default function Page() {
                             <div className={uploadTfgStyles.modal.overlay}>
                                 <div className={uploadTfgStyles.modal.container}>
                                     <p className={uploadTfgStyles.modal.message}>
-                                        ¿Estás seguro de que quieres enviar el TFG? <br /> 
+                                        ¿Estás seguro de que quieres enviar el TFG? <br />
                                         El TFG pasará a pertenecer a la universidad y solo se podrá editar contactando con coordinación.
                                     </p>
                                     <div className={uploadTfgStyles.modal.buttonsContainer}>
