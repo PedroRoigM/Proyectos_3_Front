@@ -1,21 +1,33 @@
 'use client';
 
-import { useUser } from './UserContext';
+import { useState, useEffect } from 'react';
+import { getUserRole } from './UserContext'; // Asegúrate de que la ruta sea correcta
 import UserTopBar from './topbars/UserTopBar';
 import CoordinatorTopBar from './topbars/CoordinatorTopBar';
 import AdminTopBar from './topbars/AdminTopBar';
-export default function TopBarSelector() {
-    const { role, isLoading } = useUser();
 
-    // Mientras se carga la información del usuario
+export default function TopBarSelector() {
+    const [role, setRole] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchUserRole() {
+            try {
+                const userData = await getUserRole();
+                setRole(userData.role);
+            } catch (error) {
+                console.error('Error al obtener el rol:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchUserRole();
+    }, []);
+
+    // Mostrar un estado de carga mientras se verifica el rol
     if (isLoading) {
-        return (
-            <div className="w-full bg-white border-b-[2px] border-gray-200 shadow-md p-4">
-                <div className="flex justify-center">
-                    <div className="w-8 h-8 animate-spin rounded-full border-2 border-t-2 border-t-[#0065ef] border-gray-300"></div>
-                </div>
-            </div>
-        );
+        return <div>Cargando...</div>;
     }
 
     // Seleccionar el TopBar según el rol
