@@ -98,7 +98,7 @@ export default function SearchBar({ search }) {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-black">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-black mb-10">
             {/* Input de búsqueda con datalist */}
             <div className="relative">
                 <input

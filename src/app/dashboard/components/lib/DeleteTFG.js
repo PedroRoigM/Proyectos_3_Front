@@ -16,7 +16,8 @@ export default async function DeleteTFG(id) {
             },
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data)
         }
 
         // Retornar un okey si la respuesta es correcta

@@ -19,7 +19,8 @@ export default async function GetDegrees(dataForm) {
             body: body,
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data)
         }
         const data = await response.json();
 

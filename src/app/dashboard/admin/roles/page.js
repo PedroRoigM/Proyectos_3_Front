@@ -2,8 +2,9 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import UserCard from '../components/UserCard';
-import { getUsers } from '../../components/lib/GetUsers';
+import GetUsers from '../../components/lib/GetUsers';
 import { styles, inputClassName } from '../components/styles/components'
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function Page() {
     const [users, setUsers] = useState([]);
@@ -12,7 +13,7 @@ export default function Page() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const data = await getUsers();
+                const data = await GetUsers();
                 setUsers(data);
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -25,7 +26,7 @@ export default function Page() {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingSpinner message="Cargando página..." />;
     }
 
     return (

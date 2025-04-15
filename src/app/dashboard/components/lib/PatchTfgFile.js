@@ -20,14 +20,9 @@ export default async function PatchTfgFile(id, file) {
             },
             body: formData
         });
-        console.log(response)
         if (!response.ok) {
-            let errorMessage = `Error ${response.status}: ${response.statusText}`;
-            try {
-                const errorData = await response.json();
-                errorMessage = errorData.message || errorMessage;
-            } catch (_) { /* Si no se puede parsear JSON, usa statusText */ }
-            throw new Error(errorMessage);
+            const data = await response.json();
+            return errorHandler(data)
         }
 
         return await response.json();

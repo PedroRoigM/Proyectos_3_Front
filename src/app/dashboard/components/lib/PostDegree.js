@@ -17,7 +17,8 @@ export default async function postDegree(degree) {
             body: JSON.stringify(degree)
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data)
         }
         const data = response.json();
         return data;

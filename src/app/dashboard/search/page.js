@@ -49,22 +49,21 @@ export default function SearchResults() {
             setLoading(false);
         });
     };
-    
+
     const setTfgsResults = (search) => {
         // Redirigir a la página de resultados y pasar la búsqueda a través de parámetros de la URL
         const searchQuery = encodeURIComponent(JSON.stringify(search));
         window.location.href = `/dashboard/search?search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
-    
+
     const changePage = (page_number) => {
         const searchQuery = encodeURIComponent(JSON.stringify(search));
         window.location.href = `/dashboard/search?page_number=${page_number}&search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
-    
+
     return (
         <div className={searchStyles.layout.container}>
             <SearchBar search={setTfgsResults} />
-            <h1 className={searchStyles.headings.title}>Resultados de la búsqueda</h1>
 
             {loading ? (
                 <LoadingSpinner message="Buscando proyectos..." />

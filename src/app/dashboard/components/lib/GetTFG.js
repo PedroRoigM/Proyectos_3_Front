@@ -16,7 +16,8 @@ export default async function GetTFG(id) {
             },
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data)
         }
 
         const dataResponse = await response.json();

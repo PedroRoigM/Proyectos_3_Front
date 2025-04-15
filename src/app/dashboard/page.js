@@ -32,7 +32,6 @@ export default function Dashboard() {
     return (
         <div className="font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%] md:max-w-[80%] lg:max-w-[70%]">
             <SearchBar search={setTfgsResults} />
-            <h1 className="text-4xl font-bold mb-4 text-center md:text-left">Proyectos Destacados</h1>
 
             {loading ? (
                 <LoadingSpinner message="Cargando proyectos destacados..." />

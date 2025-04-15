@@ -1,7 +1,7 @@
 'use server';
 import { cookies } from "next/headers";
 
-export async function getUsers() {
+export default async function GetUsers() {
     try {
         const url = `${process.env.SERVER_URL}/users`;
         const token = await cookies().then(c => c.get('bytoken')?.value);
@@ -16,7 +16,8 @@ export async function getUsers() {
             },
         });
         if (!response.ok) {
-            throw new Error("Failed to fetch users");
+            const data = await response.json();
+            return errorHandler(data)
         }
         const dataReponse = await response.json();
         return dataReponse.data;

@@ -18,7 +18,8 @@ export default async function GetYears(dataForm) {
             body: body,
         });
         if (!response.ok) {
-            throw new Error(response.statusText)
+            const data = await response.json();
+            return errorHandler(data)
         }
         const data = await response.json();
         return data.data;

@@ -7,7 +7,6 @@ import { cookies } from 'next/headers';
 export async function getUserRole() {
     try {
         const token = (await cookies()).get('bytoken')?.value;
-
         // Decodificar el token JWT
         const decodedToken = jwt.decode(token);
         return { role: decodedToken?.role || null };

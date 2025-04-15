@@ -20,7 +20,8 @@ export default async function GetUnverifiedTFGs(page_number, formData) {
             body: body
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data)
         }
 
         const dataResponse = await response.json();

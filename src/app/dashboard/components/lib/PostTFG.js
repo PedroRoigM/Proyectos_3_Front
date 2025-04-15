@@ -18,7 +18,8 @@ export default async function PostTFG(formData) {
             body: body,
         });
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return errorHandler(data)
         }
         const dataResponse = await response.json();
         return dataResponse.data;

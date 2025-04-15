@@ -16,8 +16,8 @@ export default async function DeleteAdvisor(id) {
             },
         });
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Error desconocido');
+            const data = await response.json();
+            return errorHandler(data)
         }
         const data = await response.json();
         return data;

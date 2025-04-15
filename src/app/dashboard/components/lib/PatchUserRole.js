@@ -17,7 +17,8 @@ export async function PatchUserRole(userId, role) {
         });
         console.log("Response:", response);
         if (!response.ok) {
-            throw new Error("Failed to update user role");
+            const data = await response.json();
+            return errorHandler(data)
         }
         const dataReponse = await response.json();
         return dataReponse.data;

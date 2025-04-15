@@ -29,9 +29,9 @@ export default function Page() {
     const [degrees, setDegrees] = useState([]);
     const [years, setYears] = useState([]);
     const [inputValue, setInputValue] = useState("");
-
     const [errors, setErrors] = useState({});
     const [showConfirmation, setShowConfirmation] = useState(false);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -57,6 +57,7 @@ export default function Page() {
                     degree: tfgRes.degree,
                     file: file,
                 });
+                setLoading(false); // Finaliza la carga
             } catch (error) {
                 console.error("Error al cargar los datos:", error);
             } finally {
@@ -138,181 +139,189 @@ export default function Page() {
         }
     };
 
-    if (loading) {
-        return <LoadingSpinner message="Cargando formulario..." />;
-    }
-
     return (
         <div className={styles.edit.container}>
-            <div className={styles.edit.form.container}>
-                <h1 className={styles.edit.form.title}>Actualizar TFG</h1>
-                <form className={styles.edit.form.space}>
-                    {/* Título */}
-                    <div>
-                        <label className={styles.edit.form.subtitle}>Título</label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title}
+            {loading ? (
+                <LoadingSpinner message="Cargando formulario..." />
+            ) : formData ? (
+
+                < div className={styles.edit.form.container}>
+                    <h1 className={styles.edit.form.title}>Actualizar TFG</h1>
+                    <form className={styles.edit.form.space}>
+                        {/* Título */}
+                        <div>
+                            <label className={styles.edit.form.subtitle}>Título</label>
+                            <input
+                                type="text"
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                className={styles.edit.form.input}
+                            />
+                        </div>
+                        {/* Resumen */}
+                        <label className={styles.edit.form.subtitle}>Resumen</label>
+                        <textarea
+
+                            name="abstract"
+                            value={formData.abstract}
                             onChange={handleChange}
                             className={styles.edit.form.input}
                         />
-                    </div>
-                    {/* Resumen */}
-                    <label className={styles.edit.form.subtitle}>Resumen</label>
-                    <textarea
 
-                        name="abstract"
-                        value={formData.abstract}
-                        onChange={handleChange}
-                        className={styles.edit.form.input}
-                    />
+                        {/* Año */}
+                        <div>
+                            <label className={styles.edit.form.subtitle}>Año</label>
+                            <select
+                                name="year"
+                                value={formData.year}
+                                onChange={handleChange}
+                                className={styles.edit.form.input}
+                            >
+                                <option value="" disabled>{formData.year.year || "Selecciona un año"}</option>
+                                {years.map((year) => (
+                                    <option key={year._id} value={year.year}>{year.year}</option>
+                                ))}
+                                {errors.year && <p className={styles.edit.form.error}>{errors.year}</p>}
+                            </select>
+                        </div>
 
-                    {/* Año */}
-                    <div>
-                        <label className={styles.edit.form.subtitle}>Año</label>
-                        <select
-                            name="year"
-                            value={formData.year}
-                            onChange={handleChange}
-                            className={styles.edit.form.input}
-                        >
-                            <option value="" disabled>{formData.year.year || "Selecciona un año"}</option>
-                            {years.map((year) => (
-                                <option key={year._id} value={year.year}>{year.year}</option>
-                            ))}
-                            {errors.year && <p className={styles.edit.form.error}>{errors.year}</p>}
-                        </select>
-                    </div>
+                        {/* Grado */}
+                        <div>
+                            <label className={styles.edit.form.subtitle}>Grado</label>
+                            <select
+                                name="degree"
+                                value={formData.degree}
+                                onChange={handleChange}
+                                className={styles.edit.form.input}
+                            >
+                                <option value="" disabled>{formData.degree.degree || "Selecciona un grado"}</option>
+                                {degrees.map((degree) => (
+                                    <option key={degree._id} value={degree.degree}>{degree.degree}</option>
+                                ))}
+                                {errors.degree && <p className={styles.edit.form.error}>{errors.degree}</p>}
+                            </select>
+                        </div>
 
-                    {/* Grado */}
-                    <div>
-                        <label className={styles.edit.form.subtitle}>Grado</label>
-                        <select
-                            name="degree"
-                            value={formData.degree}
-                            onChange={handleChange}
-                            className={styles.edit.form.input}
-                        >
-                            <option value="" disabled>{formData.degree.degree || "Selecciona un grado"}</option>
-                            {degrees.map((degree) => (
-                                <option key={degree._id} value={degree.degree}>{degree.degree}</option>
-                            ))}
-                            {errors.degree && <p className={styles.edit.form.error}>{errors.degree}</p>}
-                        </select>
-                    </div>
-
-                    {/* Asesor */}
-                    <div>
-                        <label className={styles.edit.form.subtitle}>Asesor</label>
-                        <select
-                            name="advisor"
-                            value={formData.advisor}
-                            onChange={handleChange}
-                            className={styles.edit.form.input}
-                        >
-                            <option value="" disabled>{formData.advisor.advisor || "Selecciona un asesor"}</option>
-                            {advisors.map((advisor) => (
-                                <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>
-                            ))}
-                        </select>
-                    </div>
-                    {/* Alumno */}
-                    <div>
-                        <label className={styles.edit.form.subtitle}>Alumno</label>
-                        <input
-                            type="text"
-                            name="student"
-                            value={formData.student}
-                            onChange={handleChange}
-                            className={styles.edit.form.input}
-                        />
-                        {errors.student && <p className={styles.edit.form.error}>{errors.student}</p>}
-                    </div>
-                    {/*Archivo*/}
-                    <div>
-                        <label className={styles.edit.form.subtitle}>Archivo</label>
-                        <input
-                            type="file"
-                            name="file"
-                            onChange={handleFileChange}
-                            className={`${styles.edit.file.button} ${errors.file ? styles.edit.file.error : styles.edit.file.normal}`}
-                            accept=".pdf"
-                        />
-                        {formData.file && (
-                            <span className={styles.edit.file.text}>
-                                {typeof formData.file === 'string' ? formData.file : formData.file.name}
-                            </span>
-                        )}
-                        {errors.file && <p className={styles.edit.form.error}>{errors.file}</p>}
-                    </div>
-                    {/*Palabras clave*/}
-                    <label className={styles.edit.form.subtitle}>Palabras clave</label>
-                    <div className={styles.edit.keywords.container}>
-                        <input
-                            type="text"
-                            value={inputValue}
-                            onChange={handleInputChange}
-                            className={styles.edit.form.input}
-                            placeholder="Añadir palabra clave..."
-                        />
-                        <button
-                            type="button"
-                            onClick={handleAddKeyword}
-                            className={styles.edit.keywords.addbutton}
-                        >
-                            +
-                        </button>
-                    </div>
-
-                    {/* Lista de palabras clave */}
-
-                    {formData.keywords.map((keyword, index) => (
-                        <li key={index} className={styles.edit.keywords.list}>
-                            <span>{keyword}</span>
+                        {/* Asesor */}
+                        <div>
+                            <label className={styles.edit.form.subtitle}>Asesor</label>
+                            <select
+                                name="advisor"
+                                value={formData.advisor}
+                                onChange={handleChange}
+                                className={styles.edit.form.input}
+                            >
+                                <option value="" disabled>{formData.advisor.advisor || "Selecciona un asesor"}</option>
+                                {advisors.map((advisor) => (
+                                    <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>
+                                ))}
+                            </select>
+                        </div>
+                        {/* Alumno */}
+                        <div>
+                            <label className={styles.edit.form.subtitle}>Alumno</label>
+                            <input
+                                type="text"
+                                name="student"
+                                value={formData.student}
+                                onChange={handleChange}
+                                className={styles.edit.form.input}
+                            />
+                            {errors.student && <p className={styles.edit.form.error}>{errors.student}</p>}
+                        </div>
+                        {/*Archivo*/}
+                        <div>
+                            <label className={styles.edit.form.subtitle}>Archivo</label>
+                            <input
+                                type="file"
+                                name="file"
+                                onChange={handleFileChange}
+                                className={`${styles.edit.file.button} ${errors.file ? styles.edit.file.error : styles.edit.file.normal}`}
+                                accept=".pdf"
+                            />
+                            {formData.file && (
+                                <span className={styles.edit.file.text}>
+                                    {typeof formData.file === 'string' ? formData.file : formData.file.name}
+                                </span>
+                            )}
+                            {errors.file && <p className={styles.edit.form.error}>{errors.file}</p>}
+                        </div>
+                        {/*Palabras clave*/}
+                        <label className={styles.edit.form.subtitle}>Palabras clave</label>
+                        <div className={styles.edit.keywords.container}>
+                            <input
+                                type="text"
+                                value={inputValue}
+                                onChange={handleInputChange}
+                                className={styles.edit.form.input}
+                                placeholder="Añadir palabra clave..."
+                            />
                             <button
                                 type="button"
-                                onClick={() => handleRemoveKeyword(index)}
+                                onClick={handleAddKeyword}
+                                className={styles.edit.keywords.addbutton}
                             >
-                                ❌
+                                +
                             </button>
-                        </li>
-                    ))}
+                        </div>
 
+                        {/* Lista de palabras clave */}
 
-                    {/* Botón */}
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        className={styles.edit.button}
-                    >
-                        Actualizar
-                    </button>
-                </form>
-                {showConfirmation && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
-                        <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
-                            <p className="text-lg text-center mb-4">¿Estás seguro de actualizar el TFG?</p>
-                            <div className="flex justify-around">
+                        {formData.keywords.map((keyword, index) => (
+                            <li key={index} className={styles.edit.keywords.list}>
+                                <span>{keyword}</span>
                                 <button
                                     type="button"
-                                    onClick={() => handleConfirmSubmit(true)}
-                                    className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
+                                    onClick={() => handleRemoveKeyword(index)}
                                 >
-                                    Sí
+                                    ❌
                                 </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleConfirmSubmit(false)}
-                                    className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
-                                >
-                                    No
-                                </button>
+                            </li>
+                        ))}
+
+
+                        {/* Botón */}
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            className={styles.edit.button}
+                        >
+                            Actualizar
+                        </button>
+                    </form>
+                    {showConfirmation && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
+                            <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
+                                <p className="text-lg text-center mb-4">¿Estás seguro de actualizar el TFG?</p>
+                                <div className="flex justify-around">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleConfirmSubmit(true)}
+                                        className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
+                                    >
+                                        Sí
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleConfirmSubmit(false)}
+                                        className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
+                                    >
+                                        No
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    )}
+                </div>
+            )
+                :
+                (
+                    <div className={styles.specific_tfg.id.notfound}>
+                        <h2>No se encontró el TFG</h2>
                     </div>
-                )}
-            </div>
-        </div>
+                )
+            }
+        </div >
     );
 }

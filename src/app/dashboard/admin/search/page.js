@@ -5,11 +5,13 @@ import GetUnverifiedTFGs from '../../components/lib/GetUnverifiedTFGs';
 import { useEffect, useState } from "react";
 import SearchBar from '../../components/SearchBar';
 import { styles } from '../components/styles/components';
+import LoadingSpinner from '../../components/LoadingSpinner';
 export default function SearchResults() {
     const [tfgs, setTfgs] = useState(null);
     const [search, setSearch] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const [pages, setPages] = useState(1);
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
         const searchQuery = searchParams.get('search');
@@ -34,6 +36,7 @@ export default function SearchResults() {
             setTfgs(response.tfgs);
             setPages(response.totalPages);
         });
+        setLoading(false);
     };
     const setTfgsResults = (search) => {
         // Redirigir a la página de resultados y pasar la búsqueda a través de parámetros de la URL
@@ -44,19 +47,27 @@ export default function SearchResults() {
         const searchQuery = encodeURIComponent(JSON.stringify(search));
         window.location.href = `/dashboard/search/admin?page_number=${page_number}&search=${searchQuery}`; // Redirige a la página con la búsqueda
     };
+
+    if (loading) {
+        return <LoadingSpinner message="Cargando detalles del proyecto..." />;
+    }
+
     return (
         <div className={styles.search.container}>
             <SearchBar search={setTfgsResults} />
-            <h1 className={styles.search.title}>Resultados de la búsqueda</h1>
-            {tfgs ? (
-                <div className={styles.search.TFG_result}>
-                    {tfgs.map((tfg, index) => (
-                        <TFGcardUnverified key={index} tfg={tfg} />
-                    ))}
-                </div>
-            ) : (
-                <div>Loading...</div>
-            )}
+            {loading ?
+                <LoadingSpinner message="Cargando detalles del proyecto..." />
+                : tfgs && tfgs.length > 0 ? (
+                    <div className={styles.search.TFG_result}>
+                        {tfgs.map((tfg, index) => (
+                            <TFGcardUnverified key={index} tfg={tfg} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-10">
+                        <p className="text-gray-500 text-lg">No se encontraron proyectos para revisar.</p>
+                    </div>
+                )}
 
             {/* Botones para paginación */}
             <div className={styles.search.button_container}>

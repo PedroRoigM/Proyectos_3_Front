@@ -5,19 +5,19 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { styles } from '../../components/styles/components';
-
+import loadingSpinner from "../../../components/LoadingSpinner";
 
 export default function Page() {
     const id = useSearchParams().get('id');
     const [tfg, setTfg] = useState(null);
     const [showAll, setShowAll] = useState(false);
     const maxVisible = 3; // Número de palabras clave visibles por defecto
-
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         const getTFG = async () => {
             const tfg = await GetTFG(id);
-            console.log(tfg);
             setTfg(tfg);
+            setLoading(false);
         };
         const getTFGpdf = async () => {
             const pdf = await GetTFGpdf(id);
@@ -75,89 +75,102 @@ export default function Page() {
         return false;
     };
 
-    if (!tfg) return <div>Loading...</div>;
+
 
     return (
+
         <div className={styles.specific_tfg.id.container}>
-            <div className={styles.specific_tfg.id.title}>
-                <div>
-                    <h2>{tfg.tfgTitle}</h2>
-                    <h3>{tfg.degree.degree}</h3>
-                </div>
-                <div className={styles.specific_tfg.id.button.container}>
-                    <Link
-                        href={`/dashboard/admin/tfg/edit/${tfg._id}?id=${tfg._id}`}
-                        className={styles.specific_tfg.id.button.edit}>
-                        <p>Editar</p>
-                    </Link>
-                    <button className={styles.specific_tfg.id.button.download}>
-                        <p onClick={downloadPDF}>Descargar</p>
-                    </button>
-                </div>
-            </div>
-            <div className={styles.specific_tfg.id.info.container}>
-                {/* Contenedor de palabras clave */}
-                <div className={styles.specific_tfg.id.info.keywords.container}>
-                    {tfg.keywords.slice(0, showAll ? tfg.keywords.length : maxVisible).map((element, index) => (
-                        <p key={index} className={styles.specific_tfg.id.info.keywords.keyword}>
-                            {element}
-                        </p>
-                    ))}
-                    {tfg.keywords.length > maxVisible && (
-                        <button
-                            onClick={() => setShowAll(!showAll)}
-                            className={styles.specific_tfg.id.info.keywords.extend}
-                        >
-                            {showAll ? "Ver menos" : "Ver más"}
-                        </button>
-                    )}
-                </div>
-
-                {/* Información de Año y Tutor */}
-                <div className={styles.specific_tfg.id.info.tutoryear}>
-                    <p><strong>Año:</strong> {tfg.year.year}</p>
-                    <p><strong>Tutor:</strong> {tfg.advisor.advisor}</p>
-                </div>
-            </div>
-            <div className={styles.specific_tfg.id.resumen}>
-                <h2>Resumen</h2>
-                <p>{tfg.abstract}</p>
-            </div>
-
-            {/* PDF */}
-            {tfg.pdf && (
-                <div className={styles.specific_tfg.id.pdf.margin}>
-                    <h2 className={styles.specific_tfg.id.pdf.title}>Documento TFG</h2>
-
-                    {/* Contenedor del PDF con posición relativa */}
-                    <div className={styles.specific_tfg.id.pdf.image.container} onContextMenu={handleContextMenu}>
-                        {/* Marca de agua */}
-                        <div className={styles.specific_tfg.id.pdf.image.watermark}>
-                            <div className={styles.specific_tfg.id.pdf.image.warning}>
-                                SOLO VISUALIZACIÓN
+            {loading ?
+                (<loadingSpinner message="Cargando TFG..." />)
+                : tfg ?
+                    (
+                        <>
+                            <div className={styles.specific_tfg.id.title}>
+                                <div>
+                                    <h2>{tfg.tfgTitle}</h2>
+                                    <h3>{tfg.degree.degree}</h3>
+                                </div>
+                                <div className={styles.specific_tfg.id.button.container}>
+                                    <Link
+                                        href={`/dashboard/admin/tfg/edit/${tfg._id}?id=${tfg._id}`}
+                                        className={styles.specific_tfg.id.button.edit}>
+                                        <p>Editar</p>
+                                    </Link>
+                                    <button className={styles.specific_tfg.id.button.download}>
+                                        <p onClick={downloadPDF}>Descargar</p>
+                                    </button>
+                                </div>
                             </div>
+                            <div className={styles.specific_tfg.id.info.container}>
+                                {/* Contenedor de palabras clave */}
+                                <div className={styles.specific_tfg.id.info.keywords.container}>
+                                    {tfg.keywords.slice(0, showAll ? tfg.keywords.length : maxVisible).map((element, index) => (
+                                        <p key={index} className={styles.specific_tfg.id.info.keywords.keyword}>
+                                            {element}
+                                        </p>
+                                    ))}
+                                    {tfg.keywords.length > maxVisible && (
+                                        <button
+                                            onClick={() => setShowAll(!showAll)}
+                                            className={styles.specific_tfg.id.info.keywords.extend}
+                                        >
+                                            {showAll ? "Ver menos" : "Ver más"}
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Información de Año y Tutor */}
+                                <div className={styles.specific_tfg.id.info.tutoryear}>
+                                    <p><strong>Año:</strong> {tfg.year.year}</p>
+                                    <p><strong>Tutor:</strong> {tfg.advisor.advisor}</p>
+                                </div>
+                            </div>
+                            <div className={styles.specific_tfg.id.resumen}>
+                                <h2>Resumen</h2>
+                                <p>{tfg.abstract}</p>
+                            </div>
+
+                            {tfg.pdf && (
+                                <div className={styles.specific_tfg.id.pdf.margin}>
+                                    <h2 className={styles.specific_tfg.id.pdf.title}>Documento TFG</h2>
+
+                                    {/* Contenedor del PDF con posición relativa */}
+                                    <div className={styles.specific_tfg.id.pdf.image.container} onContextMenu={handleContextMenu}>
+                                        {/* Marca de agua */}
+                                        <div className={styles.specific_tfg.id.pdf.image.watermark}>
+                                            <div className={styles.specific_tfg.id.pdf.image.warning}>
+                                                SOLO VISUALIZACIÓN
+                                            </div>
+                                        </div>
+
+                                        {/* Contenedor para object con desplazamiento negativo */}
+                                        <div className={styles.specific_tfg.id.pdf.notvisualizable.object}>
+                                            <object
+                                                data={`data:application/pdf;base64,${Buffer.from(tfg.pdf).toString('base64')}`}
+                                                type="application/pdf"
+                                                className={styles.specific_tfg.id.pdf.notvisualizable.object}
+                                            >
+                                                <p className={styles.specific_tfg.id.pdf.notvisualizable.text}>Tu navegador no puede mostrar PDFs.</p>
+                                            </object>
+                                        </div>
+
+                                        {/* Capa superior para bloquear selectivamente interacciones */}
+                                        <div className={styles.specific_tfg.id.pdf.blocker}></div>
+                                    </div>
+
+                                    <div className={styles.specific_tfg.id.pdf.text}>
+                                        Este documento está protegido. Visualización solo con fines académicos.
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    ) :
+                    (
+                        <div className={styles.specific_tfg.id.notfound}>
+                            <h2>No se encontró el TFG</h2>
                         </div>
-
-                        {/* Contenedor para object con desplazamiento negativo */}
-                        <div className={styles.specific_tfg.id.pdf.notvisualizable.object}>
-                            <object
-                                data={`data:application/pdf;base64,${Buffer.from(tfg.pdf).toString('base64')}`}
-                                type="application/pdf"
-                                className={styles.specific_tfg.id.pdf.notvisualizable.object}
-                            >
-                                <p className={styles.specific_tfg.id.pdf.notvisualizable.text}>Tu navegador no puede mostrar PDFs.</p>
-                            </object>
-                        </div>
-
-                        {/* Capa superior para bloquear selectivamente interacciones */}
-                        <div className={styles.specific_tfg.id.pdf.blocker}></div>
-                    </div>
-
-                    <div className={styles.specific_tfg.id.pdf.text}>
-                        Este documento está protegido. Visualización solo con fines académicos.
-                    </div>
-                </div>
-            )}
+                    )
+            }
         </div>
     );
 }
