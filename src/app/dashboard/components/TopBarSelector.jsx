@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getUserRole } from './UserContext'; // Asegúrate de que la ruta sea correcta
+import { getUserRole } from './UserContext';
 import UserTopBar from './topbars/UserTopBar';
 import CoordinatorTopBar from './topbars/CoordinatorTopBar';
 import AdminTopBar from './topbars/AdminTopBar';

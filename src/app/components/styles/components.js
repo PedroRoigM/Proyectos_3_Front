@@ -43,7 +43,7 @@ export const styles = {
     layout: {
         flexCenter: "flex items-center justify-center",
         topBar: "w-full bg-white border-b-[2px] border-[#14192c] shadow-md p-1 md:p-1"
-    }
+    },
 };
 
 // Función para combinar clases de estilo
