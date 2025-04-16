@@ -141,7 +141,14 @@ export const styles = {
         button: "w-full bg-[#0065ef] text-white font-bold py-2 rounded-md hover:bg-blue-700 transition duration-200",
 
         confirmation:{
-
+            flex: "fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50",
+            container: "bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md",
+            text: "text-lg text-center mb-4",
+            button:{
+                button_flex: "flex justify-around",
+                button_yes: "bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition",
+                button_no: "px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition",
+            },
         },
     
     

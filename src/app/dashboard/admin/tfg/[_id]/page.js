@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { styles } from '../../components/styles/components';
-import loadingSpinner from "../../../components/LoadingSpinner";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 export default function Page() {
     const id = useSearchParams().get('id');
@@ -81,7 +81,7 @@ export default function Page() {
 
         <div className={styles.specific_tfg.id.container}>
             {loading ?
-                (<loadingSpinner message="Cargando TFG..." />)
+                (<LoadingSpinner message="Cargando TFG..." />)
                 : tfg ?
                     (
                         <>

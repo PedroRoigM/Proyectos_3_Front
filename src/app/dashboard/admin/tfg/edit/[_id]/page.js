@@ -291,21 +291,21 @@ export default function Page() {
                         </button>
                     </form>
                     {showConfirmation && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
-                            <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
-                                <p className="text-lg text-center mb-4">¿Estás seguro de actualizar el TFG?</p>
-                                <div className="flex justify-around">
+                        <div className={styles.edit.confirmation.flex}>
+                            <div className={styles.edit.confirmation.container}>
+                                <p className={styles.edit.confirmation.text}>¿Estás seguro de actualizar el TFG?</p>
+                                <div className={styles.edit.confirmation.button.button_flex}>
                                     <button
                                         type="button"
                                         onClick={() => handleConfirmSubmit(true)}
-                                        className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
+                                        className={styles.edit.confirmation.button.button_yes}
                                     >
                                         Sí
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => handleConfirmSubmit(false)}
-                                        className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
+                                        className={styles.edit.confirmation.button.button_no}
                                     >
                                         No
                                     </button>
