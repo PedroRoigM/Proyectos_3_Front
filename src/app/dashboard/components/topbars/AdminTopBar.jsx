@@ -12,7 +12,7 @@ export default function AdminTopBar() {
   const [showAdminMenu, setShowAdminMenu] = useState(false);
 
   const handleLogout = async () => {
-    await LogOut();
+    await AccountLogOut();
   };
 
   return (
