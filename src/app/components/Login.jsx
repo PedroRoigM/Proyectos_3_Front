@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import PostLogin from './lib/login';
 import { styles, inputClassName } from './styles/components';
+import { validateLoginForm } from './errors/FormValidation';
+import { ErrorHandler, ErrorTypes } from './errors/ErrorHandler';
 
 export default function Login({ changeToRegister }) {
     const [formData, setFormData] = useState({
@@ -11,6 +13,10 @@ export default function Login({ changeToRegister }) {
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [formStatus, setFormStatus] = useState({
+        message: '',
+        type: ''
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -18,42 +24,60 @@ export default function Login({ changeToRegister }) {
             ...formData,
             [name]: value
         });
+
+        // Clear field-specific error when field changes
+        if (errors[name]) {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[name];
+                return newErrors;
+            });
+        }
+    };
+
+    const clearFormStatus = () => {
+        setFormStatus({ message: '', type: '' });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setErrors({}); // Reiniciar errores antes de validar
+        setErrors({});
+        setFormStatus({ message: '', type: '' });
 
-        let newErrors = {};
-
-        // Validación de email
-        if (!formData.email) {
-            newErrors.email = 'El email es obligatorio.';
-        } else if (!/^[a-zA-Z]+\.[a-zA-Z]+\d?@(u-tad\.com|live\.u-tad\.com)$/.test(formData.email)) {
-            newErrors.email = 'El email no es válido.';
-        }
-
-        // Validación de contraseña
-        if (!formData.password) {
-            newErrors.password = 'La contraseña es obligatoria.';
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'La contraseña debe tener al menos 6 caracteres.';
-        }
-
-        // Si hay errores, los mostramos y detenemos el proceso
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+        // Validate form fields
+        const validationErrors = validateLoginForm(formData);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
             setLoading(false);
             return;
         }
 
         try {
             const response = await PostLogin(formData);
-            setErrors(response);
-            setLoading(false);
+
+            if (response && response.account) {
+                // Server returned an error
+                setFormStatus({
+                    message: response.account,
+                    type: ErrorTypes.ERROR
+                });
+                setErrors(response);
+            } else if (!response) {
+                // Generic error
+                setFormStatus({
+                    message: "Ha ocurrido un error. Inténtalo de nuevo.",
+                    type: ErrorTypes.ERROR
+                });
+            }
+            // If successful, PostLogin will redirect to dashboard
         } catch (err) {
-            setErrors({ global: 'Ha ocurrido un error. Inténtalo de nuevo.' });
+            console.error("Login error:", err);
+            setFormStatus({
+                message: "Ha ocurrido un error. Inténtalo de nuevo.",
+                type: ErrorTypes.ERROR
+            });
+        } finally {
             setLoading(false);
         }
     };
@@ -63,8 +87,16 @@ export default function Login({ changeToRegister }) {
             <div className={styles.container.form}>
                 <h1 className={styles.headings.h1}>Login</h1>
 
+                {formStatus.message && (
+                    <ErrorHandler
+                        message={formStatus.message}
+                        type={formStatus.type}
+                        dismissible={true}
+                        onDismiss={clearFormStatus}
+                    />
+                )}
+
                 {loading && <p className={styles.form.loading}>Cargando...</p>}
-                {errors.account && <p className={styles.errors.text}>{errors.account}</p>}
 
                 <form onSubmit={handleSubmit} className={styles.form.container}>
                     <div className={styles.form.group}>
@@ -75,7 +107,8 @@ export default function Login({ changeToRegister }) {
                             placeholder="Email"
                             value={formData.email}
                             onChange={handleChange}
-                            className={inputClassName(errors.account)}
+                            className={inputClassName(errors.email)}
+                            disabled={loading}
                         />
                         {errors.email && <p className={styles.errors.text}>{errors.email}</p>}
                     </div>
@@ -88,7 +121,8 @@ export default function Login({ changeToRegister }) {
                             placeholder="Contraseña"
                             value={formData.password}
                             onChange={handleChange}
-                            className={inputClassName(errors.account)}
+                            className={inputClassName(errors.password)}
+                            disabled={loading}
                         />
                         {errors.password && <p className={styles.errors.text}>{errors.password}</p>}
                     </div>
@@ -97,8 +131,12 @@ export default function Login({ changeToRegister }) {
                         ¿Has olvidado tu contraseña?
                     </a>
 
-                    <button type="submit" className={styles.buttons.primary}>
-                        Iniciar sesión
+                    <button
+                        type="submit"
+                        className={styles.buttons.primary}
+                        disabled={loading}
+                    >
+                        {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
                     </button>
 
                     <p onClick={changeToRegister} className={styles.buttons.link}>

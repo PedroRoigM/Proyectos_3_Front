@@ -5,13 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, LogOut, Search, FileCheck } from "lucide-react";
 import { styles } from "../styles/components";
-
+import AccountLogOut from "../lib/AccountLogOutLogOut";
 export default function CoordinatorTopBar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleLogout = () => {
-    document.cookie = "bytoken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    window.location.href = "/";
+  const handleLogout = async () => {
+    await AccountLogOut();
   };
 
   return (

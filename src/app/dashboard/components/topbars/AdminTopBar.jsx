@@ -5,14 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, LogOut, Search, Settings, Users } from "lucide-react";
 import { styles } from "../styles/components";
+import AccountLogOut from "../lib/AccountLogOutLogOut";
 
 export default function AdminTopBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showAdminMenu, setShowAdminMenu] = useState(false);
 
-  const handleLogout = () => {
-    document.cookie = "bytoken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    window.location.href = "/";
+  const handleLogout = async () => {
+    await LogOut();
   };
 
   return (
