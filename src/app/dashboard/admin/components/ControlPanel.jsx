@@ -2,11 +2,14 @@ import React from 'react';
 import ToggleSwitch from './ToggleSwitch';
 import CategoryList from './CategoryList';
 import CreateForm from './CreateForm';
+import SearchInput from './SearchInput';
 
 const ControlPanel = ({
     activeTab,
     showInactive,
     setShowInactive,
+    searchTerm,
+    setSearchTerm,
     newAdvisor,
     setNewAdvisor,
     newDegree,
@@ -24,15 +27,28 @@ const ControlPanel = ({
 }) => {
     return (
         <div className={styles.panel.container}>
-            {/* Controles superiores: filtro y formulario de creación */}
+            {/* Controles superiores: filtro, búsqueda y formulario de creación */}
             <div className={styles.panel.controlers}>
-                {/* Toggle para mostrar inactivos */}
-                <ToggleSwitch
-                    checked={showInactive}
-                    onChange={() => setShowInactive(!showInactive)}
-                    label="Mostrar elementos inactivos"
-                    styles={styles}
-                />
+                <div className="flex flex-col md:flex-row w-full gap-4 mb-4">
+                    {/* Toggle para mostrar inactivos */}
+                    <div className="md:w-1/3">
+                        <ToggleSwitch
+                            checked={showInactive}
+                            onChange={() => setShowInactive(!showInactive)}
+                            label="Mostrar elementos inactivos"
+                            styles={styles}
+                        />
+                    </div>
+
+                    {/* Barra de búsqueda */}
+                    <div className="md:w-2/3">
+                        <SearchInput
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            placeholder={`Buscar ${activeTab === 'advisors' ? 'tutores' : activeTab === 'degrees' ? 'grados' : 'años'}...`}
+                        />
+                    </div>
+                </div>
 
                 {/* Formularios de creación según la pestaña activa */}
                 {activeTab === 'advisors' && (
@@ -79,6 +95,7 @@ const ControlPanel = ({
                     onDelete={handleDeleteItem}
                     onToggleStatus={handleToggleStatus}
                     styles={styles}
+                    searchTerm={searchTerm}
                 />
             )}
 
@@ -91,6 +108,7 @@ const ControlPanel = ({
                     onDelete={handleDeleteItem}
                     onToggleStatus={handleToggleStatus}
                     styles={styles}
+                    searchTerm={searchTerm}
                 />
             )}
 
@@ -103,6 +121,7 @@ const ControlPanel = ({
                     onDelete={handleDeleteItem}
                     onToggleStatus={handleToggleStatus}
                     styles={styles}
+                    searchTerm={searchTerm}
                 />
             )}
         </div>

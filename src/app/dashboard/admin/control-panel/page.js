@@ -45,6 +45,9 @@ function ControlPanelContent() {
     const [modalType, setModalType] = useState('');
     const [itemToModify, setItemToModify] = useState(null);
 
+    // Estado para la búsqueda
+    const [searchTerm, setSearchTerm] = useState('');
+
     // Hooks para el manejo de errores y notificaciones
     const { showSuccess, showError } = useNotification();
     const { loading, executeRequest } = useApiError();
@@ -348,16 +351,28 @@ function ControlPanelContent() {
         }
     };
 
-    // Filtrar elementos según el estado activo/inactivo
-    const getFilteredItems = (items) => {
+    // Función para filtrar elementos por estado activo/inactivo
+    const getActiveFilteredItems = (items) => {
         return showInactive ? items : items.filter(item => item.active);
     };
 
-    const filteredAdvisors = getFilteredItems(advisors);
-    const filteredDegrees = getFilteredItems(degrees);
-    const filteredYears = getFilteredItems(years);
+    // Función para filtrar elementos por término de búsqueda
+    const getSearchFilteredItems = (items, field) => {
+        if (!searchTerm.trim()) return items;
 
-    if (loading) {
+        return items.filter(item => {
+            const valueToSearch = field === 'advisor' ? item.advisor :
+                field === 'degree' ? item.degree : item.year;
+            return valueToSearch.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+    };
+
+    // Aplicar ambos filtros a los elementos
+    const filteredAdvisors = getSearchFilteredItems(getActiveFilteredItems(advisors), 'advisor');
+    const filteredDegrees = getSearchFilteredItems(getActiveFilteredItems(degrees), 'degree');
+    const filteredYears = getSearchFilteredItems(getActiveFilteredItems(years), 'year');
+
+    if (loading && advisors.length === 0 && degrees.length === 0 && years.length === 0) {
         return <LoadingSpinner message="Cargando panel de control..." />;
     }
 
@@ -385,6 +400,8 @@ function ControlPanelContent() {
                     activeTab={activeTab}
                     showInactive={showInactive}
                     setShowInactive={setShowInactive}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
                     newAdvisor={newAdvisor}
                     setNewAdvisor={setNewAdvisor}
                     newDegree={newDegree}
