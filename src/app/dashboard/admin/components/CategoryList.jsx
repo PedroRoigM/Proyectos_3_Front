@@ -8,8 +8,22 @@ const CategoryList = ({
     showInactive,
     onDelete,
     onToggleStatus,
-    styles
+    styles,
+    searchTerm
 }) => {
+    // Determinar el mensaje a mostrar cuando no hay resultados
+    const getEmptyMessage = () => {
+        if (searchTerm) {
+            return `No se encontraron ${type === 'advisor' ? 'tutores' :
+                type === 'degree' ? 'grados' : 'años'
+                } que coincidan con "${searchTerm}".`;
+        }
+
+        return showInactive
+            ? `No hay ${type === 'advisor' ? 'tutores' : type === 'degree' ? 'grados' : 'años'} disponibles.`
+            : `No hay ${type === 'advisor' ? 'tutores' : type === 'degree' ? 'grados' : 'años'} activos. Activa el interruptor para ver todos los ${type === 'advisor' ? 'tutores' : type === 'degree' ? 'grados' : 'años'}.`;
+    };
+
     return (
         <div className={styles.panel.content.container}>
             <h2 className={styles.panel.content.title}>{title}</h2>
@@ -31,9 +45,7 @@ const CategoryList = ({
             ) : (
                 <div className={styles.panel.content.nofiltered}>
                     <p className={styles.panel.content.text}>
-                        {showInactive
-                            ? `No hay ${type === 'advisor' ? 'tutores' : type === 'degree' ? 'grados' : 'años'} disponibles.`
-                            : `No hay ${type === 'advisor' ? 'tutores' : type === 'degree' ? 'grados' : 'años'} activos. Activa el interruptor para ver todos los ${type === 'advisor' ? 'tutores' : type === 'degree' ? 'grados' : 'años'}.`}
+                        {getEmptyMessage()}
                     </p>
                 </div>
             )}
