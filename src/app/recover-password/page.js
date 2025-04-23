@@ -3,6 +3,15 @@ import { useState } from "react";
 import PostRecoverPassword from "../components/lib/PostRecoverPassword";
 import PatchRecoverPassword from "../components/lib/PatchRecoverPassword";
 import { recoverPasswordStyles, inputClassName } from "../components/styles/recover-password";
+import {
+    ErrorTypes,
+    useFormErrors,
+    useFormStatus,
+    FormStatusMessage,
+    FormFieldError
+} from "../components/errors/enhanced-error-handler";
+import { useApiError } from "../components/errors/api-error-hook";
+import { validateRecoverPasswordForm } from "../components/errors/FormValidation";
 
 export default function Page() {
     const [formData, setFormData] = useState({
@@ -11,64 +20,93 @@ export default function Page() {
         password: '',
     });
     const [step, setStep] = useState(1);
-    const [errors, setErrors] = useState({});
+
+    // Usar los nuevos hooks para el manejo de errores
+    const [errors, setError, clearError, clearAllErrors] = useFormErrors({});
+    const [formStatus, setFormStatus, clearFormStatus] = useFormStatus();
+    const { loading, executeRequest } = useApiError();
 
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: value,
         });
-        setErrors({
-            ...errors,
-            [e.target.name]: '',
-        });
+        clearError(name);
     }
 
     const handleSubmit = async () => {
-        let newErrors = {};
+        clearAllErrors();
+        clearFormStatus();
+
+        // Validar según el paso actual
+        const validationErrors = validateRecoverPasswordForm(formData, step);
+        if (Object.keys(validationErrors).length > 0) {
+            // Agregar cada error de validación al estado
+            Object.entries(validationErrors).forEach(([field, message]) => {
+                setError(field, message);
+            });
+            return;
+        }
+
         if (step === 1) {
-            if (!formData.email) {
-                newErrors.account = 'El email es obligatorio';
-            }
-            if (Object.keys(newErrors).length > 0) {
-                setErrors(newErrors);
+            // Paso 1: Solicitar código de recuperación
+            const response = await executeRequest(
+                async () => await PostRecoverPassword(formData.email),
+                {
+                    loadingMessage: 'Enviando código...',
+                    errorMessage: 'Ha ocurrido un error al enviar el código. Inténtalo de nuevo.'
+                }
+            );
+
+            if (!response || !response.success) {
+                if (response && response.account) {
+                    setFormStatus(response.account, ErrorTypes.ERROR);
+                } else {
+                    setFormStatus('El email no existe o ha ocurrido un error', ErrorTypes.ERROR);
+                }
                 return;
             }
-            const response = await PostRecoverPassword(formData.email);
-            if (!response.success) {
-                setErrors({ account: 'El email no existe' });
-                return;
-            } else {
-                setErrors({ account: '' });
-            }
+
+            // Avanzar al siguiente paso
+            setFormStatus('Código enviado con éxito. Revisa tu correo electrónico.', ErrorTypes.SUCCESS);
             setStep(2);
+
         } else if (step === 2) {
-            if (!formData.code) {
-                newErrors.code = 'El código es obligatorio';
-            }
-            if (!formData.password) {
-                newErrors.account = 'La contraseña es obligatoria';
-            }
-            if (Object.keys(newErrors).length > 0) {
-                setErrors(newErrors);
+            // Paso 2: Cambiar contraseña con el código
+            const response = await executeRequest(
+                async () => await PatchRecoverPassword(formData),
+                {
+                    loadingMessage: 'Cambiando contraseña...',
+                    errorMessage: 'Ha ocurrido un error al cambiar la contraseña. Inténtalo de nuevo.'
+                }
+            );
+
+            if (!response || response.code || response.account) {
+                if (response && response.code) {
+                    setError('code', response.code);
+                }
+                if (response && response.account) {
+                    setError('password', response.account);
+                }
                 return;
             }
-            const response = await PatchRecoverPassword(formData);
-            if (!response.success) {
-                setErrors(response);
-                return;
-            } else {
-                setErrors({ code: '', account: '' });
-            }
+
+            // Mostrar mensaje de éxito y avanzar al paso final
+            setFormStatus('Contraseña cambiada con éxito', ErrorTypes.SUCCESS);
             setStep(3);
         }
     }
 
     const handleRollback = () => {
+        clearAllErrors();
+        clearFormStatus();
+
         if (step === 1) {
             window.location.href = '/';
             return;
         }
+
         if (step === 2) {
             setFormData({
                 email: formData.email,
@@ -76,6 +114,7 @@ export default function Page() {
                 password: '',
             });
         }
+
         setStep(step - 1);
     }
 
@@ -84,6 +123,11 @@ export default function Page() {
             <div className={recoverPasswordStyles.layout.wrapper}>
                 <div className={recoverPasswordStyles.layout.formContainer}>
                     <h1 className={recoverPasswordStyles.headings.title}>Recuperar contraseña</h1>
+
+                    <FormStatusMessage
+                        status={formStatus}
+                        onDismiss={clearFormStatus}
+                    />
 
                     {step === 1 && (
                         <div>
@@ -94,59 +138,67 @@ export default function Page() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 className={inputClassName(errors.account)}
+                                disabled={loading}
                             />
-                            {errors.account && <p className={recoverPasswordStyles.form.error}>{errors.account}</p>}
+                            <FormFieldError error={errors.account} />
                         </div>
                     )}
-                    
+
                     {step === 2 && (
                         <div className={recoverPasswordStyles.form.container}>
                             <div className={recoverPasswordStyles.form.section}>
                                 <p>Introduce el código</p>
-                                <input 
-                                    type="text" 
-                                    name="code" 
-                                    value={formData.code} 
-                                    onChange={handleChange} 
-                                    className={inputClassName(errors.code)} 
+                                <input
+                                    type="text"
+                                    name="code"
+                                    value={formData.code}
+                                    onChange={handleChange}
+                                    className={inputClassName(errors.code)}
+                                    disabled={loading}
                                 />
-                                {errors.code && <p className={recoverPasswordStyles.form.error}>{errors.code}</p>}
+                                <FormFieldError error={errors.code} />
                             </div>
                             <div>
                                 <p>Introduce tu nueva contraseña</p>
-                                <input 
-                                    type="password" 
-                                    name="password" 
-                                    value={formData.password} 
-                                    onChange={handleChange} 
-                                    className={inputClassName(errors.account)} 
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className={inputClassName(errors.account)}
+                                    disabled={loading}
                                 />
-                                {errors.account && <p className={recoverPasswordStyles.form.error}>{errors.account}</p>}
+                                <FormFieldError error={errors.account} />
                             </div>
                         </div>
                     )}
-                    
+
                     {step === 3 && (
                         <p>Contraseña cambiada correctamente</p>
                     )}
-                    
+
                     <div className={recoverPasswordStyles.buttons.container}>
-                        <button 
-                            type="submit" 
-                            onClick={handleSubmit} 
-                            className={recoverPasswordStyles.buttons.primary}
-                        >
-                            Enviar
-                        </button>
-                        <button 
-                            onClick={handleRollback} 
+                        {step !== 3 && (
+                            <button
+                                type="button"
+                                onClick={handleSubmit}
+                                className={recoverPasswordStyles.buttons.primary}
+                                disabled={loading}
+                            >
+                                {loading ? 'Procesando...' : 'Enviar'}
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            onClick={handleRollback}
                             className={recoverPasswordStyles.buttons.secondary}
+                            disabled={loading}
                         >
-                            Volver
+                            {step === 3 ? 'Ir a login' : 'Volver'}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }

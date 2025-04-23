@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import TopBar from "./components/TopBar";
 import { usePathname } from "next/navigation";
+import { ErrorBoundary } from "./components/errors/error-boundary";
+import { NotificationProvider } from "./components/errors/notification-context";
+import { useGlobalErrorHandler } from "./components/errors/global-error-handler";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,6 +17,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Componente para configurar el manejador global de errores
+function GlobalErrorHandler() {
+  useGlobalErrorHandler((errorInfo) => {
+    console.error("Error global capturado:", errorInfo);
+    // Las notificaciones se manejan automáticamente en el componente NotificationProvider
+  });
+  return null;
+}
 
 export default function RootLayout({ children }) {
   // Obtener la ruta actual
@@ -25,9 +36,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {!isDashboard && <TopBar />} {/* Solo se muestra si NO es dashboard */}
-        {children}
-        {/*footer*/}
+        <ErrorBoundary>
+          <NotificationProvider>
+            <GlobalErrorHandler />
+            {!isDashboard && <TopBar />} {/* Solo se muestra si NO es dashboard */}
+            {children}
+          </NotificationProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

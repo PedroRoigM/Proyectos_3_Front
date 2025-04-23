@@ -5,6 +5,9 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import TabNavigation from '../components/TabNavigation';
 import ControlPanel from '../components/ControlPanel';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { ErrorBoundary } from '../../../components/errors/error-boundary';
+import { useNotification } from '../../../components/errors/notification-context';
+import { useApiError } from '../../../components/errors/api-error-hook';
 
 // Importaciones de servicios
 import {
@@ -22,12 +25,11 @@ import {
     UpdateYear
 } from '../../components/lib';
 
-export default function ControlPanelPage() {
+function ControlPanelContent() {
     // Estados principales para los datos
     const [advisors, setAdvisors] = useState([]);
     const [degrees, setDegrees] = useState([]);
     const [years, setYears] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     // Estado para controlar la pestaña activa
     const [activeTab, setActiveTab] = useState('advisors');
@@ -43,45 +45,62 @@ export default function ControlPanelPage() {
     const [modalType, setModalType] = useState('');
     const [itemToModify, setItemToModify] = useState(null);
 
+    // Hooks para el manejo de errores y notificaciones
+    const { showSuccess, showError } = useNotification();
+    const { loading, executeRequest } = useApiError();
+
     // Cargar datos iniciales
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true);
+                // Ejecutar múltiples llamadas a la API en paralelo
                 const [advisorsData, degreesData, yearsData] = await Promise.all([
-                    GetAdvisors(),
-                    GetDegrees(),
-                    GetYears()
+                    executeRequest(
+                        async () => await GetAdvisors(),
+                        { errorMessage: 'Error al cargar los tutores' }
+                    ),
+                    executeRequest(
+                        async () => await GetDegrees(),
+                        { errorMessage: 'Error al cargar los grados' }
+                    ),
+                    executeRequest(
+                        async () => await GetYears(),
+                        { errorMessage: 'Error al cargar los años académicos' }
+                    )
                 ]);
 
-                // Convertir los datos y agregar estado "active" si no existe
-                const processedAdvisors = (advisorsData || []).map(advisor => ({
-                    ...advisor,
-                    active: advisor.active !== undefined ? advisor.active : true
-                }));
+                // Procesar los datos recibidos
+                if (advisorsData) {
+                    const processedAdvisors = advisorsData.map(advisor => ({
+                        ...advisor,
+                        active: advisor.active !== undefined ? advisor.active : true
+                    }));
+                    setAdvisors(processedAdvisors);
+                }
 
-                const processedDegrees = (degreesData || []).map(degree => ({
-                    ...degree,
-                    active: degree.active !== undefined ? degree.active : true
-                }));
+                if (degreesData) {
+                    const processedDegrees = degreesData.map(degree => ({
+                        ...degree,
+                        active: degree.active !== undefined ? degree.active : true
+                    }));
+                    setDegrees(processedDegrees);
+                }
 
-                const processedYears = (yearsData || []).map(year => ({
-                    ...year,
-                    active: year.active !== undefined ? year.active : true
-                }));
-
-                setAdvisors(processedAdvisors);
-                setDegrees(processedDegrees);
-                setYears(processedYears);
-                setLoading(false);
+                if (yearsData) {
+                    const processedYears = yearsData.map(year => ({
+                        ...year,
+                        active: year.active !== undefined ? year.active : true
+                    }));
+                    setYears(processedYears);
+                }
             } catch (error) {
                 console.error('Error al cargar datos:', error);
-                setLoading(false);
+                showError('No se pudieron cargar los datos. Por favor, intenta de nuevo.');
             }
         };
 
         fetchData();
-    }, []);
+    }, [executeRequest, showError]);
 
     // Crear un nuevo tutor
     const handleCreateAdvisor = async (e) => {
@@ -89,21 +108,31 @@ export default function ControlPanelPage() {
         if (!newAdvisor.trim()) return;
 
         try {
-            const response = await PostAdvisor({ advisor: newAdvisor });
+            const response = await executeRequest(
+                async () => await PostAdvisor({ advisor: newAdvisor }),
+                {
+                    loadingMessage: 'Creando tutor...',
+                    errorMessage: 'Error al crear tutor'
+                }
+            );
 
             if (response && response.data) {
                 setAdvisors([...advisors, { ...response.data, active: true }]);
+                showSuccess(`Tutor "${newAdvisor}" creado correctamente`);
             } else {
+                // Usar un ID temporal para el tutor en caso de que la API no devuelva uno
                 setAdvisors([...advisors, {
                     _id: `temp-${Date.now()}`,
                     advisor: newAdvisor,
                     active: true
                 }]);
+                showSuccess(`Tutor "${newAdvisor}" creado correctamente`);
             }
 
             setNewAdvisor('');
         } catch (error) {
             console.error('Error al crear tutor:', error);
+            showError(`No se pudo crear el tutor "${newAdvisor}"`);
         }
     };
 
@@ -113,21 +142,30 @@ export default function ControlPanelPage() {
         if (!newDegree.trim()) return;
 
         try {
-            const response = await PostDegree({ degree: newDegree });
+            const response = await executeRequest(
+                async () => await PostDegree({ degree: newDegree }),
+                {
+                    loadingMessage: 'Creando grado...',
+                    errorMessage: 'Error al crear grado'
+                }
+            );
 
             if (response && response.data) {
                 setDegrees([...degrees, { ...response.data, active: true }]);
+                showSuccess(`Grado "${newDegree}" creado correctamente`);
             } else {
                 setDegrees([...degrees, {
                     _id: `temp-${Date.now()}`,
                     degree: newDegree,
                     active: true
                 }]);
+                showSuccess(`Grado "${newDegree}" creado correctamente`);
             }
 
             setNewDegree('');
         } catch (error) {
             console.error('Error al crear grado:', error);
+            showError(`No se pudo crear el grado "${newDegree}"`);
         }
     };
 
@@ -136,21 +174,30 @@ export default function ControlPanelPage() {
         e.preventDefault();
 
         try {
-            const response = await PostYear();
+            const response = await executeRequest(
+                async () => await PostYear(),
+                {
+                    loadingMessage: 'Creando año académico...',
+                    errorMessage: 'Error al crear año académico'
+                }
+            );
 
             if (response && response.data) {
                 setYears([...years, { ...response.data, active: true }]);
+                showSuccess('Año académico creado correctamente');
             } else {
                 setYears([...years, {
                     _id: `temp-${Date.now()}`,
-                    year: newYear,
+                    year: newYear || `${new Date().getFullYear()}/${new Date().getFullYear() + 1}`,
                     active: true
                 }]);
+                showSuccess('Año académico creado correctamente');
             }
 
             setNewYear('');
         } catch (error) {
             console.error('Error al crear año:', error);
+            showError('No se pudo crear el año académico');
         }
     };
 
@@ -181,52 +228,119 @@ export default function ControlPanelPage() {
             if (action === 'delete') {
                 switch (type) {
                     case 'advisor':
-                        await DeleteAdvisor(itemToModify);
+                        await executeRequest(
+                            async () => await DeleteAdvisor(itemToModify),
+                            {
+                                loadingMessage: 'Eliminando tutor...',
+                                errorMessage: 'Error al eliminar tutor'
+                            }
+                        );
                         setAdvisors(advisors.filter(advisor => advisor._id !== itemToModify));
+                        showSuccess('Tutor eliminado correctamente');
                         break;
+
                     case 'degree':
-                        await DeleteDegree({ id: itemToModify });
+                        await executeRequest(
+                            async () => await DeleteDegree({ id: itemToModify }),
+                            {
+                                loadingMessage: 'Eliminando grado...',
+                                errorMessage: 'Error al eliminar grado'
+                            }
+                        );
                         setDegrees(degrees.filter(degree => degree._id !== itemToModify));
+                        showSuccess('Grado eliminado correctamente');
                         break;
+
                     case 'year':
-                        await DeleteYear({ id: itemToModify });
+                        await executeRequest(
+                            async () => await DeleteYear({ id: itemToModify }),
+                            {
+                                loadingMessage: 'Eliminando año académico...',
+                                errorMessage: 'Error al eliminar año académico'
+                            }
+                        );
                         setYears(years.filter(year => year._id !== itemToModify));
+                        showSuccess('Año académico eliminado correctamente');
                         break;
+
                     default:
                         break;
                 }
             } else if (action === 'toggle') {
                 switch (type) {
-                    case 'advisor':
-                        await UpdateAdvisor(itemToModify, { active: !advisors.find(advisor => advisor._id === itemToModify).active });
+                    case 'advisor': {
+                        const advisor = advisors.find(a => a._id === itemToModify);
+                        const newStatus = !advisor.active;
+
+                        await executeRequest(
+                            async () => await UpdateAdvisor(itemToModify, { active: newStatus }),
+                            {
+                                loadingMessage: `${newStatus ? 'Activando' : 'Desactivando'} tutor...`,
+                                errorMessage: `Error al ${newStatus ? 'activar' : 'desactivar'} tutor`
+                            }
+                        );
+
                         setAdvisors(advisors.map(advisor =>
                             advisor._id === itemToModify
-                                ? { ...advisor, active: !advisor.active }
+                                ? { ...advisor, active: newStatus }
                                 : advisor
                         ));
+
+                        showSuccess(`Tutor ${newStatus ? 'activado' : 'desactivado'} correctamente`);
                         break;
-                    case 'degree':
-                        await UpdateDegree(itemToModify, { active: !degrees.find(degree => degree._id === itemToModify).active });
+                    }
+
+                    case 'degree': {
+                        const degree = degrees.find(d => d._id === itemToModify);
+                        const newStatus = !degree.active;
+
+                        await executeRequest(
+                            async () => await UpdateDegree(itemToModify, { active: newStatus }),
+                            {
+                                loadingMessage: `${newStatus ? 'Activando' : 'Desactivando'} grado...`,
+                                errorMessage: `Error al ${newStatus ? 'activar' : 'desactivar'} grado`
+                            }
+                        );
+
                         setDegrees(degrees.map(degree =>
                             degree._id === itemToModify
-                                ? { ...degree, active: !degree.active }
+                                ? { ...degree, active: newStatus }
                                 : degree
                         ));
+
+                        showSuccess(`Grado ${newStatus ? 'activado' : 'desactivado'} correctamente`);
                         break;
-                    case 'year':
-                        await UpdateYear(itemToModify, { active: !years.find(year => year._id === itemToModify).active });
+                    }
+
+                    case 'year': {
+                        const year = years.find(y => y._id === itemToModify);
+                        const newStatus = !year.active;
+
+                        await executeRequest(
+                            async () => await UpdateYear(itemToModify, { active: newStatus }),
+                            {
+                                loadingMessage: `${newStatus ? 'Activando' : 'Desactivando'} año académico...`,
+                                errorMessage: `Error al ${newStatus ? 'activar' : 'desactivar'} año académico`
+                            }
+                        );
+
                         setYears(years.map(year =>
                             year._id === itemToModify
-                                ? { ...year, active: !year.active }
+                                ? { ...year, active: newStatus }
                                 : year
                         ));
+
+                        showSuccess(`Año académico ${newStatus ? 'activado' : 'desactivado'} correctamente`);
                         break;
+                    }
+
                     default:
                         break;
                 }
             }
         } catch (error) {
             console.error(`Error al procesar acción ${action} en ${type}:`, error);
+            showError(`No se pudo completar la acción. Por favor, inténtalo de nuevo.`);
         } finally {
             setShowModal(false);
             setItemToModify(null);
@@ -298,5 +412,13 @@ export default function ControlPanelPage() {
                 />
             )}
         </div>
+    );
+}
+
+export default function ControlPanelPage() {
+    return (
+        <ErrorBoundary>
+            <ControlPanelContent />
+        </ErrorBoundary>
     );
 }

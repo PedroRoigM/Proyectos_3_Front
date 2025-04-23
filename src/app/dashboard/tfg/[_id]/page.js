@@ -5,35 +5,76 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { tfgDetailsStyles } from "../../components/styles/tfg-datails";
+import { ErrorBoundary } from '../../../components/errors/error-boundary';
+import { useNotification } from '../../../components/errors/notification-context';
+import { useApiError } from '../../../components/errors/api-error-hook';
 
-export default function Page() {
+function TFGDetailsContent() {
     const id = useSearchParams().get('id');
     const [tfg, setTfg] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [showAll, setShowAll] = useState(false);
     const maxVisible = 3; // Número de palabras clave visibles por defecto
+    const { showError } = useNotification();
+    const { loading, executeRequest } = useApiError();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const tfgData = await GetTFG(id);
-                setTfg(tfgData);
+                // Obtener datos del TFG
+                const tfgData = await executeRequest(
+                    async () => await GetTFG(id),
+                    {
+                        errorMessage: 'No se pudieron cargar los detalles del TFG'
+                    }
+                );
 
-                try {
-                    const pdfData = await GetTFGpdf(id);
-                    setTfg(prevTfg => ({ ...prevTfg, pdf: pdfData }));
-                } catch (error) {
-                    console.error("Error al cargar el PDF:", error);
+                if (tfgData) {
+                    setTfg(tfgData);
+
+                    // Obtener PDF después de tener los datos básicos
+                    try {
+                        const pdfData = await executeRequest(
+                            async () => await GetTFGpdf(id),
+                            {
+                                errorMessage: 'No se pudo cargar el archivo PDF',
+                                showLoadingState: false
+                            }
+                        );
+
+                        if (pdfData) {
+                            setTfg(prevTfg => ({ ...prevTfg, pdf: pdfData }));
+                        }
+                    } catch (pdfError) {
+                        console.error("Error al cargar el PDF:", pdfError);
+                        showError('No se pudo cargar el archivo PDF del TFG');
+                    }
+                } else {
+                    showError('No se pudieron cargar los detalles del TFG');
                 }
             } catch (error) {
                 console.error("Error al cargar los detalles del TFG:", error);
-            } finally {
-                setLoading(false);
+                showError('Ha ocurrido un error al cargar los detalles del TFG');
             }
         };
 
         fetchData();
-    }, [id]);
+
+        // Añadir protección contra atajos de teclado para descargar
+        const handleKeyDown = (e) => {
+            if ((e.ctrlKey && e.key === 's') ||
+                (e.ctrlKey && e.key === 'p') ||
+                (e.ctrlKey && e.shiftKey && e.key === 's')) {
+                e.preventDefault();
+                return false;
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [id, showError, executeRequest]);
 
     // Manejar el evento contextmenu para prevenir clic derecho
     const handleContextMenu = (e) => {
@@ -43,6 +84,14 @@ export default function Page() {
 
     if (loading) {
         return <LoadingSpinner message="Cargando detalles del proyecto..." />;
+    }
+
+    if (!tfg) {
+        return (
+            <div className="text-center py-10">
+                <p className="text-red-500 text-lg">No se encontró el TFG solicitado.</p>
+            </div>
+        );
     }
 
     return (
@@ -119,5 +168,13 @@ export default function Page() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function TFGDetails() {
+    return (
+        <ErrorBoundary>
+            <TFGDetailsContent />
+        </ErrorBoundary>
     );
 }

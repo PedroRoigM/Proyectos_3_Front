@@ -1,10 +1,18 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import PostRegister from './lib/register';
 import { styles, classNames } from './styles/components';
-import { validateLoginForm } from './errors/FormValidation';
-import { ErrorHandler, ErrorTypes } from './errors/ErrorHandler';
+import { validateRegisterForm } from './errors/FormValidation';
+import {
+    ErrorTypes,
+    useFormErrors,
+    useFormStatus,
+    FormStatusMessage,
+    FormFieldError
+} from './errors/enhanced-error-handler';
+import { useApiError } from './errors/api-error-hook';
+import { mapApiErrorsToFormErrors } from './errors/api-error-service';
 
 export default function Register({ changeToLogin }) {
     const [formData, setFormData] = useState({
@@ -12,77 +20,73 @@ export default function Register({ changeToLogin }) {
         email: '',
         password: ''
     });
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
-    const [formStatus, setFormStatus] = useState({
-        message: '',
-        type: ''
-    });
+
+    // Usar los nuevos hooks para el manejo de errores
+    const [errors, setError, clearError, clearAllErrors] = useFormErrors({});
+    const [formStatus, setFormStatus, clearFormStatus] = useFormStatus();
+    const { loading, executeRequest } = useApiError();
+
+    // Usar useCallback para evitar recreaciones innecesarias de funciones
+    const handleChangeToLogin = useCallback((e) => {
+        // Prevenir comportamiento por defecto si es un evento
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+
+        // Llamar a la función proporcionada por el componente padre
+        if (typeof changeToLogin === 'function') {
+            changeToLogin();
+        }
+    }, [changeToLogin]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        // Clear field-specific error when field changes
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[name];
-                return newErrors;
-            });
-        }
-
+        // Actualizar formData
         setFormData({
             ...formData,
             [name]: value
         });
-    };
 
-    const clearFormStatus = () => {
-        setFormStatus({ message: '', type: '' });
+        // Limpiar error específico del campo
+        clearError(name);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setErrors({});
-        setFormStatus({ message: '', type: '' });
+        clearAllErrors();
+        clearFormStatus();
 
-        try {
-            // Validate form data
-            const validationErrors = validateRegisterForm(formData);
-            if (Object.keys(validationErrors).length > 0) {
-                setErrors(validationErrors);
-                setLoading(false);
-                return;
-            }
-
-            const response = await PostRegister(formData);
-
-            // Handle different response scenarios
-            if (response && response.email) {
-                // Email-specific error
-                setFormStatus({
-                    message: response.email,
-                    type: ErrorTypes.ERROR
-                });
-            } else if (response === null) {
-                // General error
-                setFormStatus({
-                    message: "Ha ocurrido un error al registrar tu cuenta. Inténtalo de nuevo.",
-                    type: ErrorTypes.ERROR
-                });
-            }
-            // If successful, PostRegister will redirect to validation page
-
-        } catch (err) {
-            console.error("Registration error:", err);
-            setFormStatus({
-                message: "Ha ocurrido un error. Inténtalo de nuevo.",
-                type: ErrorTypes.ERROR
+        // Validar formulario usando la función existente
+        const validationErrors = validateRegisterForm(formData);
+        if (Object.keys(validationErrors).length > 0) {
+            // Agregar cada error de validación al estado
+            Object.entries(validationErrors).forEach(([field, message]) => {
+                setError(field, message);
             });
-        } finally {
-            setLoading(false);
+            return;
         }
+
+        // Ejecutar la solicitud de registro
+        const response = await executeRequest(
+            async () => await PostRegister(formData),
+            {
+                loadingMessage: 'Registrando usuario...',
+                errorMessage: 'Ha ocurrido un error al registrar tu cuenta. Inténtalo de nuevo.'
+            }
+        );
+
+        // Manejar la respuesta
+        if (response && response.email) {
+            // Error específico de email
+            setFormStatus(response.email, ErrorTypes.ERROR);
+            setError('email', response.email);
+        } else if (response === null) {
+            // Error general
+            setFormStatus('Ha ocurrido un error al registrar tu cuenta. Inténtalo de nuevo.', ErrorTypes.ERROR);
+        }
+
+        // Si es exitoso, PostRegister manejará la redirección
     };
 
     return (
@@ -90,14 +94,11 @@ export default function Register({ changeToLogin }) {
             <div className={styles.container.form}>
                 <h1 className={styles.headings.h1}>Registro</h1>
 
-                {formStatus.message && (
-                    <ErrorHandler
-                        message={formStatus.message}
-                        type={formStatus.type}
-                        dismissible={true}
-                        onDismiss={clearFormStatus}
-                    />
-                )}
+                {/* Usar el componente de estado del formulario */}
+                <FormStatusMessage
+                    status={formStatus}
+                    onDismiss={clearFormStatus}
+                />
 
                 {loading && <p className={styles.form.loading}>Cargando...</p>}
 
@@ -116,7 +117,7 @@ export default function Register({ changeToLogin }) {
                             )}
                             disabled={loading}
                         />
-                        {errors.name && <p className={styles.form.error}>{errors.name}</p>}
+                        <FormFieldError error={errors.name} />
                     </div>
 
                     <div className={styles.form.group}>
@@ -133,7 +134,7 @@ export default function Register({ changeToLogin }) {
                             )}
                             disabled={loading}
                         />
-                        {errors.email && <p className={styles.form.error}>{errors.email}</p>}
+                        <FormFieldError error={errors.email} />
                     </div>
 
                     <div className={styles.form.group}>
@@ -150,7 +151,7 @@ export default function Register({ changeToLogin }) {
                             )}
                             disabled={loading}
                         />
-                        {errors.password && <p className={styles.form.error}>{errors.password}</p>}
+                        <FormFieldError error={errors.password} />
                     </div>
 
                     <button
@@ -161,7 +162,14 @@ export default function Register({ changeToLogin }) {
                         {loading ? 'Registrando...' : 'Registrarse'}
                     </button>
 
-                    <p onClick={changeToLogin} className={styles.buttons.link}>¿Ya tiene cuenta?</p>
+                    <button
+                        type="button"
+                        onClick={handleChangeToLogin}
+                        className={styles.buttons.link}
+                        disabled={loading}
+                    >
+                        ¿Ya tiene cuenta?
+                    </button>
                 </form>
             </div>
         </div>

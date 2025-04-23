@@ -1,22 +1,42 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import PostLogin from './lib/login';
 import { styles, inputClassName } from './styles/components';
 import { validateLoginForm } from './errors/FormValidation';
-import { ErrorHandler, ErrorTypes } from './errors/ErrorHandler';
+import {
+    ErrorTypes,
+    useFormErrors,
+    useFormStatus,
+    FormStatusMessage,
+    FormFieldError
+} from './errors/enhanced-error-handler';
+import { useApiError } from './errors/api-error-hook';
+import { mapApiErrorsToFormErrors } from './errors/api-error-service';
 
 export default function Login({ changeToRegister }) {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
-    const [formStatus, setFormStatus] = useState({
-        message: '',
-        type: ''
-    });
+
+    // Usar los nuevos hooks para manejo de errores
+    const [errors, setError, clearError, clearAllErrors] = useFormErrors({});
+    const [formStatus, setFormStatus, clearFormStatus] = useFormStatus();
+    const { loading, executeRequest } = useApiError();
+
+    // Usar useCallback para evitar recreaciones innecesarias de funciones
+    const handleChangeToRegister = useCallback((e) => {
+        // Prevenir comportamiento por defecto si es un evento
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+
+        // Llamar a la función proporcionada por el componente padre
+        if (typeof changeToRegister === 'function') {
+            changeToRegister();
+        }
+    }, [changeToRegister]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,61 +45,49 @@ export default function Login({ changeToRegister }) {
             [name]: value
         });
 
-        // Clear field-specific error when field changes
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[name];
-                return newErrors;
-            });
-        }
-    };
-
-    const clearFormStatus = () => {
-        setFormStatus({ message: '', type: '' });
+        // Limpiar el error cuando el usuario empieza a escribir
+        clearError(name);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setErrors({});
-        setFormStatus({ message: '', type: '' });
+        clearAllErrors();
+        clearFormStatus();
 
-        // Validate form fields
+        // Validar el formulario
         const validationErrors = validateLoginForm(formData);
         if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            setLoading(false);
+            // Agregar cada error de validación al estado de errores
+            Object.entries(validationErrors).forEach(([field, message]) => {
+                setError(field, message);
+            });
             return;
         }
 
-        try {
-            const response = await PostLogin(formData);
-
-            if (response && response.account) {
-                // Server returned an error
-                setFormStatus({
-                    message: response.account,
-                    type: ErrorTypes.ERROR
-                });
-                setErrors(response);
-            } else if (!response) {
-                // Generic error
-                setFormStatus({
-                    message: "Ha ocurrido un error. Inténtalo de nuevo.",
-                    type: ErrorTypes.ERROR
-                });
+        // Ejecutar la solicitud de login
+        const response = await executeRequest(
+            async () => await PostLogin(formData),
+            {
+                loadingMessage: 'Iniciando sesión...',
+                errorMessage: 'Ha ocurrido un error al iniciar sesión. Inténtalo de nuevo.'
             }
-            // If successful, PostLogin will redirect to dashboard
-        } catch (err) {
-            console.error("Login error:", err);
-            setFormStatus({
-                message: "Ha ocurrido un error. Inténtalo de nuevo.",
-                type: ErrorTypes.ERROR
+        );
+
+        // Manejar la respuesta
+        if (response && response.account) {
+            // Mapear los errores de la API a errores de formulario
+            const mappedErrors = mapApiErrorsToFormErrors(response);
+
+            // Establecer errores mapeados
+            Object.entries(mappedErrors).forEach(([field, message]) => {
+                setError(field, message);
             });
-        } finally {
-            setLoading(false);
+
+            // Establecer mensaje de estado general
+            setFormStatus(response.account, ErrorTypes.ERROR);
         }
+
+        // La redirección la maneja PostLogin si todo va bien
     };
 
     return (
@@ -87,14 +95,11 @@ export default function Login({ changeToRegister }) {
             <div className={styles.container.form}>
                 <h1 className={styles.headings.h1}>Login</h1>
 
-                {formStatus.message && (
-                    <ErrorHandler
-                        message={formStatus.message}
-                        type={formStatus.type}
-                        dismissible={true}
-                        onDismiss={clearFormStatus}
-                    />
-                )}
+                {/* Usar el nuevo componente para mostrar mensajes de estado */}
+                <FormStatusMessage
+                    status={formStatus}
+                    onDismiss={clearFormStatus}
+                />
 
                 {loading && <p className={styles.form.loading}>Cargando...</p>}
 
@@ -110,7 +115,7 @@ export default function Login({ changeToRegister }) {
                             className={inputClassName(errors.email)}
                             disabled={loading}
                         />
-                        {errors.email && <p className={styles.errors.text}>{errors.email}</p>}
+                        <FormFieldError error={errors.email} />
                     </div>
 
                     <div className={styles.form.group}>
@@ -124,7 +129,7 @@ export default function Login({ changeToRegister }) {
                             className={inputClassName(errors.password)}
                             disabled={loading}
                         />
-                        {errors.password && <p className={styles.errors.text}>{errors.password}</p>}
+                        <FormFieldError error={errors.password} />
                     </div>
 
                     <a href="/recover-password" className={styles.buttons.link + " block text-left"}>
@@ -139,9 +144,14 @@ export default function Login({ changeToRegister }) {
                         {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
                     </button>
 
-                    <p onClick={changeToRegister} className={styles.buttons.link}>
+                    <button
+                        type="button"
+                        onClick={handleChangeToRegister}
+                        className={styles.buttons.link}
+                        disabled={loading}
+                    >
                         ¿No tiene cuenta?
-                    </p>
+                    </button>
                 </form>
             </div>
         </div>

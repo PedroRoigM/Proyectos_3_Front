@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }) {
 
                 {/*Footer*/}
                 <div className="text-black">
-                    <Footer/>
+                    <Footer />
                 </div>
             </div>
         </div >

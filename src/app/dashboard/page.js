@@ -4,25 +4,41 @@ import TFGcard from "./components/TFGcard";
 import SearchBar from "./components/SearchBar";
 import PostTenTFGs from "./components/lib/PostTenTFGs";
 import LoadingSpinner from "./components/LoadingSpinner";
-export default function Dashboard() {
+import { ErrorBoundary } from "../components/errors/error-boundary";
+import { useNotification } from "../components/errors/notification-context";
+import { useApiError } from "../components/errors/api-error-hook";
+
+function DashboardContent() {
     const [tfgs, setTfgs] = useState(null);
     const [pages, setPages] = useState(1);
-    const [loading, setLoading] = useState(true);
+    const { showError } = useNotification();
+    const { loading, executeRequest } = useApiError();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await PostTenTFGs(1, {});
-                setTfgs(response.tfgs);
-                setPages(response.totalPages);
+                const response = await executeRequest(
+                    async () => await PostTenTFGs(1, {}),
+                    {
+                        errorMessage: 'No se pudieron cargar los proyectos destacados'
+                    }
+                );
+
+                if (response) {
+                    setTfgs(response.tfgs);
+                    setPages(response.totalPages);
+                } else {
+                    showError('No se pudieron cargar los proyectos destacados');
+                }
             } catch (error) {
                 console.error("Error al cargar los TFGs:", error);
-            } finally {
-                setLoading(false);
+                showError('Ha ocurrido un error al cargar los proyectos destacados');
             }
         };
+
         fetchData();
-    }, []);
+    }, [executeRequest, showError]);
+
     const setTfgsResults = (search) => {
         // Redirigir a la página de resultados y pasar la búsqueda a través de parámetros de la URL
         const searchQuery = encodeURIComponent(JSON.stringify(search));
@@ -47,5 +63,13 @@ export default function Dashboard() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function Dashboard() {
+    return (
+        <ErrorBoundary>
+            <DashboardContent />
+        </ErrorBoundary>
     );
 }

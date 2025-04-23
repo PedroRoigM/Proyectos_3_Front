@@ -18,8 +18,10 @@ export default async function PostTenTFGs(number, dataForm) {
             },
             body: body,
         });
+
         if (!response.ok) {
             const data = await response.json();
+            console.log(data)
             return errorHandler(data)
         }
         const dataResponse = await response.json();

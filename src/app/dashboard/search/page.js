@@ -6,14 +6,18 @@ import { useEffect, useState } from "react";
 import SearchBar from '../components/SearchBar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { searchStyles, paginationButtonClass } from '../components/styles/search';
+import { ErrorBoundary } from '../../components/errors/error-boundary';
+import { useNotification } from '../../components/errors/notification-context';
+import { useApiError } from '../../components/errors/api-error-hook';
 
-export default function SearchResults() {
+function SearchResultsContent() {
     const [tfgs, setTfgs] = useState(null);
     const [search, setSearch] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const [pages, setPages] = useState(1);
-    const [loading, setLoading] = useState(true);
     const [noResults, setNoResults] = useState(false);
+    const { showError } = useNotification();
+    const { loading, executeRequest } = useApiError();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -28,26 +32,38 @@ export default function SearchResults() {
                     setSearch(parsedSearch);  // Actualiza el estado con la búsqueda
                     setCurrentPage(page_number);
                     await getSearchResult(page_number, parsedSearch);
+                } else {
+                    await getSearchResult(page_number, {});
                 }
             } catch (error) {
                 console.error("Error al procesar la búsqueda:", error);
-                setLoading(false);
                 setNoResults(true);
+                showError('Error al procesar la búsqueda. Inténtalo de nuevo.');
             }
         };
 
         fetchData();
-    }, []);
+    }, [showError]);
 
-    const getSearchResult = (page_number, dataForm) => {
+    const getSearchResult = async (page_number, dataForm) => {
         const sanitizedFormData = Object.fromEntries(
             Object.entries(dataForm).filter(([key, value]) => value !== "")
         );
-        PostTenTFGs(page_number, sanitizedFormData).then((response) => {
+
+        const response = await executeRequest(
+            async () => await PostTenTFGs(page_number, sanitizedFormData),
+            {
+                errorMessage: 'Error al buscar proyectos'
+            }
+        );
+
+        if (response) {
             setTfgs(response.tfgs);
             setPages(response.totalPages);
-            setLoading(false);
-        });
+            setNoResults(response.tfgs.length === 0);
+        } else {
+            setNoResults(true);
+        }
     };
 
     const setTfgsResults = (search) => {
@@ -74,7 +90,7 @@ export default function SearchResults() {
             ) : (
                 <>
                     <div className={searchStyles.results.container}>
-                        {tfgs.map((tfg, index) => (
+                        {tfgs && tfgs.map((tfg, index) => (
                             <TFGcard key={index} tfg={tfg} />
                         ))}
                     </div>
@@ -104,5 +120,13 @@ export default function SearchResults() {
                 </>
             )}
         </div>
+    );
+}
+
+export default function SearchResults() {
+    return (
+        <ErrorBoundary>
+            <SearchResultsContent />
+        </ErrorBoundary>
     );
 }
