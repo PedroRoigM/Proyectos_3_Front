@@ -1,13 +1,9 @@
 'use server';
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { handleApiError } from "../errors/api-error-service";
 
-/**
- * Función mejorada para el registro de usuarios
- * @param {Object} dataForm - Datos del formulario de registro
- */
-export default async function PostRegister(dataForm) {
+async function sendFetch(dataForm) {
     try {
         const url = `${process.env.SERVER_URL}/users/register`;
         const body = JSON.stringify(dataForm);
@@ -18,7 +14,6 @@ export default async function PostRegister(dataForm) {
                 'Content-Type': 'application/json',
             },
             body: body,
-            // Agregar timeout para evitar esperas indefinidas
             signal: AbortSignal.timeout(10000) // 10 segundos
         });
 
@@ -28,9 +23,8 @@ export default async function PostRegister(dataForm) {
         }
 
         const responseData = await response.json();
-        console.log(responseData)
-        // Verificar que tengamos un token en la respuesta
         const token = responseData?.data?.token;
+
         if (!token) {
             return handleApiError('Respuesta del servidor incompleta');
         }
@@ -46,17 +40,58 @@ export default async function PostRegister(dataForm) {
             maxAge: 60 * 5, // 5 minutos
         });
 
-        // Redirigir a la página de validación
-        redirect('/validation');
+        // Retornar datos para posterior manejo
+        return {
+            success: true,
+            data: responseData.data
+        };
     } catch (error) {
         console.error("Error registering user:", error);
 
         // Manejar errores de timeout específicamente
         if (error.name === 'AbortError') {
-            return { email: 'La solicitud ha excedido el tiempo de espera. Por favor, inténtalo de nuevo.' };
+            return {
+                success: false,
+                error: {
+                    email: 'La solicitud ha excedido el tiempo de espera. Por favor, inténtalo de nuevo.'
+                }
+            };
         }
 
         // Manejar otros errores
-        return { email: 'Ha ocurrido un error durante el registro. Por favor, inténtalo de nuevo.' };
+        return {
+            success: false,
+            error: {
+                email: 'Ha ocurrido un error durante el registro. Por favor, inténtalo de nuevo.'
+            }
+        };
+    }
+}
+
+export default async function PostRegister(dataForm) {
+    try {
+        const result = await sendFetch(dataForm);
+
+        // Manejar diferentes escenarios de resultado
+        if (!result.success) {
+            // Si hay un error, devolver el objeto de error
+            return result.error;
+        }
+
+        // Usar un throw directo para redirección
+        throw redirect('/validation');
+    } catch (error) {
+        // Manejar específicamente el error de redirección de Next.js
+        if (error.digest && error.digest.startsWith('NEXT_REDIRECT')) {
+            // Este es un caso especial de redirección, no un error real
+            throw error;
+        }
+
+        console.error("Unhandled error in PostRegister:", error);
+
+        // Devolver un error genérico en caso de excepción inesperada
+        return {
+            email: 'Ha ocurrido un error inesperado durante el registro. Por favor, inténtalo de nuevo.'
+        };
     }
 }
