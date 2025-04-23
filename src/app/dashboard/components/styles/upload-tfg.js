@@ -1,73 +1,74 @@
 // src/app/dashboard/components/styles/upload-tfg.js
 // Estilos específicos para la página de subida de TFG
-
 export const uploadTfgStyles = {
-    // Layout principal
-    layout: {
-      container: "flex items-center justify-center min-h-screen p-5 bg-gradient-to-b from-white to-gray-400",
-      formContainer: "bg-white p-8 rounded-lg shadow-lg w-full md:w-[50%] lg:w-[50%]",
+  // Layout principal
+  layout: {
+    container: "flex justify-center min-h-screen bg-[#edf1fc] px-4 py-12",
+    formContainer: "w-full max-w-[720px] flex flex-col gap-6",
+  },
+
+  // Encabezados
+  headings: {
+    title: "text-gray-800 text-xl font-semibold text-center mb-4",
+  },
+
+  // Feedback y notificaciones
+  feedback: {
+    success: "bg-green-100 text-green-800 p-3 rounded-md mb-4 text-sm font-medium",
+    error: "bg-red-100 text-red-800 p-3 rounded-md mb-4 text-sm font-medium",
+  },
+
+  // Formularios
+  form: {
+    container: "space-y-6",
+    group: "bg-white rounded-lg shadow-sm p-5 w-full",
+    label: "block text-sm font-semibold text-gray-700 mb-2 uppercase",
+    input: {
+      base: "w-full px-4 py-2 rounded-md border text-sm bg-[#f8fafc]",
+      valid: "border-gray-300",
+      error: "border-red-500",
     },
-    
-    // Encabezados
-    headings: {
-      title: "text-gray-800 font-bold text-2xl text-center mb-4",
+    select: {
+      base: "w-full px-4 py-2 rounded-md border text-sm bg-[#f8fafc]",
+      valid: "border-gray-300",
+      error: "border-red-500",
     },
-    
-    // Feedback y notificaciones
-    feedback: {
-      success: "p-3 mb-4 rounded-md bg-green-100 text-green-700",
-      error: "p-3 mb-4 rounded-md bg-red-100 text-red-700",
+    textarea: {
+      base: "w-full px-4 py-2 rounded-md border text-sm bg-[#f8fafc] resize-none",
+      valid: "border-gray-300",
+      error: "border-red-500",
     },
-    
-    // Formularios
-    form: {
-      container: "space-y-4",
-      group: "text-left",
-      label: "text-gray-700 block mb-1",
-      input: {
-        base: "w-full p-2 rounded-md border",
-        valid: "border-gray-300",
-        error: "border-red-500",
-      },
-      select: {
-        base: "w-full p-2 rounded-md border",
-        valid: "border-gray-300",
-        error: "border-red-500",
-      },
-      textarea: {
-        base: "w-full p-2 rounded-md border",
-        valid: "border-gray-300",
-        error: "border-red-500",
-      },
-      error: "text-red-500 text-sm",
-      keywordInput: {
-        container: "flex items-center gap-2",
-        input: "w-full p-2 rounded-md border",
-        button: "bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition",
-      },
-      keywordList: {
-        container: "mt-3 space-y-2",
-        item: "flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md",
-        text: "text-gray-800",
-        removeButton: "text-red-500 hover:text-red-700",
-      },
+    error: "text-red-500 text-xs mt-1",
+    keywordInput: {
+      container: "flex items-center gap-2 mt-2",
+      input: "flex-grow px-3 py-2 rounded-md border text-sm bg-[#f8fafc]",
+      button: "bg-[#0065ef] text-white px-4 py-2 rounded-md hover:bg-[#0047b3] transition text-sm",
     },
-    
-    // Modal de confirmación
-    modal: {
-      overlay: "fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50",
-      container: "bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md",
-      message: "text-lg text-center mb-4",
-      buttonsContainer: "flex justify-around",
-      confirmButton: "bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition",
-      cancelButton: "px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition",
+    keywordList: {
+      container: "mt-3 space-y-2",
+      item: "flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md text-sm",
+      text: "text-gray-800",
+      removeButton: "text-red-500 hover:text-red-700",
     },
-    
-    // Botones
-    buttons: {
-      primary: "w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-700 transition",
-    },
-  };
+  },
+
+  // Modal de confirmación
+  modal: {
+    overlay: "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50",
+    container: "bg-white p-6 rounded-xl w-full max-w-sm shadow-md",
+    message: "text-center text-base font-medium text-gray-800 mb-4",
+    buttonsContainer: "flex justify-between gap-4 mt-4",
+    confirmButton: "bg-[#0065ef] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#0047b3] transition",
+    cancelButton: "border border-gray-400 text-gray-700 font-semibold py-2 px-6 rounded-md hover:bg-gray-200 transition",
+  },
+
+  // Botones
+  buttons: {
+    primary: "bg-white border border-[#0065ef] text-[#0065ef] w-full py-2 rounded-md font-semibold hover:bg-[#f0f4ff] transition shadow-sm",
+  },
+};
+
+
   
   // Función para combinar clases de estilo
   export function classNames(...classes) {
