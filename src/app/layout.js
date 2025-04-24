@@ -2,6 +2,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import TopBar from "./components/TopBar";
+import Footer from "./components/Footer";
 import { usePathname } from "next/navigation";
 import { ErrorBoundary } from "./components/errors/error-boundary";
 import { NotificationProvider } from "./components/errors/notification-context";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }) {
             <GlobalErrorHandler />
             {!isDashboard && <TopBar />} {/* Solo se muestra si NO es dashboard */}
             {children}
+              {<Footer />}
           </NotificationProvider>
         </ErrorBoundary>
       </body>
