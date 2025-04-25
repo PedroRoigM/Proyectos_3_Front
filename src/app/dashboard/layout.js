@@ -14,11 +14,6 @@ export default function DashboardLayout({ children }) {
                 <div className="flex-1 bg-gray-100 overflow-auto">
                     {children}
                 </div>
-
-                {/*Footer*/}
-                <div className="text-black">
-                    <Footer />
-                </div>
             </div>
         </div >
     );
