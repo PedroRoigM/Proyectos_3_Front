@@ -76,10 +76,10 @@ export default function SearchBar({ search }) {
     }, []);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, key } = e.target;
         setFormDataSearch(prev => ({
             ...prev,
-            [name]: value
+            [name]: key
         }));
     };
 

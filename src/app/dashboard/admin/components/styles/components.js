@@ -61,7 +61,16 @@ export const styles = {
 
     roles: {
         container: "container mx-auto p-4",
-        title: "text-2xl font-bold mb-4"
+        title: "text-2xl font-bold mb-4",
+        search: {
+            container: "w-full mb-4",
+            input: "w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
+            clearButton: "absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+        },
+        userList: {
+            empty: "text-center py-8 text-gray-500",
+            container: "mt-6 space-y-4"
+        }
     },
 
     search: {
