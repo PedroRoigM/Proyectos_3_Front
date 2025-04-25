@@ -70,23 +70,22 @@ const UserCard = ({ user, onRoleChange }) => {
                 <p className="text-gray-600">{user.email}</p>
             </div>
             <div className="flex items-center">
-                <span className="text-sm text-gray-500 mr-2">Rol:</span>
-                <select
-                    value={role}
-                    onChange={(e) => handleRoleChange(e.target.value)}
-                    className="border border-gray-300 rounded-md p-2 bg-white"
-                    disabled={loading}
-                >
-                    {roles.map((roleOption, index) => (
-                        <option
-                            key={index}
-                            value={roleOption.name}
+                <div className="flex gap-1">
+                    {roles.map((roleOption) => (
+                        <button
+                            key={roleOption.name}
+                            onClick={() => handleRoleChange(roleOption.name)}
+                            disabled={loading}
+                            className={`px-3 py-2 rounded-full border text-15px font-medium transition ${
+                                role === roleOption.name
+                                    ? "bg-blue-600 text-white border-blue-600"
+                                    : "bg-white text-gray-700 border-gray-300"
+                            }`}
                         >
-                            {roleOption.name}
-                        </option>
+                            {roleOption.name.charAt(0).toUpperCase() + roleOption.name.slice(1)}
+                        </button>
                     ))}
-                </select>
-
+                </div>
                 {loading && (
                     <div className="ml-2">
                         <div className="w-5 h-5 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
