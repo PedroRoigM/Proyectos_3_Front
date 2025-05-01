@@ -1,5 +1,6 @@
 'use server';
 import { cookies } from "next/headers";
+import { handleApiError } from "../../../components/errors/api-error-service";
 
 export default async function GetTFGpdf(id) {
     try {
@@ -18,7 +19,7 @@ export default async function GetTFGpdf(id) {
 
         if (!response.ok) {
             const data = await response.json();
-            return errorHandler(data)
+            return handleApiError(data);
         }
         const data = await response.arrayBuffer();
         return data

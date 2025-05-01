@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from "next/headers";
+import { handleApiError } from "../../../components/errors/api-error-service";
 
 export default async function PatchValidateTFG(id) {
     try {
@@ -18,7 +19,7 @@ export default async function PatchValidateTFG(id) {
         });
         if (!response.ok) {
             const data = await response.json();
-            return errorHandler(data)
+            return handleApiError(data);
         }
 
         const data = response.json();

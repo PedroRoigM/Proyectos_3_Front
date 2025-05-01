@@ -1,8 +1,10 @@
 'use server'
 import { cookies } from "next/headers";
+import { handleApiError } from "../../../components/errors/api-error-service";
 
 export default async function PostTenTFGs(number, dataForm) {
     try {
+        console.log(dataForm)
         const page_number = number || 1;
         const url = `${process.env.SERVER_URL}/tfgs/pages/${page_number}`;
         const body = JSON.stringify(dataForm) || null;
@@ -22,7 +24,7 @@ export default async function PostTenTFGs(number, dataForm) {
         if (!response.ok) {
             const data = await response.json();
             console.log(data)
-            return errorHandler(data)
+            return handleApiError(data);
         }
         const dataResponse = await response.json();
         return dataResponse.data;

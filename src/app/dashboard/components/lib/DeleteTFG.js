@@ -1,5 +1,6 @@
 'use server';
 import { cookies } from "next/headers";
+import { handleApiError } from "../../../components/errors/api-error-service";
 
 export default async function DeleteTFG(id) {
     try {
@@ -17,7 +18,7 @@ export default async function DeleteTFG(id) {
         });
         if (!response.ok) {
             const data = await response.json();
-            return errorHandler(data)
+            return handleApiError(data);
         }
 
         // Retornar un okey si la respuesta es correcta

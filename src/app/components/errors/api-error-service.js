@@ -35,11 +35,9 @@ export async function handleApiError(error) {
     // Errores de permisos (403)
     const permissionErrors = {
         'No tienes permisos para realizar esta acción': async () => {
-            redirect('/');
             return { autenticationError: 'No tienes permisos para realizar esta acción' };
         },
         'Acción no autorizada': async () => {
-            redirect('/');
             return { autenticationError: 'Acción no autorizada' };
         },
         'El TFG no está verificado': () => ({ tfg: 'El TFG no está verificado' }),

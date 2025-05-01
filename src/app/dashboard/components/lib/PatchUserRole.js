@@ -1,5 +1,6 @@
 'use server';
 import { cookies } from "next/headers";
+import { handleApiError } from "../../../components/errors/api-error-service";
 
 export async function PatchUserRole(userId, role) {
     try {
@@ -18,7 +19,7 @@ export async function PatchUserRole(userId, role) {
         console.log("Response:", response);
         if (!response.ok) {
             const data = await response.json();
-            return errorHandler(data)
+            return handleApiError(data);
         }
         const dataReponse = await response.json();
         return dataReponse.data;

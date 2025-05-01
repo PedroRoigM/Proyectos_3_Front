@@ -6,10 +6,14 @@ import GetYears from "./lib/GetYears";
 import GetTFGsNames from "./lib/GetTFGsNames";
 
 export default function SearchBar({ search }) {
+    // Conservar tanto los valores mostrados como los IDs
     const [formDataSearch, setFormDataSearch] = useState({
         year: "",
+        yearId: "",
         degree: "",
+        degreeId: "",
         advisor: "",
+        advisorId: "",
         search: ""
     });
 
@@ -34,23 +38,23 @@ export default function SearchBar({ search }) {
 
                 // Verificar y establecer los datos de grados
                 if (Array.isArray(degreesData) && degreesData.length > 0) {
-                    setDegrees([{ degree: "Grado" }, ...degreesData]);
+                    setDegrees([{ _id: "", degree: "Grado" }, ...degreesData]);
                 } else {
-                    setDegrees([{ degree: "Grado" }]);
+                    setDegrees([{ _id: "", degree: "Grado" }]);
                 }
 
                 // Verificar y establecer los datos de años
                 if (Array.isArray(yearsData) && yearsData.length > 0) {
-                    setYears([{ year: "Año" }, ...yearsData]);
+                    setYears([{ _id: "", year: "Año" }, ...yearsData]);
                 } else {
-                    setYears([{ year: "Año" }]);
+                    setYears([{ _id: "", year: "Año" }]);
                 }
 
                 // Verificar y establecer los datos de tutores
                 if (Array.isArray(advisorsData) && advisorsData.length > 0) {
-                    setAdvisors([{ advisor: "Tutor" }, ...advisorsData]);
+                    setAdvisors([{ _id: "", advisor: "Tutor" }, ...advisorsData]);
                 } else {
-                    setAdvisors([{ advisor: "Tutor" }]);
+                    setAdvisors([{ _id: "", advisor: "Tutor" }]);
                 }
 
                 if (Array.isArray(tfgsData)) {
@@ -75,18 +79,72 @@ export default function SearchBar({ search }) {
         loadData();
     }, []);
 
-    const handleChange = (e) => {
-        const { name, key } = e.target;
+    // Manejar cambios en el input de búsqueda de texto
+    const handleSearchInputChange = (e) => {
+        const { value } = e.target;
         setFormDataSearch(prev => ({
             ...prev,
-            [name]: key
+            search: value
         }));
+    };
+
+    // Manejar cambios en los selectores (año, grado, tutor)
+    const handleSelectChange = (e) => {
+        const { name, value } = e.target;
+        const selectedIndex = e.target.selectedIndex;
+
+        // Casos según el tipo de selector
+        switch (name) {
+            case "year":
+                const yearObj = years[selectedIndex];
+                console.log(`Seleccionado año: ${value} con ID: ${yearObj?._id || ""}`);
+                setFormDataSearch(prev => ({
+                    ...prev,
+                    year: value,
+                    yearId: yearObj?._id || ""
+                }));
+                break;
+
+            case "degree":
+                const degreeObj = degrees[selectedIndex];
+                console.log(`Seleccionado grado: ${value} con ID: ${degreeObj?._id || ""}`);
+                setFormDataSearch(prev => ({
+                    ...prev,
+                    degree: value,
+                    degreeId: degreeObj?._id || ""
+                }));
+                break;
+
+            case "advisor":
+                const advisorObj = advisors[selectedIndex];
+                console.log(`Seleccionado tutor: ${value} con ID: ${advisorObj?._id || ""}`);
+                setFormDataSearch(prev => ({
+                    ...prev,
+                    advisor: value,
+                    advisorId: advisorObj?._id || ""
+                }));
+                break;
+
+            default:
+                break;
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Crear objeto de datos para enviar con IDs en lugar de nombres
+        const searchData = {
+            year: formDataSearch.yearId || "",     // Usar el ID del año
+            degree: formDataSearch.degreeId || "", // Usar el ID del grado
+            advisor: formDataSearch.advisorId || "", // Usar el ID del tutor
+            search: formDataSearch.search || ""
+        };
+
+        console.log("Enviando búsqueda:", searchData);
+
         if (typeof search === 'function') {
-            search(formDataSearch);
+            search(searchData);
         } else {
             console.error("La prop 'search' no es una función");
         }
@@ -105,7 +163,7 @@ export default function SearchBar({ search }) {
                     type="text"
                     name="search"
                     value={formDataSearch.search}
-                    onChange={handleChange}
+                    onChange={handleSearchInputChange}
                     placeholder="Buscar..."
                     className="border border-gray-400 rounded-md px-2 py-1 w-full text-sm"
                     list="tfgSuggestions"
@@ -129,7 +187,7 @@ export default function SearchBar({ search }) {
                 <select
                     name="year"
                     value={formDataSearch.year}
-                    onChange={handleChange}
+                    onChange={handleSelectChange}
                     className="border border-gray-400 rounded-md px-2 py-1 text-sm w-full sm:w-auto flex-1"
                 >
                     {years.map((year, index) => (
@@ -146,7 +204,7 @@ export default function SearchBar({ search }) {
                 <select
                     name="degree"
                     value={formDataSearch.degree}
-                    onChange={handleChange}
+                    onChange={handleSelectChange}
                     className="border border-gray-400 rounded-md px-2 py-1 text-sm w-full sm:w-auto flex-1"
                 >
                     {degrees.map((degree, index) => (
@@ -163,7 +221,7 @@ export default function SearchBar({ search }) {
                 <select
                     name="advisor"
                     value={formDataSearch.advisor}
-                    onChange={handleChange}
+                    onChange={handleSelectChange}
                     className="border border-gray-400 rounded-md px-2 py-1 text-sm w-full sm:w-auto flex-1"
                 >
                     {advisors.map((advisor, index) => (

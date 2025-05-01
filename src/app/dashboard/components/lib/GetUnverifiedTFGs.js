@@ -1,5 +1,6 @@
 'use server';
 import { cookies } from "next/headers";
+import { handleApiError } from "../../../components/errors/api-error-service";
 
 export default async function GetUnverifiedTFGs(page_number, formData) {
     try {
@@ -21,7 +22,7 @@ export default async function GetUnverifiedTFGs(page_number, formData) {
         });
         if (!response.ok) {
             const data = await response.json();
-            return errorHandler(data)
+            return handleApiError(data);
         }
 
         const dataResponse = await response.json();

@@ -38,13 +38,26 @@ function UploadTFGContent() {
         file: null,
     });
 
+    // Almacenar todos los datos completos
+    const [advisorsData, setAdvisorsData] = useState([]);
+    const [yearsData, setYearsData] = useState([]);
+    const [degreesData, setDegreesData] = useState([]);
+
+    // Listas para los selects
     const [advisors, setAdvisors] = useState([]);
     const [years, setYears] = useState([]);
     const [degrees, setDegrees] = useState([]);
+
     const [inputValue, setInputValue] = useState("");
     const [showConfirmation, setShowConfirmation] = useState(false);
 
-    // Usar los nuevos hooks para el manejo de errores
+    // Estado para prevenir múltiples envíos
+    const [buttonState, setButtonState] = useState({
+        clicked: false,
+        lastClickTime: 0
+    });
+
+    // Usar los hooks para el manejo de errores
     const [errors, setError, clearError, clearAllErrors] = useFormErrors({});
     const [formStatus, setFormStatus, clearFormStatus] = useFormStatus();
     const { loading: apiLoading, executeRequest } = useApiError();
@@ -52,12 +65,13 @@ function UploadTFGContent() {
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [tfgCreated, setTfgCreated] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // Ejecutar solicitudes a la API en paralelo
-                const [advisorsData, yearsData, degreesData] = await Promise.all([
+                const [advisorsResult, yearsResult, degreesResult] = await Promise.all([
                     executeRequest(
                         async () => await GetAdvisors({ active: true }),
                         {
@@ -81,9 +95,21 @@ function UploadTFGContent() {
                     )
                 ]);
 
-                setAdvisors(advisorsData || []);
-                setYears(yearsData || []);
-                setDegrees(degreesData || []);
+                // Guardar los datos completos
+                setAdvisorsData(advisorsResult || []);
+                setYearsData(yearsResult || []);
+                setDegreesData(degreesResult || []);
+
+                // Preparar listas para los selects
+                setAdvisors(advisorsResult || []);
+                setYears(yearsResult || []);
+                setDegrees(degreesResult || []);
+
+                console.log("Datos cargados:", {
+                    advisors: advisorsResult?.length || 0,
+                    years: yearsResult?.length || 0,
+                    degrees: degreesResult?.length || 0
+                });
             } catch (error) {
                 console.error("Error al cargar los datos:", error);
                 setFormStatus("No se pudieron cargar los datos necesarios. Por favor, intenta más tarde.", ErrorTypes.ERROR);
@@ -139,6 +165,26 @@ function UploadTFGContent() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Prevenir envíos rápidos múltiples (debounce)
+        if (isSubmitting || apiLoading) {
+            console.log("Solicitud ya en proceso, ignorando clic adicional");
+            return;
+        }
+
+        // Si ya fue clicado recientemente (últimos 2 segundos), prevenir clic adicional
+        const now = Date.now();
+        if (buttonState.clicked && now - buttonState.lastClickTime < 2000) {
+            console.log("Múltiples clics detectados, ignorando");
+            return;
+        }
+
+        // Actualizar estado de botón
+        setButtonState({
+            clicked: true,
+            lastClickTime: now
+        });
+
         clearAllErrors();
         clearFormStatus();
 
@@ -149,16 +195,39 @@ function UploadTFGContent() {
             Object.entries(validationErrors).forEach(([field, message]) => {
                 setError(field, message);
             });
+
+            // Restaurar estado del botón
+            setTimeout(() => {
+                setButtonState({
+                    clicked: false,
+                    lastClickTime: 0
+                });
+            }, 1000);
+
             return;
         }
 
         // Mostrar diálogo de confirmación
         setShowConfirmation(true);
+
+        // Restaurar estado del botón después de 3 segundos
+        setTimeout(() => {
+            setButtonState({
+                clicked: false,
+                lastClickTime: 0
+            });
+        }, 3000);
     };
 
     const handleConfirmSubmit = async (confirm) => {
         if (!confirm) {
             setShowConfirmation(false);
+            return;
+        }
+
+        // Si ya está enviando, ignorar
+        if (isSubmitting) {
+            console.log("Envío ya en proceso, ignorando solicitud duplicada");
             return;
         }
 
@@ -168,43 +237,79 @@ function UploadTFGContent() {
         clearFormStatus();
 
         try {
-            // Paso 1: Crear el TFG sin el archivo
+            // Añadir ID único para seguimiento en logs
+            const requestId = `tfg-${Date.now()}`;
+            console.log(`[${requestId}] Iniciando envío de TFG`);
+
+            // Preparar datos para enviar al servidor
             const { file, ...dataWithoutFile } = formData;
+
+            // Encontrar los objetos completos de year, degree y advisor
+            const selectedYear = yearsData.find(y => y.year === formData.year);
+            const selectedDegree = degreesData.find(d => d.degree === formData.degree);
+            const selectedAdvisor = advisorsData.find(a => a.advisor === formData.advisor);
+
+            // Verificar que se encontraron todos los datos necesarios
+            if (!selectedYear || !selectedDegree || !selectedAdvisor) {
+                console.error("No se pudieron encontrar todos los datos necesarios:", {
+                    yearFound: !!selectedYear,
+                    degreeFound: !!selectedDegree,
+                    advisorFound: !!selectedAdvisor
+                });
+                setFormStatus("Error en los datos seleccionados. Por favor, verifica tu selección.", ErrorTypes.ERROR);
+                setIsSubmitting(false);
+                return;
+            }
+
+            // Crear objeto de datos con formato correcto
+            const formattedData = {
+                ...dataWithoutFile,
+                year: selectedYear._id,
+                degree: selectedDegree._id,
+                advisor: selectedAdvisor._id,
+            };
+
+            console.log(`[${requestId}] Datos preparados:`, formattedData);
+
+            // Paso 1: Crear el TFG sin el archivo
             const response = await executeRequest(
-                async () => await PostTFG(dataWithoutFile),
+                async () => await PostTFG(formattedData),
                 {
                     loadingMessage: 'Creando proyecto TFG...',
                     errorMessage: 'Error al crear el proyecto TFG'
                 }
             );
 
-            if (!response) {
-                setFormStatus('No se pudo crear el proyecto TFG', ErrorTypes.ERROR);
+            if (!response || response.error) {
+                console.log(`[${requestId}] Error en creación de TFG:`, response);
+                setFormStatus(response?.message || 'No se pudo crear el proyecto TFG', ErrorTypes.ERROR);
                 setIsSubmitting(false);
                 return;
             }
 
-            // Paso 2: Subir el archivo PDF
-            const fileResponse = await executeRequest(
-                async () => await PatchTfgFile(response._id, file),
-                {
-                    loadingMessage: 'Subiendo archivo PDF...',
-                    errorMessage: 'Error al subir el archivo PDF'
-                }
-            );
+            // Guardar el TFG creado
+            setTfgCreated(response);
 
-            if (!fileResponse) {
-                setFormStatus('Se creó el proyecto pero hubo un problema al subir el archivo', ErrorTypes.WARNING);
-                // Aún así, redirigir al dashboard después de un breve retraso
-                setTimeout(() => router.push('/dashboard'), 3000);
-                return;
+            // Paso 2: Subir el archivo PDF - ahora con redirección automática
+            console.log(`[${requestId}] TFG creado con éxito, ID:`, response._id);
+
+            // Mostrar mensaje de éxito y notificar que se está procesando el archivo
+            setFormStatus('TFG creado correctamente. Subiendo archivo y redirigiendo...', ErrorTypes.SUCCESS);
+
+            // Intentar subir el archivo - esta función ahora redirigirá automáticamente
+            const fileUploadResult = await PatchTfgFile(response._id, file);
+
+            // Si llegamos aquí, es que hubo un error en la subida del archivo
+            // ya que la función debería redirigir en caso de éxito
+            if (fileUploadResult && fileUploadResult.fileError) {
+                setFormStatus(`Error al subir el archivo: ${fileUploadResult.fileError}`, ErrorTypes.ERROR);
+            } else {
+                // Por si acaso, mostrar un error genérico
+                setFormStatus('Ocurrió un error inesperado al subir el archivo', ErrorTypes.ERROR);
             }
 
-            // Éxito: mostrar mensaje y redirigir
-            showSuccess('Proyecto TFG creado correctamente');
-            router.push('/dashboard');
-
         } catch (error) {
+            // Este bloque solo se ejecutará si hay un error no controlado
             console.error('Error en el proceso de subida:', error);
             setFormStatus('Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.', ErrorTypes.ERROR);
         } finally {
@@ -321,6 +426,7 @@ function UploadTFGContent() {
                                 onChange={handleChange}
                                 className={textareaClassName(errors.abstract)}
                                 disabled={apiLoading}
+                                rows={5}
                             ></textarea>
                             <FormFieldError error={errors.abstract} />
                         </div>
@@ -387,10 +493,18 @@ function UploadTFGContent() {
 
                         <button
                             type="submit"
-                            className={uploadTfgStyles.buttons.primary}
-                            disabled={apiLoading}
+                            className={`${uploadTfgStyles.buttons.primary} ${isSubmitting || apiLoading || buttonState.clicked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isSubmitting || apiLoading || buttonState.clicked}
                         >
-                            {apiLoading ? 'Procesando...' : 'Enviar'}
+                            {isSubmitting || apiLoading ? (
+                                <span className="flex items-center justify-center">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Procesando...
+                                </span>
+                            ) : 'Enviar'}
                         </button>
                     </form>
                 )}
@@ -406,17 +520,31 @@ function UploadTFGContent() {
                             <div className={uploadTfgStyles.modal.buttonsContainer}>
                                 <button
                                     type="button"
-                                    onClick={() => handleConfirmSubmit(true)}
-                                    className={uploadTfgStyles.modal.confirmButton}
-                                    disabled={apiLoading}
+                                    onClick={() => {
+                                        if (apiLoading || isSubmitting) {
+                                            console.log("Procesamiento en curso, ignorando clic adicional");
+                                            return;
+                                        }
+                                        handleConfirmSubmit(true);
+                                    }}
+                                    className={`${uploadTfgStyles.modal.confirmButton} ${apiLoading || isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    disabled={apiLoading || isSubmitting}
                                 >
-                                    Sí
+                                    {isSubmitting ? (
+                                        <span className="flex items-center justify-center">
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Procesando...
+                                        </span>
+                                    ) : 'Sí'}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => handleConfirmSubmit(false)}
                                     className={uploadTfgStyles.modal.cancelButton}
-                                    disabled={apiLoading}
+                                    disabled={apiLoading || isSubmitting}
                                 >
                                     No
                                 </button>

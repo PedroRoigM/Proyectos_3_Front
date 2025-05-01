@@ -1,9 +1,9 @@
 'use server';
 import { cookies } from "next/headers";
+import { handleApiError } from "../../../components/errors/api-error-service";
 
 export default async function PutTFG(id, dataForm) {
     try {
-        console.log("PUTTFG", id, dataForm);
         const url = `${process.env.SERVER_URL}/tfgs/${id}`;
         const body = JSON.stringify(dataForm);
         const token = await cookies().then(c => c.get('bytoken')?.value);
@@ -20,9 +20,9 @@ export default async function PutTFG(id, dataForm) {
             },
             body: body,
         });
-        console.log(response);
         if (!response.ok) {
-            throw new Error(response.statusText);
+            const data = await response.json();
+            return handleApiError(data);
         }
 
         const data = await response.json();
