@@ -1,5 +1,6 @@
 'use client';
 import PutTFG from '../../../../components/lib/PutTFG';
+import PatchTfgFile from '../../../../components/lib/PatchTfgFile';
 import GetTFG from '../../../../components/lib/GetTFG';
 import GetAdvisors from '../../../../components/lib/GetAdvisors';
 import GetDegrees from '../../../../components/lib/GetDegrees';
@@ -15,14 +16,18 @@ export default function Page() {
     const [loading, setLoading] = useState(true); // Estado de carga
     const [formData, setFormData] = useState({
         year: '',
+        yearId: '',
         degree: '',
+        degreeId: '',
         tfgTitle: '',
         abstract: '',
         advisor: '',
+        advisorId: '',
         student: '',
         keywords: [],
-        file: null //Initialize file as null
+        file: null
     });
+
 
     const id = useSearchParams().get('id');
     const [advisors, setAdvisors] = useState([]);
@@ -48,15 +53,19 @@ export default function Page() {
                 setDegrees(degreesRes);
                 setYears(yearsRes);
                 setFormData({
-                    title: tfgRes.tfgTitle,
+                    tfgTitle: tfgRes.tfgTitle,
                     abstract: tfgRes.abstract,
-                    advisor: tfgRes.advisor,
+                    advisor: tfgRes.advisor.advisor || tfgRes.advisor,
+                    advisorId: tfgRes.advisor._id || tfgRes.advisorId,
                     student: tfgRes.student,
                     keywords: tfgRes.keywords,
-                    year: tfgRes.year,
-                    degree: tfgRes.degree,
+                    year: tfgRes.year.year || tfgRes.year,
+                    yearId: tfgRes.year._id || tfgRes.yearId,
+                    degree: tfgRes.degree.degree || tfgRes.degree,
+                    degreeId: tfgRes.degree._id || tfgRes.degreeId,
                     file: file,
                 });
+
                 setLoading(false); // Finaliza la carga
             } catch (error) {
                 console.error("Error al cargar los datos:", error);
@@ -70,9 +79,43 @@ export default function Page() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+
+        // Para campos especiales con ID, manejamos tanto el valor como el ID
+        if (name === "advisor") {
+            const selectedAdvisor = advisors.find(a => a.advisor === value);
+            if (selectedAdvisor) {
+                setFormData({
+                    ...formData,
+                    advisor: value,
+                    advisorId: selectedAdvisor._id
+                });
+            }
+        } else if (name === "year") {
+            const selectedYear = years.find(y => y.year === value);
+            if (selectedYear) {
+                setFormData({
+                    ...formData,
+                    year: value,
+                    yearId: selectedYear._id
+                });
+            }
+        } else if (name === "degree") {
+            const selectedDegree = degrees.find(d => d.degree === value);
+            if (selectedDegree) {
+                setFormData({
+                    ...formData,
+                    degree: value,
+                    degreeId: selectedDegree._id
+                });
+            }
+        } else {
+            // Para el resto de los campos normales
+            setFormData({ ...formData, [name]: value });
+        }
+
         setErrors({ ...errors, [name]: "" }); // Limpiar errores al cambiar el valor
     };
+
 
     const handleFileChange = (e) => {
         setFormData({
@@ -100,19 +143,8 @@ export default function Page() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setShowConfirmation(true);
-    };
-
-    const handleConfirmSubmit = async () => {
-
-        if (!confirm) {
-            setShowConfirmation(false);
-            return;
-        }
-        setShowConfirmation(false);
-
 
         const validationErrors = {};
         if (!formData.year) validationErrors.year = 'El año es obligatorio.';
@@ -123,21 +155,39 @@ export default function Page() {
         if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
         if (!formData.file) validationErrors.file = 'El archivo es obligatorio.';
         if (formData.keywords.length < 3) validationErrors.keywords = 'Añade al menos 3 palabras claves.';
-        console.log(Object.keys(validationErrors))
+
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
-        console.log("HANDLE SUBMIT")
+
         try {
-            console.log("formData", formData);
-            const response = await PutTFG(id, formData);
+            // Preparamos los datos para enviar al backend, usando los IDs en lugar de los valores
+            const dataToSend = {
+                ...formData,
+                advisor: formData.advisorId, // Enviar el ID en lugar del valor
+                year: formData.yearId,       // Enviar el ID en lugar del valor
+                degree: formData.degreeId    // Enviar el ID en lugar del valor
+            };
+
+            console.log("Datos a enviar:", dataToSend);
+            const response = await PutTFG(id, dataToSend);
             console.log(response);
+
+            // Si se ha actualizado el PDF, enviar el archivo
+
+            const responseFile = await PatchTfgFile(id, formData.file);
+            if (!responseFile) {
+                setErrors({ general: '❌ Error al actualizar el archivo, intenta de nuevo.' });
+                return;
+            }
             setErrors({ general: "✅ TFG actualizado correctamente." });
-        } catch {
+        } catch (error) {
+            console.error("Error al actualizar:", error);
             setErrors({ general: '❌ Ha ocurrido un error, intenta de nuevo.' });
         }
     };
+
 
     return (
         <div className={styles.edit.container}>
@@ -153,8 +203,8 @@ export default function Page() {
                             <label className={styles.edit.form.subtitle}>Título</label>
                             <input
                                 type="text"
-                                name="title"
-                                value={formData.title}
+                                name="tfgTitle"
+                                value={formData.tfgTitle}
                                 onChange={handleChange}
                                 className={styles.edit.form.input}
                             />
@@ -162,7 +212,6 @@ export default function Page() {
                         {/* Resumen */}
                         <label className={styles.edit.form.subtitle}>Resumen</label>
                         <textarea
-
                             name="abstract"
                             value={formData.abstract}
                             onChange={handleChange}
@@ -178,12 +227,12 @@ export default function Page() {
                                 onChange={handleChange}
                                 className={styles.edit.form.input}
                             >
-                                <option value="" disabled>{formData.year.year || "Selecciona un año"}</option>
+                                <option value="" disabled>Selecciona un año</option>
                                 {years.map((year) => (
                                     <option key={year._id} value={year.year}>{year.year}</option>
                                 ))}
-                                {errors.year && <p className={styles.edit.form.error}>{errors.year}</p>}
                             </select>
+                            {errors.year && <p className={styles.edit.form.error}>{errors.year}</p>}
                         </div>
 
                         {/* Grado */}
@@ -195,12 +244,12 @@ export default function Page() {
                                 onChange={handleChange}
                                 className={styles.edit.form.input}
                             >
-                                <option value="" disabled>{formData.degree.degree || "Selecciona un grado"}</option>
+                                <option value="" disabled>Selecciona un grado</option>
                                 {degrees.map((degree) => (
                                     <option key={degree._id} value={degree.degree}>{degree.degree}</option>
                                 ))}
-                                {errors.degree && <p className={styles.edit.form.error}>{errors.degree}</p>}
                             </select>
+                            {errors.degree && <p className={styles.edit.form.error}>{errors.degree}</p>}
                         </div>
 
                         {/* Asesor */}
@@ -212,12 +261,14 @@ export default function Page() {
                                 onChange={handleChange}
                                 className={styles.edit.form.input}
                             >
-                                <option value="" disabled>{formData.advisor.advisor || "Selecciona un asesor"}</option>
+                                <option value="" disabled>Selecciona un asesor</option>
                                 {advisors.map((advisor) => (
                                     <option key={advisor._id} value={advisor.advisor}>{advisor.advisor}</option>
                                 ))}
                             </select>
+                            {errors.advisor && <p className={styles.edit.form.error}>{errors.advisor}</p>}
                         </div>
+
                         {/* Alumno */}
                         <div>
                             <label className={styles.edit.form.subtitle}>Alumno</label>
@@ -230,6 +281,7 @@ export default function Page() {
                             />
                             {errors.student && <p className={styles.edit.form.error}>{errors.student}</p>}
                         </div>
+
                         {/*Archivo*/}
                         <div>
                             <label className={styles.edit.form.subtitle}>Archivo</label>
@@ -247,6 +299,7 @@ export default function Page() {
                             )}
                             {errors.file && <p className={styles.edit.form.error}>{errors.file}</p>}
                         </div>
+
                         {/*Palabras clave*/}
                         <label className={styles.edit.form.subtitle}>Palabras clave</label>
                         <div className={styles.edit.keywords.container}>
@@ -267,7 +320,6 @@ export default function Page() {
                         </div>
 
                         {/* Lista de palabras clave */}
-
                         {formData.keywords.map((keyword, index) => (
                             <li key={index} className={styles.edit.keywords.list}>
                                 <span>{keyword}</span>
@@ -280,6 +332,8 @@ export default function Page() {
                             </li>
                         ))}
 
+                        {errors.keywords && <p className={styles.edit.form.error}>{errors.keywords}</p>}
+                        {errors.general && <p className={errors.general.includes("✅") ? styles.edit.form.success : styles.edit.form.error}>{errors.general}</p>}
 
                         {/* Botón */}
                         <button

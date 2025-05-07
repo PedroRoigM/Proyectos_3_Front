@@ -7,7 +7,7 @@ export default async function PutTFG(id, dataForm) {
         const url = `${process.env.SERVER_URL}/tfgs/${id}`;
         const body = JSON.stringify(dataForm);
         const token = await cookies().then(c => c.get('bytoken')?.value);
-
+        console.log(dataForm);
         if (!token) {
             throw new Error('NOT_FOUND_TOKEN');
         }
@@ -20,6 +20,7 @@ export default async function PutTFG(id, dataForm) {
             },
             body: body,
         });
+        console.log(response);
         if (!response.ok) {
             const data = await response.json();
             return handleApiError(data);

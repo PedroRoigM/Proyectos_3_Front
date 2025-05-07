@@ -8,7 +8,6 @@ import AdminTopBar from './topbars/AdminTopBar';
 
 export default function TopBarSelector() {
     const [role, setRole] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function fetchUserRole() {
@@ -17,18 +16,11 @@ export default function TopBarSelector() {
                 setRole(userData.role);
             } catch (error) {
                 console.error('Error al obtener el rol:', error);
-            } finally {
-                setIsLoading(false);
             }
         }
 
         fetchUserRole();
     }, []);
-
-    // Mostrar un estado de carga mientras se verifica el rol
-    if (isLoading) {
-        return <div>Cargando...</div>;
-    }
 
     // Seleccionar el TopBar según el rol
     if (role === 'administrador') {
