@@ -82,28 +82,13 @@ async function sendFetch(id, file) {
 // Función principal que maneja la lógica y redirección
 export default async function PatchTfgFile(id, file) {
     try {
-        console.log("Iniciando PatchTfgFile para ID:", id);
         const result = await sendFetch(id, file);
 
         // Manejar diferentes escenarios de resultado
         if (!result.success) {
             // Si hay un error, devolver el objeto de error
-            console.log("Error en la subida del archivo:", result.error);
             return result.error;
         }
-
-        // Si tiene éxito, redirigir a la página del TFG
-        const roleToken = await cookies().then(c => c.get('bytoken')?.value);
-        const decoded = roleToken ? JSON.parse(atob(roleToken.split('.')[1])) : {};
-        const role = decoded.role || 'usuario';
-
-        // Decidir la URL de redirección basada en el rol del usuario
-
-        const redirectUrl = `/dashboard/tfg/${id}?id=${id}`;
-        console.log("Redirigiendo a:", redirectUrl);
-
-        // Usar un throw directo para redirección
-        throw redirect(redirectUrl);
     } catch (error) {
         // Manejar específicamente el error de redirección de Next.js
         if (error.digest && error.digest.startsWith('NEXT_REDIRECT')) {
@@ -118,4 +103,6 @@ export default async function PatchTfgFile(id, file) {
             fileError: 'Ha ocurrido un error inesperado al subir el archivo. Por favor, inténtalo de nuevo.'
         };
     }
+    let redirectUrl = `/dashboard`;
+    redirect(redirectUrl);
 }
