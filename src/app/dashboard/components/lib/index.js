@@ -5,7 +5,6 @@ import GetDegrees from './GetDegrees';
 import GetYears from './GetYears';
 import GetTFG from './GetTFG';
 import GetTFGpdf from './GetTFGpdf';
-import GetTFGs from './GetTFGs';
 import GetTFGsNames from './GetTFGsNames';
 import GetUnverifiedTFGs from './GetUnverifiedTFGs';
 import GetUsers from './GetUsers';
@@ -38,7 +37,6 @@ export {
     GetYears,
     GetTFG,
     GetTFGpdf,
-    GetTFGs,
     GetTFGsNames,
     GetUnverifiedTFGs,
     GetUsers,
