@@ -4,6 +4,7 @@ import GetDegrees from "./lib/GetDegrees";
 import GetAdvisors from "./lib/GetAdvisors";
 import GetYears from "./lib/GetYears";
 import GetTFGsNames from "./lib/GetTFGsNames";
+import styles from './styles/searchstyles';
 
 export default function SearchBar({ search }) {
     // Conservar tanto los valores mostrados como los IDs
@@ -156,20 +157,23 @@ export default function SearchBar({ search }) {
     }
 
     return (
+        
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-black mb-10">
             {/* Input de búsqueda con datalist */}
-            <div className="relative">
+            <div style={styles.container}>
+            <div style={styles.searchBox}>
+            <span style={styles.icon}>≡</span>
                 <input
                     type="text"
                     name="search"
                     value={formDataSearch.search}
                     onChange={handleSearchInputChange}
                     placeholder="Buscar..."
-                    className="border border-gray-400 rounded-md px-2 py-1 w-full text-sm"
+                    style={styles.input}
                     list="tfgSuggestions"
                     autoComplete="on"
                 />
-
+                <span style={styles.searchIcon}>🔍</span>
                 {/* Datalist para sugerencias - mantener estructura original */}
                 <datalist id="tfgSuggestions">
                     {tfgs.map((tfg, index) => (
@@ -180,7 +184,7 @@ export default function SearchBar({ search }) {
                     ))}
                 </datalist>
             </div>
-
+            </div>
             {/* Contenedor de filtros */}
             <div className="flex flex-wrap gap-2">
                 {/* Select Año */}
