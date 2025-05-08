@@ -420,39 +420,40 @@ export default function Page() {
                     {errors.file && <p className="text-red-500 text-sm mt-2">{errors.file}</p>}
                 </div>
 
-                {/* Contenedor del PDF con marca de agua */}
+                {/* Visualizador de PDF */}
                 {formData.file && (
-                    <div className="relative w-full h-[800px] overflow-hidden rounded bg-gray-100 shadow-lg" 
-                         ref={pdfContainerRef} 
-                         onContextMenu={handleContextMenu}>
-                        
-                        {/* Marca de agua */}
-                        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                            <div className="transform rotate-45 text-gray-400 text-5xl font-bold opacity-10 whitespace-nowrap">
-                                SOLO VISUALIZACIÓN
+                    <div>
+                        <div className="relative w-full h-[800px] overflow-hidden rounded bg-gray-100 shadow-lg" 
+                             ref={pdfContainerRef} 
+                             onContextMenu={handleContextMenu}>
+                            
+                            {/* Marca de agua */}
+                            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                                <div className="transform rotate-45 text-gray-400 text-5xl font-bold opacity-10 whitespace-nowrap">
+                                    SOLO VISUALIZACIÓN
+                                </div>
                             </div>
+
+                            {/* Visualizador de PDF */}
+                            <div className="w-full h-full overflow-hidden">
+                                <object
+                                    data={`data:application/pdf;base64,${Buffer.from(formData.file).toString('base64')}`}
+                                    type="application/pdf"
+                                    className="w-full h-[calc(100%+40px)] -mt-10 border-0"
+                                >
+                                    <p className="p-4 text-center">Tu navegador no puede mostrar PDFs.</p>
+                                </object>
+                            </div>
+
+                            {/* Capa superior para bloquear interacciones */}
+                            <div className="absolute top-0 left-0 right-0 h-10 bg-white opacity-0 z-20"></div>
                         </div>
 
-                        {/* Contenedor para object con desplazamiento negativo */}
-                        <div className="w-full h-full overflow-hidden">
-                            <object
-                                data={`data:application/pdf;base64,${typeof formData.file === 'string' ? 
-                                    Buffer.from(formData.file).toString('base64') : ''}`}
-                                type="application/pdf"
-                                className="w-full h-[calc(100%+40px)] -mt-10 border-0"
-                            >
-                                <p className="p-4 text-center">Tu navegador no puede mostrar PDFs.</p>
-                            </object>
+                        <div className="bg-gray-100 p-3 rounded text-center text-sm text-gray-600 mt-2">
+                            Este documento está protegido. Visualización solo con fines académicos.
                         </div>
-
-                        {/* Capa superior para bloquear selectivamente interacciones */}
-                        <div className="absolute top-0 left-0 right-0 h-10 bg-white opacity-0 z-20"></div>
                     </div>
                 )}
-
-                <div className="bg-gray-100 p-3 rounded text-center text-sm text-gray-600 mt-2">
-                    Este documento está protegido. Visualización solo con fines académicos.
-                </div>
             </div>
 
             {/* Campos adicionales para editar */}
