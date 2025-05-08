@@ -10,6 +10,7 @@ import LoadingSpinner from '../../../../components/LoadingSpinner';
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { editTfgStyles, inputClassName, selectClassName, classNames } from '../../../components/styles/edit-tfg';
 
 export default function Page() {
     const [loading, setLoading] = useState(true);
@@ -177,7 +178,7 @@ export default function Page() {
             ...formData,
             file: e.target.files[0]
         });
-        
+
         // Limpiar error de archivo
         if (errors.file) {
             setErrors({ ...errors, file: "" });
@@ -193,7 +194,7 @@ export default function Page() {
                 keywords: [...formData.keywords, inputValue.trim()]
             });
             setInputValue("");
-            
+
             // Limpiar error de keywords
             if (errors.keywords) {
                 setErrors({ ...errors, keywords: "" });
@@ -221,7 +222,7 @@ export default function Page() {
     // Función para filtrar tutores
     useEffect(() => {
         if (searchTerm) {
-            const filtered = advisors.filter(advisor => 
+            const filtered = advisors.filter(advisor =>
                 advisor.advisor.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredAdvisors(filtered);
@@ -230,17 +231,23 @@ export default function Page() {
         }
     }, [searchTerm, advisors]);
 
-    // Cerrar dropdown al hacer clic fuera
+    // Cerrar dropdown al hacer clic fuera o al hacer scroll
     useEffect(() => {
         function handleClickOutside(event) {
             if (advisorRef.current && !advisorRef.current.contains(event.target)) {
                 setShowDropdown(false);
             }
         }
-        
+
+        function handleScroll() {
+            setShowDropdown(false);
+        }
+
         document.addEventListener("mousedown", handleClickOutside);
+        window.addEventListener("scroll", handleScroll);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
+            window.removeEventListener("scroll", handleScroll);
         };
     }, []);
 
@@ -257,7 +264,7 @@ export default function Page() {
         }
 
         setShowConfirmation(false);
-        
+
         // Validar formulario
         const validationErrors = {};
         if (!formData.year) validationErrors.year = 'El año es obligatorio.';
@@ -284,7 +291,7 @@ export default function Page() {
 
             // Actualizar TFG
             const response = await PutTFG(id, dataToSend);
-            
+
             // Comprobar si se ha cambiado el archivo
             if (formData.file && typeof formData.file !== 'string') {
                 const responseFile = await PatchTfgFile(id, formData.file);
@@ -293,7 +300,7 @@ export default function Page() {
                     return;
                 }
             }
-            
+
             setSuccessMessage("✅ TFG actualizado correctamente");
             setErrors({});
             // Mostrar mensaje por 3 segundos y luego redirigir
@@ -322,323 +329,301 @@ export default function Page() {
     }
 
     return (
-        <div className="font-montserrat w-full h-full min-h-screen bg-gray-100">
-            {/* Cabecera con título y botones de acción */}
-            <div className="flex items-center justify-between p-5 pr-3 pl-3 bg-white border-b-[2px] border-[#14192c] shadow-md">
-                <h2 className="text-xl font-semibold">{formData.tfgTitle}</h2>
-                <div className="flex gap-4">
-                    <button 
-                        onClick={handleSubmit}
-                        className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#14192c] transition"
-                    >
-                        Guardar
-                    </button>
-                    <button 
-                        onClick={downloadPDF}
-                        className="text-black border-gray-400 border-2 font-bold px-4 py-2 rounded-md hover:bg-[#9da3a7] transition"
-                    >
-                        Descargar
-                    </button>
-                    <Link 
-                        href={`/dashboard/admin/tfg/${id}?id=${id}`}
-                        className="text-black border-gray-400 border-2 font-bold px-4 py-2 rounded-md hover:bg-[#9da3a7] transition"
-                    >
-                        Ver TFG
-                    </Link>
-                </div>
-            </div>
-
-            {/* Panel de información y keywords */}
-            <div className="bg-[#e5e9ec] flex flex-wrap items-center justify-between p-5 pr-3 pl-3 rounded-md max-w-full overflow-hidden mx-auto my-4 max-w-7xl">
-                {/* Palabras clave */}
-                <div className="flex gap-2 flex-wrap">
-                    {formData.keywords.slice(0, showAll ? formData.keywords.length : maxVisible).map((keyword, index) => (
-                        <span key={index} className="border border-gray-500 rounded-md px-2 py-1">
-                            {keyword}
-                        </span>
-                    ))}
-                    {formData.keywords.length > maxVisible && (
+        <div className={editTfgStyles.layout.container}>
+            <div className={editTfgStyles.layout.formContainer}>
+                {/* Cabecera con título y botones de acción */}
+                <div className={editTfgStyles.header.container}>
+                    <h2 className={editTfgStyles.header.title}>{formData.tfgTitle}</h2>
+                    <div className={editTfgStyles.header.actionsContainer}>
                         <button
-                            onClick={() => setShowAll(!showAll)}
-                            className="text-blue-500 underline ml-2"
+                            onClick={handleSubmit}
+                            className={editTfgStyles.header.editButton}
                         >
-                            {showAll ? "Ver menos" : "Ver más"}
+                            Guardar
                         </button>
+                        <button
+                            onClick={downloadPDF}
+                            className={editTfgStyles.header.secondaryButton}
+                        >
+                            Descargar
+                        </button>
+                        <Link
+                            href={`/dashboard/admin/tfg/${id}?id=${id}`}
+                            className={editTfgStyles.header.secondaryButton}
+                        >
+                            Ver TFG
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Mensajes de error o éxito */}
+                {(errors.general || successMessage) && (
+                    <div className={successMessage ? editTfgStyles.feedback.success : editTfgStyles.feedback.error}>
+                        {errors.general || successMessage}
+                    </div>
+                )}
+
+                {/* Contenedor del resumen */}
+                <div className={editTfgStyles.abstract.container}>
+                    <textarea
+                        name="abstract"
+                        value={formData.abstract}
+                        onChange={handleChange}
+                        className={editTfgStyles.abstract.textarea}
+                        rows="5"
+                    />
+                    {errors.abstract && <p className={editTfgStyles.form.error}>{errors.abstract}</p>}
+                </div>
+
+
+
+
+                {/* Campos adicionales para editar */}
+                <div className={editTfgStyles.form.container}>
+                    {/* Título */}
+                    <div className={editTfgStyles.form.group}>
+                        <label className={editTfgStyles.form.label}>Título</label>
+                        <input
+                            type="text"
+                            name="tfgTitle"
+                            value={formData.tfgTitle}
+                            onChange={handleChange}
+                            className={inputClassName(errors.tfgTitle)}
+                        />
+                        {errors.tfgTitle && <p className={editTfgStyles.form.error}>{errors.tfgTitle}</p>}
+                    </div>
+
+                    {/* Año */}
+                    <div className={editTfgStyles.form.group}>
+                        <label className={editTfgStyles.form.label}>Año</label>
+                        <select
+                            name="year"
+                            value={formData.year}
+                            onChange={handleChange}
+                            className={selectClassName(errors.year)}
+                        >
+                            <option value="" disabled>Selecciona un año</option>
+                            {years.map((year) => (
+                                <option key={year._id} value={year.year}>{year.year}</option>
+                            ))}
+                        </select>
+                        {errors.year && <p className={editTfgStyles.form.error}>{errors.year}</p>}
+                    </div>
+
+                    {/* Grado */}
+                    <div className={editTfgStyles.form.group}>
+                        <label className={editTfgStyles.form.label}>Grado</label>
+                        <select
+                            name="degree"
+                            value={formData.degree}
+                            onChange={handleChange}
+                            className={selectClassName(errors.degree)}
+                        >
+                            <option value="" disabled>Selecciona un grado</option>
+                            {degrees.map((degree) => (
+                                <option key={degree._id} value={degree.degree}>{degree.degree}</option>
+                            ))}
+                        </select>
+                        {errors.degree && <p className={editTfgStyles.form.error}>{errors.degree}</p>}
+                    </div>
+
+                    {/* Tutor */}
+                    <div className={editTfgStyles.form.group} ref={advisorRef}>
+                        <label className={editTfgStyles.form.label}>Tutor</label>
+                        <div className="relative">
+                            <div
+                                onClick={() => setShowDropdown(!showDropdown)}
+                                className={selectClassName(errors.advisor)}
+                            >
+                                <span>{formData.advisor || "Selecciona un tutor"}</span>
+                                <svg className={`w-5 h-5 transform absolute right-2 top-1/2 -translate-y-1/2 ${showDropdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+
+                            {showDropdown && (
+                                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                    <div className="sticky top-0 bg-white p-2 border-b border-gray-200">
+                                        <input
+                                            type="text"
+                                            placeholder="Buscar tutor..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </div>
+
+                                    {filteredAdvisors.length > 0 ? (
+                                        filteredAdvisors.map((advisor) => (
+                                            <div
+                                                key={advisor._id}
+                                                className="p-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => {
+                                                    handleChange({
+                                                        target: {
+                                                            name: "advisor",
+                                                            value: advisor.advisor
+                                                        }
+                                                    });
+                                                    setShowDropdown(false);
+                                                    setSearchTerm("");
+                                                }}
+                                            >
+                                                {advisor.advisor}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="p-2 text-gray-500">No se encontraron tutores</div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        {errors.advisor && <p className={editTfgStyles.form.error}>{errors.advisor}</p>}
+                    </div>
+
+                    {/* Alumno */}
+                    <div className={editTfgStyles.form.group}>
+                        <label className={editTfgStyles.form.label}>Alumno</label>
+                        <input
+                            type="text"
+                            name="student"
+                            value={formData.student}
+                            onChange={handleChange}
+                            className={inputClassName(errors.student)}
+                        />
+                        {errors.student && <p className={editTfgStyles.form.error}>{errors.student}</p>}
+                    </div>
+
+                    {/* Palabras clave */}
+                    <div className={editTfgStyles.keywords.container}>
+                        <label className={editTfgStyles.form.label}>Palabras clave</label>
+                        <div className={editTfgStyles.keywords.inputContainer}>
+                            <input
+                                type="text"
+                                value={inputValue}
+                                onChange={handleInputChange}
+                                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
+                                placeholder="Añadir palabra clave..."
+                                className={errors.keywords ?
+                                    `${editTfgStyles.keywords.input} border-red-500` :
+                                    editTfgStyles.keywords.input}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleAddKeyword}
+                                className={editTfgStyles.keywords.addButton}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                                </svg>
+                                Añadir
+                            </button>
+                        </div>
+
+                        {errors.keywords && <p className={editTfgStyles.form.error}>{errors.keywords}</p>}
+
+                        <div className={editTfgStyles.keywords.list}>
+                            {formData.keywords.map((keyword, index) => (
+                                <div key={index} className={editTfgStyles.keywords.tag}>
+                                    <span>{keyword}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveKeyword(index)}
+                                        className={editTfgStyles.keywords.removeButton}
+                                        title="Eliminar palabra clave"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                {/* Sección del PDF */}
+                <div className={editTfgStyles.pdf.container}>
+                    <h2 className={editTfgStyles.pdf.title}>Documento TFG</h2>
+
+                    {/* Formulario para cambiar el archivo */}
+                    <div className={editTfgStyles.pdf.uploadContainer}>
+                        <div className={editTfgStyles.pdf.uploadInfo}>
+                            <div className={editTfgStyles.pdf.fileInfo}>
+                                {typeof formData.file === 'string' ?
+                                    'Archivo PDF actual del TFG' :
+                                    formData.file ? formData.file.name : 'No se ha seleccionado un archivo'
+                                }
+                            </div>
+                            <label className={editTfgStyles.pdf.uploadButton}>
+                                Cambiar archivo
+                                <input
+                                    type="file"
+                                    name="file"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                    accept=".pdf"
+                                />
+                            </label>
+                        </div>
+                        {errors.file && <p className={editTfgStyles.form.error}>{errors.file}</p>}
+                    </div>
+                    {/* Visualizador de PDF */}
+                    {formData.file && (
+                        <div>
+                            <div className={editTfgStyles.pdf.viewerContainer}
+                                ref={pdfContainerRef}
+                                onContextMenu={handleContextMenu}>
+
+                                {/* Marca de agua */}
+                                <div className={editTfgStyles.pdf.watermark}>
+                                    <div className={editTfgStyles.pdf.watermarkText}>
+                                        SOLO VISUALIZACIÓN
+                                    </div>
+                                </div>
+
+                                {/* Visualizador de PDF */}
+                                <div className="w-full h-full overflow-hidden">
+                                    <object
+                                        data={`data:application/pdf;base64,${Buffer.from(formData.file).toString('base64')}`}
+                                        type="application/pdf"
+                                        className={editTfgStyles.pdf.pdfObject}
+                                    >
+                                        <p className={editTfgStyles.pdf.fallbackMessage}>Tu navegador no puede mostrar PDFs.</p>
+                                    </object>
+                                </div>
+
+                                {/* Capa superior para bloquear interacciones */}
+                                <div className={editTfgStyles.pdf.protectionOverlay}></div>
+                            </div>
+
+                            <div className={editTfgStyles.pdf.disclaimer}>
+                                Este documento está protegido. Visualización solo con fines académicos.
+                            </div>
+                        </div>
                     )}
                 </div>
-
-                {/* Información de Año y Tutor */}
-                <div className="flex ml-auto text-right gap-x-4">
-                    <p><strong>Año:</strong> {formData.year}</p>
-                    <p><strong>Tutor:</strong> {formData.advisor}</p>
-                </div>
-            </div>
-
-            {/* Contenedor del resumen */}
-            <div className="mt-2 mb-8 bg-[#BEBEBE] p-5 border border-[#000000] max-w-7xl mx-auto">
-                <textarea
-                    name="abstract"
-                    value={formData.abstract}
-                    onChange={handleChange}
-                    className="w-full bg-transparent border-none focus:outline-none resize-none p-2"
-                    rows="5"
-                />
-                {errors.abstract && <p className="text-red-500 text-sm mt-2">{errors.abstract}</p>}
-            </div>
-
-            {/* Mensajes de error o éxito */}
-            {(errors.general || successMessage) && (
-                <div className={`max-w-7xl mx-auto mb-4 p-4 rounded-md ${errors.general ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
-                    {errors.general || successMessage}
-                </div>
-            )}
-
-            {/* Sección del PDF */}
-            <div className="mt-4 max-w-7xl mx-auto">
-                <h2 className="text-xl font-semibold mb-4">Documento TFG</h2>
-
-                {/* Formulario para cambiar el archivo */}
-                <div className="mb-6 bg-white p-4 rounded-md shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-600">
-                            {typeof formData.file === 'string' ? 
-                                'Archivo PDF actual del TFG' : 
-                                formData.file ? formData.file.name : 'No se ha seleccionado un archivo'
-                            }
-                        </div>
-                        <label className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md cursor-pointer transition">
-                            Cambiar archivo
-                            <input
-                                type="file"
-                                name="file"
-                                onChange={handleFileChange}
-                                className="hidden"
-                                accept=".pdf"
-                            />
-                        </label>
-                    </div>
-                    {errors.file && <p className="text-red-500 text-sm mt-2">{errors.file}</p>}
-                </div>
-
-                {/* Visualizador de PDF */}
-                {formData.file && (
-                    <div>
-                        <div className="relative w-full h-[800px] overflow-hidden rounded bg-gray-100 shadow-lg" 
-                             ref={pdfContainerRef} 
-                             onContextMenu={handleContextMenu}>
-                            
-                            {/* Marca de agua */}
-                            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                                <div className="transform rotate-45 text-gray-400 text-5xl font-bold opacity-10 whitespace-nowrap">
-                                    SOLO VISUALIZACIÓN
-                                </div>
-                            </div>
-
-                            {/* Visualizador de PDF */}
-                            <div className="w-full h-full overflow-hidden">
-                                <object
-                                    data={`data:application/pdf;base64,${Buffer.from(formData.file).toString('base64')}`}
-                                    type="application/pdf"
-                                    className="w-full h-[calc(100%+40px)] -mt-10 border-0"
+                {/* Modal de confirmación */}
+                {showConfirmation && (
+                    <div className={editTfgStyles.modal.overlay}>
+                        <div className={editTfgStyles.modal.container}>
+                            <h3 className={editTfgStyles.modal.message}>¿Estás seguro de actualizar el TFG?</h3>
+                            <div className={editTfgStyles.modal.buttonsContainer}>
+                                <button
+                                    onClick={() => handleConfirmSubmit(true)}
+                                    className={editTfgStyles.modal.confirmButton}
                                 >
-                                    <p className="p-4 text-center">Tu navegador no puede mostrar PDFs.</p>
-                                </object>
+                                    Sí
+                                </button>
+                                <button
+                                    onClick={() => handleConfirmSubmit(false)}
+                                    className={editTfgStyles.modal.cancelButton}
+                                >
+                                    No
+                                </button>
                             </div>
-
-                            {/* Capa superior para bloquear interacciones */}
-                            <div className="absolute top-0 left-0 right-0 h-10 bg-white opacity-0 z-20"></div>
-                        </div>
-
-                        <div className="bg-gray-100 p-3 rounded text-center text-sm text-gray-600 mt-2">
-                            Este documento está protegido. Visualización solo con fines académicos.
                         </div>
                     </div>
                 )}
             </div>
-
-            {/* Campos adicionales para editar */}
-            <div className="max-w-7xl mx-auto mt-8 mb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Título */}
-                <div className="bg-white p-4 rounded-md shadow-sm">
-                    <label className="block text-gray-700 font-medium mb-2">Título</label>
-                    <input
-                        type="text"
-                        name="tfgTitle"
-                        value={formData.tfgTitle}
-                        onChange={handleChange}
-                        className={`w-full p-2 border ${errors.tfgTitle ? 'border-red-500' : 'border-gray-300'} rounded-md`}
-                    />
-                    {errors.tfgTitle && <p className="text-red-500 text-sm mt-1">{errors.tfgTitle}</p>}
-                </div>
-
-                {/* Año */}
-                <div className="bg-white p-4 rounded-md shadow-sm">
-                    <label className="block text-gray-700 font-medium mb-2">Año</label>
-                    <select
-                        name="year"
-                        value={formData.year}
-                        onChange={handleChange}
-                        className={`w-full p-2 border ${errors.year ? 'border-red-500' : 'border-gray-300'} rounded-md bg-white`}
-                    >
-                        <option value="" disabled>Selecciona un año</option>
-                        {years.map((year) => (
-                            <option key={year._id} value={year.year}>{year.year}</option>
-                        ))}
-                    </select>
-                    {errors.year && <p className="text-red-500 text-sm mt-1">{errors.year}</p>}
-                </div>
-
-                {/* Grado */}
-                <div className="bg-white p-4 rounded-md shadow-sm">
-                    <label className="block text-gray-700 font-medium mb-2">Grado</label>
-                    <select
-                        name="degree"
-                        value={formData.degree}
-                        onChange={handleChange}
-                        className={`w-full p-2 border ${errors.degree ? 'border-red-500' : 'border-gray-300'} rounded-md bg-white`}
-                    >
-                        <option value="" disabled>Selecciona un grado</option>
-                        {degrees.map((degree) => (
-                            <option key={degree._id} value={degree.degree}>{degree.degree}</option>
-                        ))}
-                    </select>
-                    {errors.degree && <p className="text-red-500 text-sm mt-1">{errors.degree}</p>}
-                </div>
-
-                {/* Tutor */}
-                <div className="bg-white p-4 rounded-md shadow-sm" ref={advisorRef}>
-                    <label className="block text-gray-700 font-medium mb-2">Tutor</label>
-                    <div className="relative">
-                        <div 
-                            onClick={() => setShowDropdown(!showDropdown)}
-                            className={`w-full p-2 border ${errors.advisor ? 'border-red-500' : 'border-gray-300'} rounded-md bg-white flex justify-between items-center cursor-pointer`}
-                        >
-                            <span>{formData.advisor || "Selecciona un tutor"}</span>
-                            <svg className={`w-5 h-5 transform ${showDropdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-                        
-                        {showDropdown && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                <div className="sticky top-0 bg-white p-2 border-b border-gray-200">
-                                    <input
-                                        type="text"
-                                        placeholder="Buscar tutor..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        onClick={(e) => e.stopPropagation()}
-                                    />
-                                </div>
-                                
-                                {filteredAdvisors.length > 0 ? (
-                                    filteredAdvisors.map((advisor) => (
-                                        <div
-                                            key={advisor._id}
-                                            className="p-2 hover:bg-gray-100 cursor-pointer"
-                                            onClick={() => {
-                                                handleChange({
-                                                    target: {
-                                                        name: "advisor",
-                                                        value: advisor.advisor
-                                                    }
-                                                });
-                                                setShowDropdown(false);
-                                                setSearchTerm("");
-                                            }}
-                                        >
-                                            {advisor.advisor}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="p-2 text-gray-500">No se encontraron tutores</div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                    {errors.advisor && <p className="text-red-500 text-sm mt-1">{errors.advisor}</p>}
-                </div>
-
-                {/* Alumno */}
-                <div className="bg-white p-4 rounded-md shadow-sm">
-                    <label className="block text-gray-700 font-medium mb-2">Alumno</label>
-                    <input
-                        type="text"
-                        name="student"
-                        value={formData.student}
-                        onChange={handleChange}
-                        className={`w-full p-2 border ${errors.student ? 'border-red-500' : 'border-gray-300'} rounded-md`}
-                    />
-                    {errors.student && <p className="text-red-500 text-sm mt-1">{errors.student}</p>}
-                </div>
-
-                {/* Palabras clave */}
-                <div className="bg-white p-4 rounded-md shadow-sm">
-                    <label className="block text-gray-700 font-medium mb-2">Palabras clave</label>
-                    <div className="flex space-x-2 mb-2">
-                        <input
-                            type="text"
-                            value={inputValue}
-                            onChange={handleInputChange}
-                            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
-                            placeholder="Añadir palabra clave..."
-                            className={`flex-1 p-2 border ${errors.keywords ? 'border-red-500' : 'border-gray-300'} rounded-md`}
-                        />
-                        <button
-                            type="button"
-                            onClick={handleAddKeyword}
-                            className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition flex items-center"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-                            </svg>
-                            Añadir
-                        </button>
-                    </div>
-                    
-                    {errors.keywords && <p className="text-red-500 text-sm mb-2">{errors.keywords}</p>}
-                    
-                    <div className="flex flex-wrap gap-2 mt-2">
-                        {formData.keywords.map((keyword, index) => (
-                            <div key={index} className="flex items-center bg-gray-100 px-2 py-1 rounded-md border border-gray-300">
-                                <span>{keyword}</span>
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveKeyword(index)}
-                                    className="ml-2 bg-gray-200 text-red-600 rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors"
-                                    title="Eliminar palabra clave"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Modal de confirmación */}
-            {showConfirmation && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
-                    <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
-                        <h3 className="text-lg text-center mb-4">¿Estás seguro de actualizar el TFG?</h3>
-                        <div className="flex justify-around">
-                            <button
-                                onClick={() => handleConfirmSubmit(true)}
-                                className="bg-[#0065ef] px-8 text-white border-2 font-bold py-2 rounded-md hover:bg-[#1d4996] transition"
-                            >
-                                Sí
-                            </button>
-                            <button
-                                onClick={() => handleConfirmSubmit(false)}
-                                className="px-8 text-black border-2 font-bold py-2 rounded-md hover:bg-[#9da3a7] transition"
-                            >
-                                No
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
