@@ -3,16 +3,16 @@
 export const styles = {
     // Layout ("Header")
     layout: {
-        flexCenter: "flex flex-col min-h-screen bg-gray-100",
-        card: "w-full border-b-[2px]  shadow-md p-1 md:p-1",
+        flexCenter: "flex flex-col min-h-screen bg-gray-100 mx-[10%] mt-[2%]",
+        card: "w-full  p-1 md:p-1",
         title: "text-3xl font-bold text-gray-800",
-        subtitle: "text-gray-600 mt-2"
+        subtitle: "text-gray-600 mt-2 mb-10"
     },
 
     //Tabs (Donde pone Tutores, Grados y Años)
     tabs: {
-        container: "rounded-lg shadow-md mb-6",
-        container_window: "flex border-b border-gray-200",
+        container: "rounded-lg mb-6 ",
+        container_window: "flex border border-gray-200 shadow-md",
         window_layout: "flex-1 py-4 px-6 font-medium",
         active_window: "text-blue-600 border-b-2 border-blue-600 bg-blue-50",
         inactive_window: "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
@@ -83,7 +83,7 @@ export const styles = {
 
     specific_tfg: {
         id: {
-            container: "font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]",
+            container: "font-montserrat h-full flex flex-col justify-center my-[50px] rounded-md mx-[15%]",
             title: "flex items-center justify-between p-5 pr-3 pl-3 rounded-md max-w-full overflow-hidden text-black",
             button: {
                 container: "flex gap-10",

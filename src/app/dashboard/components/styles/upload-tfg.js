@@ -4,7 +4,7 @@ export const uploadTfgStyles = {
   // Layout principal
   layout: {
     container: "flex justify-center min-h-screen bg-[#edf1fc] px-4 py-12",
-    formContainer: "w-full max-w-[720px] flex flex-col gap-6",
+    formContainer: "w-full mx-[15%] flex flex-col gap-6",
   },
 
   // Encabezados
@@ -69,32 +69,32 @@ export const uploadTfgStyles = {
 };
 
 
-  
-  // Función para combinar clases de estilo
-  export function classNames(...classes) {
-    return classes.filter(Boolean).join(' ');
-  }
-  
-  // Función para aplicar condicionalmente un estilo de error o normal a inputs
-  export function inputClassName(hasError) {
-    return classNames(
-      uploadTfgStyles.form.input.base,
-      hasError ? uploadTfgStyles.form.input.error : uploadTfgStyles.form.input.valid
-    );
-  }
-  
-  // Función para aplicar condicionalmente un estilo de error o normal a selects
-  export function selectClassName(hasError) {
-    return classNames(
-      uploadTfgStyles.form.select.base,
-      hasError ? uploadTfgStyles.form.select.error : uploadTfgStyles.form.select.valid
-    );
-  }
-  
-  // Función para aplicar condicionalmente un estilo de error o normal a textareas
-  export function textareaClassName(hasError) {
-    return classNames(
-      uploadTfgStyles.form.textarea.base,
-      hasError ? uploadTfgStyles.form.textarea.error : uploadTfgStyles.form.textarea.valid
-    );
-  }
+
+// Función para combinar clases de estilo
+export function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
+
+// Función para aplicar condicionalmente un estilo de error o normal a inputs
+export function inputClassName(hasError) {
+  return classNames(
+    uploadTfgStyles.form.input.base,
+    hasError ? uploadTfgStyles.form.input.error : uploadTfgStyles.form.input.valid
+  );
+}
+
+// Función para aplicar condicionalmente un estilo de error o normal a selects
+export function selectClassName(hasError) {
+  return classNames(
+    uploadTfgStyles.form.select.base,
+    hasError ? uploadTfgStyles.form.select.error : uploadTfgStyles.form.select.valid
+  );
+}
+
+// Función para aplicar condicionalmente un estilo de error o normal a textareas
+export function textareaClassName(hasError) {
+  return classNames(
+    uploadTfgStyles.form.textarea.base,
+    hasError ? uploadTfgStyles.form.textarea.error : uploadTfgStyles.form.textarea.valid
+  );
+}

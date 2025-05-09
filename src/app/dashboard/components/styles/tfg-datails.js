@@ -4,16 +4,16 @@
 export const tfgDetailsStyles = {
   // Layout principal
   layout: {
-    container: "font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[90%]",
+    container: "font-montserrat w-full h-full flex flex-col justify-center mx-auto my-[50px] rounded-md max-w-[80%]",
   },
-  
+
   // Header con título y grado
   header: {
     container: "",
     title: "text-xl md:text-2xl font-semibold",
     degree: "text-md text-gray-700",
   },
-  
+
   // Contenedor de metadatos (keywords, año, tutor)
   metadata: {
     container: "bg-[#e5e9ec] flex flex-wrap items-center justify-between p-5 pr-3 pl-3 rounded-md max-w-full overflow-hidden",
@@ -29,14 +29,14 @@ export const tfgDetailsStyles = {
     container: "bg-blue-600 text-white p-3 rounded-t-md",
     text: "font-semibold",
   },
-  
+
   // Resumen del TFG
   abstract: {
     container: "mt-2 mb-8 bg-white p-5 border border-[#000000] rounded-md shadow-sm",
     title: "font-semibold mb-2",
     text: "text-sm md:text-base",
   },
-  
+
   // Sección del PDF
   pdf: {
     container: "mt-4",
