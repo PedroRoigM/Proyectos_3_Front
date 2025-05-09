@@ -3,7 +3,7 @@
 export const styles = {
     // Layout ("Header")
     layout: {
-        flexCenter: "flex flex-col min-h-screen bg-gray-100 mx-[10%] mt-[2%]",
+        flexCenter: "flex flex-col min-h-screen bg-gray-100 mx-[15%] mt-[2%]",
         card: "w-full  p-1 md:p-1",
         title: "text-3xl font-bold text-gray-800",
         subtitle: "text-gray-600 mt-2 mb-10"
@@ -60,11 +60,11 @@ export const styles = {
     },
 
     roles: {
-        container: "container mx-auto p-4",
+        container: "p-4 mx-[15%]",
         title: "text-2xl font-bold mb-4",
         search: {
-            container: "w-full mb-4",
-            input: "w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
+            container: " mb-4",
+            input: "border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
             clearButton: "absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
         },
         userList: {
