@@ -13,7 +13,9 @@ export default function Home() {
   };
 
   return (
-    <div className="font-montserrat rounded-md from-white to-gray-400 bg-gradient-to-b h-screen">
+    <div className="font-montserrat rounded-md bg-cover bg-center bg-no-repeat pb-[5%]"
+      style={{ backgroundImage: "url('/images/image.png')" }}
+    >
       <ErrorBoundary>
         {showLogin ? (
           <Login changeToRegister={toggleAuthMode} />

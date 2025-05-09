@@ -3,8 +3,8 @@
 export const editTfgStyles = {
     // Layout principal
     layout: {
-        container: "flex items-center justify-center min-h-screen p-5 bg-[#edf1fc]",
-        formContainer: "p-8 rounded-lg shadow-lg w-[80%] mx-auto",
+        container: "flex items-center justify-center min-h-screen p-5",
+        formContainer: "p-8 rounded-lg shadow-lg w-[80%] mx-auto bg-white",
     },
 
     // Encabezados
@@ -21,11 +21,11 @@ export const editTfgStyles = {
 
     // Barra superior con título y acciones
     header: {
-        container: "flex items-center justify-between p-5 bg-white border-b border-gray-200 mb-6",
+        container: "flex items-center justify-between p-5 bg-white  mb-6",
         title: "text-xl font-semibold truncate max-w-lg",
         actionsContainer: "flex gap-4",
         editButton: "bg-blue-600 px-6 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition",
-        secondaryButton: "text-gray-800 border border-gray-400 font-medium px-4 py-2 rounded-md hover:bg-gray-100 transition",
+        secondaryButton: "text-gray-800  font-medium px-4 py-2 rounded-md hover:bg-gray-100 transition",
     },
 
     // Metadata

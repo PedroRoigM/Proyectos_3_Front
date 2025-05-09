@@ -189,12 +189,7 @@ function ControlPanelContent() {
                 setYears([...years, { ...response.data, active: true }]);
                 showSuccess('Año académico creado correctamente');
             } else {
-                setYears([...years, {
-                    _id: `temp-${Date.now()}`,
-                    year: newYear || `${new Date().getFullYear()}/${new Date().getFullYear() + 1}`,
-                    active: true
-                }]);
-                showSuccess('Año académico creado correctamente');
+                showError('No se pudo crear el año académico');
             }
 
             setNewYear('');

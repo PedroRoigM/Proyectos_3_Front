@@ -41,7 +41,7 @@ export const styles = {
 
     // Layout
     layout: {
-        flexCenter: "flex items-center justify-center",
+        flexCenter: "flex items-center justify-center mx-[15%]",
         topBar: "w-full bg-white border-b-[2px] border-[#14192c] shadow-md p-1 md:p-1"
     },
 };

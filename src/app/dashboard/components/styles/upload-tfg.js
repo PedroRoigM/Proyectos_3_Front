@@ -3,7 +3,7 @@
 export const uploadTfgStyles = {
   // Layout principal
   layout: {
-    container: "flex justify-center min-h-screen bg-[#edf1fc] px-4 py-12",
+    container: "flex justify-center min-h-screen px-4 py-12",
     formContainer: "w-full mx-[15%] flex flex-col gap-6",
   },
 
