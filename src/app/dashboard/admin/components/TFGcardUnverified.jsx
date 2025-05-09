@@ -5,6 +5,7 @@ import DeleteTFG from '../../components/lib/DeleteTFG';
 import PatchValidateTFG from '../../components/lib/PatchValidateTFG';
 import { useNotification } from '../../../components/errors/notification-context';
 import { useApiError } from '../../../components/errors/api-error-hook';
+import styles from './styles/TFGcardUnverifiedStyles';
 
 export default function TFGcardUnverified({ tfg, onStatusChange }) {
     const [isVisible, setIsVisible] = useState(true);
@@ -87,35 +88,45 @@ export default function TFGcardUnverified({ tfg, onStatusChange }) {
     }
 
     return (
-        <div className="border border-gray-400 rounded-lg overflow-hidden shadow-md mb-4 bg-white">
-            <Link href={`/dashboard/admin/tfg/${tfg._id}?id=${tfg._id}`}>
-                <div className="cursor-pointer bg-gray-100 p-4 hover:bg-gray-200 transition">
-                    <h2 className="text-lg font-semibold">{truncateText(tfg.tfgTitle, 80)}</h2>
-                    <h3 className="text-sm text-gray-700">{tfg.degree.degree}</h3>
-                    <p className="text-sm text-gray-600">{truncateText(tfg.abstract, 200)}</p>
+        <div style={styles.container}>
+            <Link href={`/dashboard/admin/tfg/${tfg._id}?id=${tfg._id}`} className="block">
+                <div className="p-4 hover:bg-gray-200 transition">
+                    <h2 style={styles.header}>
+                        {truncateText(tfg.tfgTitle, 80)}
+                    </h2>
+                    <h3 style={styles.description}>
+                        {tfg.degree.degree}
+                    </h3>
+                    <p style={styles.description}>
+                        {truncateText(tfg.abstract, 180)}
+                    </p>
                 </div>
             </Link>
 
-            <div className="flex flex-wrap justify-between items-center bg-gray-200 p-3">
+            <div style={styles.actionContainer}>
                 {/* Palabras clave */}
-                <div className="flex flex-wrap gap-1">
+                <div style={styles.keywordsContainer}>
                     {tfg.keywords.map((element, index) => (
-                        <span key={index} className="border border-gray-500 text-xs px-2 py-1 rounded-md">
+                        <span key={index} style={styles.tag}>
                             {element}
                         </span>
                     ))}
                 </div>
 
                 {/* Botones */}
-                <div className="flex gap-2 mt-2 sm:mt-0">
+                <div style={styles.buttonsContainer}>
                     <button
-                        className="bg-blue-500 text-white text-sm font-semibold px-4 py-1 rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                        style={{
+                            ...styles.verifyButton,
+                            opacity: loading ? 0.5 : 1,
+                            cursor: loading ? 'not-allowed' : 'pointer'
+                        }}
                         onClick={() => validateTFG(tfg._id)}
                         disabled={loading}
                     >
                         {actionType === 'verify' && loading ? (
                             <>
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                <div style={{ ...styles.loadingSpinner, ...styles.loadingSpinnerWhite }}></div>
                                 <span>Verificando...</span>
                             </>
                         ) : (
@@ -123,13 +134,17 @@ export default function TFGcardUnverified({ tfg, onStatusChange }) {
                         )}
                     </button>
                     <button
-                        className="bg-white border border-red-500 text-red-500 text-sm font-semibold px-4 py-1 rounded-md hover:bg-red-500 hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                        style={{
+                            ...styles.deleteButton,
+                            opacity: loading ? 0.5 : 1,
+                            cursor: loading ? 'not-allowed' : 'pointer'
+                        }}
                         onClick={() => deleteTFG(tfg._id)}
                         disabled={loading}
                     >
                         {actionType === 'delete' && loading ? (
                             <>
-                                <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin mr-2"></div>
+                                <div style={{ ...styles.loadingSpinner, ...styles.loadingSpinnerRed }}></div>
                                 <span>Eliminando...</span>
                             </>
                         ) : (

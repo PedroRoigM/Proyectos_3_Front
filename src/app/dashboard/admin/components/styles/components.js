@@ -3,15 +3,15 @@
 export const styles = {
     // Layout ("Header")
     layout: {
-        flexCenter: "flex flex-col min-h-screen bg-gray-100 p-6",
-        card: "w-full bg-white border-b-[2px] border-[#14192c] shadow-md p-1 md:p-1",
+        flexCenter: "flex flex-col min-h-screen bg-gray-100",
+        card: "w-full border-b-[2px]  shadow-md p-1 md:p-1",
         title: "text-3xl font-bold text-gray-800",
         subtitle: "text-gray-600 mt-2"
     },
 
     //Tabs (Donde pone Tutores, Grados y Años)
     tabs: {
-        container: "bg-white rounded-lg shadow-md mb-6",
+        container: "rounded-lg shadow-md mb-6",
         container_window: "flex border-b border-gray-200",
         window_layout: "flex-1 py-4 px-6 font-medium",
         active_window: "text-blue-600 border-b-2 border-blue-600 bg-blue-50",
@@ -20,7 +20,7 @@ export const styles = {
 
     //Panel (Donde están los elementos)
     panel: {
-        container: "p-6",
+        container: "m-6",
         controlers: "flex flex-col mb-6 space-y-4",
         toggle: { //Botón de "Mostrar elementos inactivos"
             container: "flex items-center",

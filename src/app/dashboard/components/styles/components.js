@@ -1,7 +1,7 @@
 export const styles = {
     // General Styles
     general: {
-        container: "mx-auto",
+        container: "mx-[15%]",
         flex: "flex",
         flexCol: "flex-col",
         itemsCenter: "items-center",

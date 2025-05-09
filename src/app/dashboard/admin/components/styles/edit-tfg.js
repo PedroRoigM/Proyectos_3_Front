@@ -1,4 +1,3 @@
-// src/app/dashboard/admin/components/styles/edit-tfg.js
 // Estilos específicos para la página de edición de TFG
 
 export const editTfgStyles = {

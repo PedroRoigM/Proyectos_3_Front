@@ -1,6 +1,5 @@
 const styles = {
   card: {
-    backgroundColor: '#f4f7fe',
     borderRadius: '8px',
     width: '100%', // Asegura que ocupe todo el ancho disponible
     margin: 'auto',
