@@ -10,7 +10,7 @@ import LoadingSpinner from '../../../../components/LoadingSpinner';
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { editTfgStyles, inputClassName, selectClassName, classNames } from '../../../components/styles/edit-tfg';
+import { editTfgStyles, inputClassName, selectClassName } from '../../../components/styles/edit-tfg';
 
 export default function Page() {
     const [loading, setLoading] = useState(true);
@@ -36,16 +36,15 @@ export default function Page() {
     const [errors, setErrors] = useState({});
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
-    const [showAll, setShowAll] = useState(false);
-    const maxVisible = 3; // Número de palabras clave visibles por defecto
-
-    // Para manejar el evento contextmenu
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredAdvisors, setFilteredAdvisors] = useState([]);
+    const advisorRef = useRef(null);
     const pdfContainerRef = useRef(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Obtener todos los datos en paralelo
                 const [advisorsRes, degreesRes, yearsRes, tfgRes, file] = await Promise.all([
                     GetAdvisors({ active: true }),
                     GetDegrees({ active: true }),
@@ -53,7 +52,6 @@ export default function Page() {
                     GetTFG(id),
                     GetTFGpdf(id)
                 ]);
-
                 setAdvisors(advisorsRes);
                 setDegrees(degreesRes);
                 setYears(yearsRes);
@@ -71,16 +69,14 @@ export default function Page() {
                     file: file,
                 });
             } catch (error) {
-                console.error("Error al cargar los datos:", error);
                 setErrors({ general: "Error al cargar los datos del TFG. Inténtalo de nuevo." });
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
 
-        // Añadir protección contra atajos de teclado para descargar
+        // Protección contra atajos de descarga/impresión
         const handleKeyDown = (e) => {
             if ((e.ctrlKey && e.key === 's') ||
                 (e.ctrlKey && e.key === 'p') ||
@@ -89,100 +85,63 @@ export default function Page() {
                 return false;
             }
         };
-
         document.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
+        return () => document.removeEventListener('keydown', handleKeyDown);
     }, [id]);
 
-    // Función para descargar el PDF
-    const downloadPDF = () => {
-        if (formData.file) {
-            try {
-                // Crear un Uint8Array a partir del ArrayBuffer del PDF
-                const uint8Array = new Uint8Array(formData.file);
+    useEffect(() => {
+        if (searchTerm) {
+            setFilteredAdvisors(advisors.filter(advisor =>
+                advisor.advisor.toLowerCase().includes(searchTerm.toLowerCase())
+            ));
+        } else {
+            setFilteredAdvisors(advisors);
+        }
+    }, [searchTerm, advisors]);
 
-                // Crear un Blob usando el array de bytes
-                const pdfBlob = new Blob([uint8Array], { type: 'application/pdf' });
-
-                // Crear la URL del objeto
-                const pdfUrl = URL.createObjectURL(pdfBlob);
-
-                // Crear el elemento para la descarga
-                const a = document.createElement('a');
-                a.href = pdfUrl;
-                a.download = `${formData.tfgTitle}.pdf`; // Nombre del archivo PDF
-
-                // Añadir al documento, hacer clic y eliminar
-                document.body.appendChild(a);
-                a.click();
-
-                // Pequeño retraso antes de limpiar para asegurar que la descarga comience
-                setTimeout(() => {
-                    URL.revokeObjectURL(pdfUrl); // Liberar el objeto URL
-                    a.remove(); // Eliminar el elemento <a> después de la descarga
-                }, 100);
-            } catch (error) {
-                console.error("Error al descargar el PDF:", error);
-                setErrors({ file: "Error al descargar el archivo. Inténtalo más tarde." });
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (advisorRef.current && !advisorRef.current.contains(event.target)) {
+                setShowDropdown(false);
             }
         }
-    };
+        function handleScroll() {
+            setShowDropdown(false);
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        // Para campos especiales con ID, manejamos tanto el valor como el ID
         if (name === "advisor") {
             const selectedAdvisor = advisors.find(a => a.advisor === value);
             if (selectedAdvisor) {
-                setFormData({
-                    ...formData,
-                    advisor: value,
-                    advisorId: selectedAdvisor._id
-                });
+                setFormData({ ...formData, advisor: value, advisorId: selectedAdvisor._id });
             }
         } else if (name === "year") {
             const selectedYear = years.find(y => y.year === value);
             if (selectedYear) {
-                setFormData({
-                    ...formData,
-                    year: value,
-                    yearId: selectedYear._id
-                });
+                setFormData({ ...formData, year: value, yearId: selectedYear._id });
             }
         } else if (name === "degree") {
             const selectedDegree = degrees.find(d => d.degree === value);
             if (selectedDegree) {
-                setFormData({
-                    ...formData,
-                    degree: value,
-                    degreeId: selectedDegree._id
-                });
+                setFormData({ ...formData, degree: value, degreeId: selectedDegree._id });
             }
         } else {
-            // Para el resto de los campos normales
             setFormData({ ...formData, [name]: value });
         }
-
-        // Limpiar errores al cambiar un campo
-        if (errors[name]) {
-            setErrors({ ...errors, [name]: "" });
-        }
+        if (errors[name]) setErrors({ ...errors, [name]: "" });
     };
 
     const handleFileChange = (e) => {
-        setFormData({
-            ...formData,
-            file: e.target.files[0]
-        });
-
-        // Limpiar error de archivo
-        if (errors.file) {
-            setErrors({ ...errors, file: "" });
-        }
+        setFormData({ ...formData, file: e.target.files[0] });
+        if (errors.file) setErrors({ ...errors, file: "" });
     };
 
     const handleInputChange = (e) => setInputValue(e.target.value);
@@ -194,11 +153,7 @@ export default function Page() {
                 keywords: [...formData.keywords, inputValue.trim()]
             });
             setInputValue("");
-
-            // Limpiar error de keywords
-            if (errors.keywords) {
-                setErrors({ ...errors, keywords: "" });
-            }
+            if (errors.keywords) setErrors({ ...errors, keywords: "" });
         }
     };
 
@@ -214,58 +169,14 @@ export default function Page() {
         setShowConfirmation(true);
     };
 
-    const [showDropdown, setShowDropdown] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [filteredAdvisors, setFilteredAdvisors] = useState([]);
-    const advisorRef = useRef(null);
-
-    // Función para filtrar tutores
-    useEffect(() => {
-        if (searchTerm) {
-            const filtered = advisors.filter(advisor =>
-                advisor.advisor.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredAdvisors(filtered);
-        } else {
-            setFilteredAdvisors(advisors);
-        }
-    }, [searchTerm, advisors]);
-
-    // Cerrar dropdown al hacer clic fuera o al hacer scroll
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (advisorRef.current && !advisorRef.current.contains(event.target)) {
-                setShowDropdown(false);
-            }
-        }
-
-        function handleScroll() {
-            setShowDropdown(false);
-        }
-
-        document.addEventListener("mousedown", handleClickOutside);
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
-
-    // Manejar el evento contextmenu para prevenir clic derecho
-    const handleContextMenu = (e) => {
-        e.preventDefault();
-        return false;
-    };
-
     const handleConfirmSubmit = async (confirmed) => {
         if (!confirmed) {
             setShowConfirmation(false);
             return;
         }
-
         setShowConfirmation(false);
 
-        // Validar formulario
+        // Validación
         const validationErrors = {};
         if (!formData.year) validationErrors.year = 'El año es obligatorio.';
         if (!formData.degree) validationErrors.degree = 'El grado es obligatorio.';
@@ -274,51 +185,62 @@ export default function Page() {
         if (!formData.tfgTitle) validationErrors.tfgTitle = 'El título del TFG es obligatorio.';
         if (!formData.abstract) validationErrors.abstract = 'El resumen es obligatorio.';
         if (formData.keywords.length < 3) validationErrors.keywords = 'Añade al menos 3 palabras claves.';
-
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
 
         try {
-            // Preparar datos para enviar al backend
             const dataToSend = {
                 ...formData,
                 advisor: formData.advisorId,
                 year: formData.yearId,
                 degree: formData.degreeId
             };
-
-            // Actualizar TFG
-            const response = await PutTFG(id, dataToSend);
-
-            // Comprobar si se ha cambiado el archivo
+            await PutTFG(id, dataToSend);
             if (formData.file && typeof formData.file !== 'string') {
-                const responseFile = await PatchTfgFile(id, formData.file);
-                if (!responseFile) {
-                    setErrors({ general: '❌ Error al actualizar el archivo, pero los demás datos se guardaron correctamente.' });
-                    return;
-                }
+                await PatchTfgFile(id, formData.file);
             }
-
             setSuccessMessage("✅ TFG actualizado correctamente");
             setErrors({});
-            // Mostrar mensaje por 3 segundos y luego redirigir
             setTimeout(() => {
                 window.location.href = `/dashboard/admin/tfg/${id}?id=${id}`;
             }, 2000);
         } catch (error) {
-            console.error("Error al actualizar:", error);
             setErrors({ general: '❌ Ha ocurrido un error al actualizar el TFG. Por favor, inténtalo de nuevo.' });
         }
     };
 
-    // Renderizar pantalla de carga
+    const downloadPDF = () => {
+        if (formData.file) {
+            try {
+                const uint8Array = new Uint8Array(formData.file);
+                const pdfBlob = new Blob([uint8Array], { type: 'application/pdf' });
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                const a = document.createElement('a');
+                a.href = pdfUrl;
+                a.download = `${formData.tfgTitle}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    URL.revokeObjectURL(pdfUrl);
+                    a.remove();
+                }, 100);
+            } catch {
+                setErrors({ file: "Error al descargar el archivo. Inténtalo más tarde." });
+            }
+        }
+    };
+
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+        return false;
+    };
+
     if (loading) {
         return <LoadingSpinner message="Cargando formulario..." />;
     }
 
-    // Renderizar error si no hay datos
     if (!formData.tfgTitle) {
         return (
             <div className="text-center py-10">
@@ -331,39 +253,23 @@ export default function Page() {
     return (
         <div className={editTfgStyles.layout.container}>
             <div className={editTfgStyles.layout.formContainer}>
-                {/* Cabecera con título y botones de acción */}
+                {/* Cabecera */}
                 <div className={editTfgStyles.header.container}>
                     <h2 className={editTfgStyles.header.title}>{formData.tfgTitle}</h2>
                     <div className={editTfgStyles.header.actionsContainer}>
-                        <button
-                            onClick={handleSubmit}
-                            className={editTfgStyles.header.editButton}
-                        >
-                            Guardar
-                        </button>
-                        <button
-                            onClick={downloadPDF}
-                            className={editTfgStyles.header.secondaryButton}
-                        >
-                            Descargar
-                        </button>
-                        <Link
-                            href={`/dashboard/admin/tfg/${id}?id=${id}`}
-                            className={editTfgStyles.header.secondaryButton}
-                        >
-                            Ver TFG
-                        </Link>
+                        <button onClick={handleSubmit} className={editTfgStyles.header.editButton}>Guardar</button>
+                        <button onClick={downloadPDF} className={editTfgStyles.header.secondaryButton}>Descargar</button>
+                        <Link href={`/dashboard/admin/tfg/${id}?id=${id}`} className={editTfgStyles.header.secondaryButton}>Ver TFG</Link>
                     </div>
                 </div>
 
-                {/* Mensajes de error o éxito */}
                 {(errors.general || successMessage) && (
                     <div className={successMessage ? editTfgStyles.feedback.success : editTfgStyles.feedback.error}>
                         {errors.general || successMessage}
                     </div>
                 )}
 
-                {/* Contenedor del resumen */}
+                {/* Resumen */}
                 <div className={editTfgStyles.abstract.container}>
                     <textarea
                         name="abstract"
@@ -375,10 +281,7 @@ export default function Page() {
                     {errors.abstract && <p className={editTfgStyles.form.error}>{errors.abstract}</p>}
                 </div>
 
-
-
-
-                {/* Campos adicionales para editar */}
+                {/* Formulario */}
                 <div className={editTfgStyles.form.container}>
                     {/* Título */}
                     <div className={editTfgStyles.form.group}>
@@ -392,7 +295,6 @@ export default function Page() {
                         />
                         {errors.tfgTitle && <p className={editTfgStyles.form.error}>{errors.tfgTitle}</p>}
                     </div>
-
                     {/* Año */}
                     <div className={editTfgStyles.form.group}>
                         <label className={editTfgStyles.form.label}>Año</label>
@@ -409,7 +311,6 @@ export default function Page() {
                         </select>
                         {errors.year && <p className={editTfgStyles.form.error}>{errors.year}</p>}
                     </div>
-
                     {/* Grado */}
                     <div className={editTfgStyles.form.group}>
                         <label className={editTfgStyles.form.label}>Grado</label>
@@ -426,7 +327,6 @@ export default function Page() {
                         </select>
                         {errors.degree && <p className={editTfgStyles.form.error}>{errors.degree}</p>}
                     </div>
-
                     {/* Tutor */}
                     <div className={editTfgStyles.form.group} ref={advisorRef}>
                         <label className={editTfgStyles.form.label}>Tutor</label>
@@ -440,7 +340,6 @@ export default function Page() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </div>
-
                             {showDropdown && (
                                 <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                                     <div className="sticky top-0 bg-white p-2 border-b border-gray-200">
@@ -453,7 +352,6 @@ export default function Page() {
                                             onClick={(e) => e.stopPropagation()}
                                         />
                                     </div>
-
                                     {filteredAdvisors.length > 0 ? (
                                         filteredAdvisors.map((advisor) => (
                                             <div
@@ -481,7 +379,6 @@ export default function Page() {
                         </div>
                         {errors.advisor && <p className={editTfgStyles.form.error}>{errors.advisor}</p>}
                     </div>
-
                     {/* Alumno */}
                     <div className={editTfgStyles.form.group}>
                         <label className={editTfgStyles.form.label}>Alumno</label>
@@ -494,7 +391,6 @@ export default function Page() {
                         />
                         {errors.student && <p className={editTfgStyles.form.error}>{errors.student}</p>}
                     </div>
-
                     {/* Palabras clave */}
                     <div className={editTfgStyles.keywords.container}>
                         <label className={editTfgStyles.form.label}>Palabras clave</label>
@@ -520,9 +416,7 @@ export default function Page() {
                                 Añadir
                             </button>
                         </div>
-
                         {errors.keywords && <p className={editTfgStyles.form.error}>{errors.keywords}</p>}
-
                         <div className={editTfgStyles.keywords.list}>
                             {formData.keywords.map((keyword, index) => (
                                 <div key={index} className={editTfgStyles.keywords.tag}>
@@ -540,11 +434,9 @@ export default function Page() {
                         </div>
                     </div>
                 </div>
-                {/* Sección del PDF */}
+                {/* PDF */}
                 <div className={editTfgStyles.pdf.container}>
                     <h2 className={editTfgStyles.pdf.title}>Documento TFG</h2>
-
-                    {/* Formulario para cambiar el archivo */}
                     <div className={editTfgStyles.pdf.uploadContainer}>
                         <div className={editTfgStyles.pdf.uploadInfo}>
                             <div className={editTfgStyles.pdf.fileInfo}>
@@ -566,21 +458,16 @@ export default function Page() {
                         </div>
                         {errors.file && <p className={editTfgStyles.form.error}>{errors.file}</p>}
                     </div>
-                    {/* Visualizador de PDF */}
                     {formData.file && (
                         <div>
                             <div className={editTfgStyles.pdf.viewerContainer}
                                 ref={pdfContainerRef}
                                 onContextMenu={handleContextMenu}>
-
-                                {/* Marca de agua */}
                                 <div className={editTfgStyles.pdf.watermark}>
                                     <div className={editTfgStyles.pdf.watermarkText}>
                                         SOLO VISUALIZACIÓN
                                     </div>
                                 </div>
-
-                                {/* Visualizador de PDF */}
                                 <div className="w-full h-full overflow-hidden">
                                     <object
                                         data={`data:application/pdf;base64,${Buffer.from(formData.file).toString('base64')}`}
@@ -590,11 +477,8 @@ export default function Page() {
                                         <p className={editTfgStyles.pdf.fallbackMessage}>Tu navegador no puede mostrar PDFs.</p>
                                     </object>
                                 </div>
-
-                                {/* Capa superior para bloquear interacciones */}
                                 <div className={editTfgStyles.pdf.protectionOverlay}></div>
                             </div>
-
                             <div className={editTfgStyles.pdf.disclaimer}>
                                 Este documento está protegido. Visualización solo con fines académicos.
                             </div>
