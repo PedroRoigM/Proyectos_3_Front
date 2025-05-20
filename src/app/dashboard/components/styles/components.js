@@ -1,7 +1,7 @@
 export const styles = {
     // General Styles
     general: {
-        container: "mx-[15%]",
+        container: "w-11/12 sm:w-10/12 md:w-9/12 lg:w-4/5 xl:w-4/5 mx-auto",
         flex: "flex",
         flexCol: "flex-col",
         itemsCenter: "items-center",
@@ -48,7 +48,7 @@ export const styles = {
     // Button Styles
     button: {
         base: "rounded-md px-3 py-1 text-sm font-bold transition",
-        blue: "bg-blue-500 text-white hover:bg-blue-600",
+        blue: "bg-[#0065ef] text-white hover:bg-[#0047b3]",
         red: "text-red-600 hover:text-red-800"
     },
 
@@ -60,19 +60,19 @@ export const styles = {
 
     // Card Styles
     card: {
-        base: "border w-full border-black rounded-md overflow-hidden shadow-md",
-        header: "bg-gray-200 p-4 hover:bg-gray-300 transition",
-        title: "text-lg md:text-xl font-semibold",
-        subtitle: "text-sm md:text-md text-gray-700",
-        description: "text-xs md:text-sm text-gray-600",
-        keywords: "flex flex-wrap gap-2 bg-gray-100 p-2",
-        keyword: "border border-gray-500 rounded-md px-2 py-1 text-xs md:text-sm"
+        base: "border w-full border-gray-300 rounded-md overflow-hidden shadow-md hover:shadow-lg transition-shadow",
+        header: "bg-white p-4 hover:bg-gray-50 transition",
+        title: "text-lg md:text-xl font-semibold text-gray-800",
+        subtitle: "text-sm md:text-md text-gray-700 mt-1",
+        description: "text-xs md:text-sm text-gray-600 mt-2",
+        keywords: "flex flex-wrap gap-2 bg-gray-100 p-3",
+        keyword: "bg-[#e6edff] text-[#0065ef] border border-[#b5c9ff] rounded-full px-2 py-1 text-xs md:text-sm"
     },
 
     // Form Styles
     form: {
         base: "flex flex-col gap-3 text-black",
-        input: "border border-gray-400 rounded-md px-2 py-1 w-full text-sm",
+        input: "border border-gray-400 rounded-md px-2 py-1 w-full text-sm focus:ring-2 focus:ring-[#0065ef] focus:border-[#0065ef] outline-none",
         select: "border border-gray-400 rounded-md px-2 py-1 text-sm w-full sm:w-auto flex-1"
     }
 };
@@ -86,6 +86,6 @@ export function classNames(...classes) {
 export function inputClassName(hasError) {
     return classNames(
         styles.form.input,
-        hasError ? "border-red-500 ring-red-500" : "border-gray-400 focus:ring-blue-500"
+        hasError ? "border-red-500 ring-red-500" : "border-gray-400 focus:ring-[#0065ef]"
     );
 }

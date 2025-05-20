@@ -7,6 +7,7 @@ const styles = {
     // Estilos específicos para TFGcardUnverified
     container: {
         ...cardStyles.card,
+        margin: '0 0 12px 0', // Reducido el margen
     },
 
     actionContainer: {
@@ -14,41 +15,50 @@ const styles = {
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '12px',
-        backgroundColor: '#E1E7FB'
+        padding: '8px 12px', // Reducido el padding
+        backgroundColor: '#E1E7FB',
+        gap: '8px',
+        '@media (maxWidth: 640px)': {
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+        }
     },
 
     keywordsContainer: {
         display: 'flex',
         flexWrap: 'wrap',
-        gap: '4px'
+        gap: '4px' // Reducido el gap
     },
 
     buttonsContainer: {
         display: 'flex',
-        gap: '8px',
-        marginTop: '8px',
-        '@media (minWidth: 640px)': {
-            marginTop: '0'
+        gap: '6px', // Reducido el gap
+        marginTop: '0',
+        '@media (maxWidth: 640px)': {
+            width: '100%',
+            justifyContent: 'space-between'
         }
     },
 
     verifyButton: {
-        backgroundColor: '#3B82F6',
+        backgroundColor: '#0065ef',
         color: 'white',
-        fontSize: '0.875rem',
+        fontSize: '0.75rem', // Reducido el tamaño de fuente
         fontWeight: '600',
-        padding: '4px 16px',
-        borderRadius: '6px',
+        padding: '4px 12px', // Reducido el padding
+        borderRadius: '4px',
         display: 'flex',
         alignItems: 'center',
-        transition: 'background-color 0.3s',
+        transition: 'all 0.3s',
         ':hover': {
-            backgroundColor: '#1D4ED8'
+            backgroundColor: '#0047b3'
         },
         ':disabled': {
             opacity: '0.5',
             cursor: 'not-allowed'
+        },
+        '@media (maxWidth: 640px)': {
+            flex: '1'
         }
     },
 
@@ -56,31 +66,33 @@ const styles = {
         backgroundColor: 'white',
         color: '#EF4444',
         border: '1px solid #EF4444',
-        fontSize: '0.875rem',
+        fontSize: '0.75rem', // Reducido el tamaño de fuente
         fontWeight: '600',
-        padding: '4px 16px',
-        borderRadius: '6px',
+        padding: '4px 12px', // Reducido el padding
+        borderRadius: '4px',
         display: 'flex',
         alignItems: 'center',
         transition: 'all 0.3s',
         ':hover': {
-            backgroundColor: '#EF4444',
-            color: 'white'
+            backgroundColor: '#FEE2E2',
         },
         ':disabled': {
             opacity: '0.5',
             cursor: 'not-allowed'
+        },
+        '@media (maxWidth: 640px)': {
+            flex: '1'
         }
     },
 
     loadingSpinner: {
-        width: '16px',
-        height: '16px',
+        width: '12px', // Reducido el tamaño
+        height: '12px', // Reducido el tamaño
         border: '2px solid',
         borderTopColor: 'transparent',
         borderRadius: '50%',
         animation: 'spin 1s linear infinite',
-        marginRight: '8px'
+        marginRight: '6px' // Reducido el margen
     },
 
     loadingSpinnerRed: {

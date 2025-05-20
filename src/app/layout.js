@@ -42,7 +42,7 @@ export default function RootLayout({ children }) {
             <GlobalErrorHandler />
             {!isDashboard && <TopBar />} {/* Solo se muestra si NO es dashboard */}
             {children}
-              {<Footer />}
+            {<Footer />}
           </NotificationProvider>
         </ErrorBoundary>
       </body>

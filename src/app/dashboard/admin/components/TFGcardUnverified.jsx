@@ -1,4 +1,3 @@
-// Componente que renderiza una tarjeta con la información de un TFG sin verificar
 import React, { useState } from 'react';
 import Link from 'next/link';
 import DeleteTFG from '../../components/lib/DeleteTFG';
@@ -87,18 +86,21 @@ export default function TFGcardUnverified({ tfg, onStatusChange }) {
         return null; // No renderiza nada si no es visible
     }
 
+    // Mostrar menos palabras clave para ahorrar espacio
+    const displayedKeywords = tfg.keywords.slice(0, 2); // Limitamos a 2 palabras clave máximo
+
     return (
         <div style={styles.container}>
             <Link href={`/dashboard/admin/tfg/${tfg._id}?id=${tfg._id}`} className="block">
-                <div className="p-4 hover:bg-gray-200 transition">
+                <div className="p-3 hover:bg-gray-200 transition">
                     <h2 style={styles.header}>
-                        {truncateText(tfg.tfgTitle, 80)}
+                        {truncateText(tfg.tfgTitle, 60)}
                     </h2>
                     <h3 style={styles.description}>
                         {tfg.degree.degree}
                     </h3>
                     <p style={styles.description}>
-                        {truncateText(tfg.abstract, 180)}
+                        {truncateText(tfg.abstract, 120)}
                     </p>
                 </div>
             </Link>
@@ -106,11 +108,16 @@ export default function TFGcardUnverified({ tfg, onStatusChange }) {
             <div style={styles.actionContainer}>
                 {/* Palabras clave */}
                 <div style={styles.keywordsContainer}>
-                    {tfg.keywords.map((element, index) => (
+                    {displayedKeywords.map((element, index) => (
                         <span key={index} style={styles.tag}>
                             {element}
                         </span>
                     ))}
+                    {tfg.keywords.length > 2 && (
+                        <span style={{ ...styles.tag, backgroundColor: '#EDF2FD' }}>
+                            +{tfg.keywords.length - 2}
+                        </span>
+                    )}
                 </div>
 
                 {/* Botones */}

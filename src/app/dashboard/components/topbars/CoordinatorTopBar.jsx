@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Menu, X, LogOut, Search, FileCheck } from "lucide-react";
 import { styles } from "../styles/components";
 import AccountLogOut from "../lib/AccountLogOutLogOut";
+
 export default function CoordinatorTopBar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -44,7 +45,10 @@ export default function CoordinatorTopBar() {
         </nav>
 
         {/* Menú hamburguesa en móvil */}
-        <button onClick={() => setIsOpen(!isOpen)} className={styles.navigation.mobile}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden"
+        >
           {isOpen ? <X size={32} /> : <Menu size={32} />}
         </button>
       </div>
@@ -58,6 +62,19 @@ export default function CoordinatorTopBar() {
           <Link href="/dashboard/upload-tfg" className={styles.navigation.link} onClick={() => setIsOpen(false)}>
             Subir TFG
           </Link>
+
+          {/* Opciones específicas del Coordinador en el menú móvil */}
+          <div className="w-full border-t border-gray-300 my-2 pt-2">
+            <Link href="/dashboard/search/admin" className={styles.navigation.adminLink} onClick={() => setIsOpen(false)}>
+              <Search size={18} />
+              <span>Revisión</span>
+            </Link>
+            <Link href="/dashboard/admin/verify" className={styles.navigation.adminLink} onClick={() => setIsOpen(false)}>
+              <FileCheck size={18} />
+              <span>Pendientes</span>
+            </Link>
+          </div>
+
           <button onClick={handleLogout} className={styles.navigation.logoutButton}>
             <LogOut size={18} />
             <span>Cerrar sesión</span>

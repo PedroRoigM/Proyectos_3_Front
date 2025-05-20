@@ -1,4 +1,3 @@
-// Componente que renderiza una tarjeta con la información de un TFG
 import React from 'react';
 import Link from 'next/link';
 import styles from './styles/TFGcard';
@@ -14,25 +13,33 @@ export default function TFGcard({ tfg }) {
         return text.substring(0, maxLength) + '...';
     };
 
+    // Mostrar menos palabras clave para ahorrar espacio
+    const displayedKeywords = tfg.keywords.slice(0, 3); // Limitamos a 3 palabras clave máximo
+
     return (
         <div style={styles.card}>
             <Link href={`/dashboard/tfg/${tfg._id}?id=${tfg._id}`} className="block">
-                <div className="p-4 hover:bg-gray-200 transition">
-                    <h2 className="text-lg md:text-xl font-semibold" style={styles.header}>
-                        {truncateText(tfg.tfgTitle, 80)}
+                <div className="p-3 hover:bg-gray-50 transition"> {/* Reducido el padding */}
+                    <h2 style={styles.header}>
+                        {truncateText(tfg.tfgTitle, 60)} {/* Reducido el número de caracteres */}
                     </h2>
-                    <h3 className="text-sm md:text-md text-gray-700" style={styles.description}>
+                    <h3 className="text-xs text-gray-600"> {/* Reducido el tamaño de fuente */}
                         {tfg.degree.degree}
                     </h3>
-                    <p className="text-xs md:text-sm text-gray-600" style={styles.description}>
-                        {truncateText(tfg.abstract, 180)}
+                    <p style={styles.description}>
+                        {truncateText(tfg.abstract, 120)} {/* Reducido el número de caracteres */}
                     </p>
                 </div>
             </Link>
-            <div className="bg-[#E1E7FB] flex flex-wrap gap-2 p-2">
-                {tfg.keywords.map((keyword, index) => (
+            <div className="bg-[#E1E7FB] flex flex-wrap gap-1 p-2"> {/* Reducido el padding y gap */}
+                {displayedKeywords.map((keyword, index) => (
                     <span key={index} style={styles.tag}>{keyword}</span>
                 ))}
+                {tfg.keywords.length > 3 && (
+                    <span style={{ ...styles.tag, backgroundColor: '#EDF2FD' }}>
+                        +{tfg.keywords.length - 3}
+                    </span>
+                )}
             </div>
         </div>
     );
