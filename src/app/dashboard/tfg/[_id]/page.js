@@ -7,7 +7,7 @@ import { useNotification } from '../../../components/errors/notification-context
 import { useApiError } from '../../../components/errors/api-error-hook';
 import GetTFG from '../../components/lib/GetTFG';
 import GetTFGpdf from '../../components/lib/GetTFGpdf';
-import TFGDetailCommon from '../../../components/TFGDetailCommon';
+import TFGDetailCommon from '../../components/TFGDetailCommon';
 
 function TFGDetailsContent() {
     const id = useSearchParams().get('id');
