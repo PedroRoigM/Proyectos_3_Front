@@ -117,6 +117,7 @@ function AdminTFGDetailsContent() {
         </>
     );
 
+
     return (
         <TFGDetailCommon
             tfg={tfg}
