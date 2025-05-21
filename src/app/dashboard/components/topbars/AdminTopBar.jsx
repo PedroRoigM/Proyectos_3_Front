@@ -1,4 +1,3 @@
-// src/app/dashboard/components/topbars/AdminTopBar.jsx
 "use client";
 
 import { useState } from "react";
@@ -17,6 +16,13 @@ export default function AdminTopBar() {
     await AccountLogOut();
   };
 
+  // Función para cerrar el menú después de seleccionar una opción
+  const closeMenus = () => {
+    setShowAdminMenu(false);
+    setIsOpen(false);
+    setShowMobileAdminMenu(false);
+  };
+
   return (
     <header className={`${styles.header.base} ${styles.header.admin}`}>
       <div className="mx-[14%] sm:px-6 flex items-center justify-between">
@@ -27,13 +33,13 @@ export default function AdminTopBar() {
 
         {/* Menú en escritorio */}
         <nav className={styles.navigation.desktop}>
-          <Link href="/dashboard" className={styles.navigation.link}>
+          <Link href="/dashboard" className={styles.navigation.link} onClick={closeMenus}>
             Destacados
           </Link>
-          <Link href="/dashboard/upload-tfg" className={styles.navigation.link}>
+          <Link href="/dashboard/upload-tfg" className={styles.navigation.link} onClick={closeMenus}>
             Subir TFG
           </Link>
-          <Link href="/dashboard/admin/search" className={styles.navigation.adminLink}>
+          <Link href="/dashboard/admin/search" className={styles.navigation.adminLink} onClick={closeMenus}>
             <Search size={18} />
             <span>Revisión</span>
           </Link>
@@ -47,11 +53,11 @@ export default function AdminTopBar() {
             </button>
             {showAdminMenu && (
               <div className={styles.dropdown.menu}>
-                <Link href="/dashboard/admin/roles" className={styles.dropdown.item}>
+                <Link href="/dashboard/admin/roles" className={styles.dropdown.item} onClick={closeMenus}>
                   <Users size={16} />
                   <span>Gestionar Usuarios</span>
                 </Link>
-                <Link href="/dashboard/admin/control-panel" className={styles.dropdown.item}>
+                <Link href="/dashboard/admin/control-panel" className={styles.dropdown.item} onClick={closeMenus}>
                   <span>Panel de Control</span>
                 </Link>
               </div>
@@ -76,13 +82,13 @@ export default function AdminTopBar() {
       {isOpen && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <nav className={styles.navigation.mobile}>
-            <Link href="/dashboard" className={styles.navigation.link} onClick={() => setIsOpen(false)}>
+            <Link href="/dashboard" className={styles.navigation.link} onClick={closeMenus}>
               Destacados
             </Link>
-            <Link href="/dashboard/upload-tfg" className={styles.navigation.link} onClick={() => setIsOpen(false)}>
+            <Link href="/dashboard/upload-tfg" className={styles.navigation.link} onClick={closeMenus}>
               Subir TFG
             </Link>
-            <Link href="/dashboard/admin/search" className={styles.navigation.adminLink} onClick={() => setIsOpen(false)}>
+            <Link href="/dashboard/admin/search" className={styles.navigation.adminLink} onClick={closeMenus}>
               <Search size={18} />
               <span>Revisión</span>
             </Link>
@@ -100,13 +106,13 @@ export default function AdminTopBar() {
 
               {showMobileAdminMenu && (
                 <div className="pl-6 flex flex-col gap-2 mt-2">
-                  <Link href="/dashboard/admin/roles" className={styles.navigation.link} onClick={() => setIsOpen(false)}>
+                  <Link href="/dashboard/admin/roles" className={styles.navigation.link} onClick={closeMenus}>
                     <div className="flex items-center gap-2">
                       <Users size={16} />
                       <span>Gestionar Usuarios</span>
                     </div>
                   </Link>
-                  <Link href="/dashboard/admin/control-panel" className={styles.navigation.link} onClick={() => setIsOpen(false)}>
+                  <Link href="/dashboard/admin/control-panel" className={styles.navigation.link} onClick={closeMenus}>
                     <span>Panel de Control</span>
                   </Link>
                 </div>
